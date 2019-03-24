@@ -4,4 +4,4 @@ jdk:
   - oraclejdk8
   - oraclejdk9
 install:
-  - grale build
+  - ./gradlew build
