@@ -20,7 +20,7 @@ ext {
     siteUrl = 'https://ettt.t-zomu.com'
 
     // SCM（GitHub）
-    githubUrl = 'https://github.com/epion-tropic-test-tool/epion-t3'
+    githubUrl = 'https://github.com/epion-tropic-test-tool/epion-t3-core'
 }
 
 repositories {
@@ -95,14 +95,14 @@ tasks.withType(JavaCompile) {
 
 
 bintray {
-    user = 'takashno'
-    key = '92ef2bf4efd803336f6b17bfc74c6d7a306e9923'
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
     configurations = ['archives']
 
     pkg {
         repo = 'maven'
         name = project.name
-        licenses = ['MIT']
+        licenses = ['Apache2']
         websiteUrl = siteUrl
         issueTrackerUrl = githubUrl + '/blob/master/LICENSE'
         vcsUrl = githubUrl + '.git'
@@ -127,8 +127,8 @@ install {
 
             licenses {
                 license {
-                    name 'The MIT License'
-                    url 'https://opensource.org/licenses/MIT'
+                    name 'Apache License'
+                    url 'http://www.apache.org/licenses/'
                     distribution 'repo'
                 }
             }
