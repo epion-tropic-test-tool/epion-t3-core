@@ -2,6 +2,6 @@ language: java
 sudo: required
 jdk:
   - oraclejdk8
-  - oraclejdk9
+  #Skip - oraclejdk9
 install:
   - ./gradlew build
