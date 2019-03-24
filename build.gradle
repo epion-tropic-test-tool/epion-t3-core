@@ -1,0 +1,141 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+    id 'maven'
+    id "com.jfrog.bintray" version "1.8.4"
+}
+
+ext {
+    // バージョン定義
+    versionMajor = 0
+    versionMinor = 0
+    versionPatch = 1
+
+    // アーティファクト関連
+    group 'com.zomu.t'
+    version "${versionMajor}.${versionMinor}.${versionPatch}"
+
+    // Document
+    siteUrl = 'https://ettt.t-zomu.com'
+
+    // SCM（GitHub）
+    githubUrl = 'https://github.com/epion-tropic-test-tool/epion-t3'
+}
+
+repositories {
+    maven {
+        url  "https://dl.bintray.com/takashno/maven"
+    }
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+
+    // Json & Yaml
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.6'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.6'
+
+    // Java Utils
+    implementation group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+
+    // logging
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    // cli interface
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+
+    // lang
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+
+    // io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
+    // text
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.4'
+
+    // BeanValidation
+    implementation group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
+    implementation group: 'org.apache.bval', name: 'bval-jsr', version: '1.1.2'
+
+    // Reporting
+    implementation group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.9.RELEASE'
+    implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.1.RELEASE'
+
+    // JSON Path
+    implementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
+
+    // Activity
+    implementation group: 'net.sourceforge.plantuml', name: 'plantuml', version: '8059'
+
+    // for develop
+    compileOnly 'org.projectlombok:lombok:1.18.6'
+
+    testCompile 'junit:junit:4.12'
+
+}
+
+// JavaDoc
+tasks.withType(Javadoc) {
+    options.charSet = 'UTF-8'
+    options.encoding = 'UTF-8'
+    options.addBooleanOption('Xdoclint:none', true)
+}
+
+// Java
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    it.options.encoding = 'UTF-8'
+}
+
+
+bintray {
+    user = 'takashno'
+    key = '92ef2bf4efd803336f6b17bfc74c6d7a306e9923'
+    configurations = ['archives']
+
+    pkg {
+        repo = 'maven'
+        name = project.name
+        licenses = ['MIT']
+        websiteUrl = siteUrl
+        issueTrackerUrl = githubUrl + '/blob/master/LICENSE'
+        vcsUrl = githubUrl + '.git'
+        issueTrackerUrl = githubUrl + '/issues'
+        publicDownloadNumbers = true
+        version {
+            name = project.version
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name project.name
+            url siteUrl
+
+            packaging 'jar'
+            groupId project.group
+            artifactId project.name
+            version project.version
+
+            licenses {
+                license {
+                    name 'The MIT License'
+                    url 'https://opensource.org/licenses/MIT'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection githubUrl + '.git'
+                url githubUrl
+            }
+        }
+    }
+}
