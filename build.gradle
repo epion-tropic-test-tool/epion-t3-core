@@ -15,11 +15,11 @@ ext {
     versionPatch = 1
 
     // アーティファクト関連
-    group 'com.zomu.t'
+    group 'com.epion_t3'
     version "${versionMajor}.${versionMinor}.${versionPatch}"
 
     // Document
-    siteUrl = 'https://ettt.t-zomu.com'
+    siteUrl = 'https://docs.epion-t3.com'
 
     // SCM（GitHub）
     githubUrl = 'https://github.com/epion-tropic-test-tool/epion-t3-core'

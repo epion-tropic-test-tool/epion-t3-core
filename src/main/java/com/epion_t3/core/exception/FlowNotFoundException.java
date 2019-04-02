@@ -1,0 +1,13 @@
+package com.epion_t3.core.exception;
+
+/**
+ * Flowが見つからない例外.
+ *
+ * @author takashno
+ */
+public class FlowNotFoundException extends RuntimeException {
+
+    public FlowNotFoundException(String type) {
+        super("not found flow: '" + type + "'");
+    }
+}

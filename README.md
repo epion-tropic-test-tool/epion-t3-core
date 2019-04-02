@@ -7,7 +7,7 @@
 
 ## What's
 `EpionTropicTestTool(ETTT)`のコアライブラリです。
-詳細については、[Document](https://ettt.t-zomu.com)を参照してください。
+詳細については、[Document](https://docs.epion-t3.com) を参照してください。
 
 
 ## Issue
