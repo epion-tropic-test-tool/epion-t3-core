@@ -27,7 +27,7 @@ ext {
 
 repositories {
     maven {
-        url "https://dl.bintray.com/takashno/maven"
+        url "https://dl.bintray.com/epion-tropic-test-tool/maven"
     }
     mavenCentral()
     jcenter()
@@ -141,6 +141,7 @@ bintray {
     pkg {
         repo = 'maven'
         name = project.name
+        userOrg = 'epion-tropic-test-tool'
         licenses = ['Apache2']
         websiteUrl = siteUrl
         issueTrackerUrl = githubUrl + '/blob/master/LICENSE'
