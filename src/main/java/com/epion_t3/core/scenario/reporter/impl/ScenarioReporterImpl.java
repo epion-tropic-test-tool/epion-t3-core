@@ -1,16 +1,17 @@
 package com.epion_t3.core.scenario.reporter.impl;
 
-import com.epion_t3.core.annotation.OriginalProcessField;
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.annotation.OriginalProcessField;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.scenario.reporter.ThymeleafScenarioReporter;
-import com.epion_t3.core.util.ExecutionFileUtils;
-import com.epion_t3.core.util.ThymeleafReportUtils;
+import com.epion_t3.core.common.util.ExecutionFileUtils;
+import com.epion_t3.core.common.util.ThymeleafReportUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
@@ -48,7 +49,7 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
     /**
      * インスタンスを取得する.
      *
-     * @return
+     * @return シングルトンインスタンス
      */
     public static ScenarioReporterImpl getInstance() {
         return instance;
@@ -88,6 +89,9 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
             ExecuteContext executeContext,
             ExecuteScenario executeScenario,
             Throwable t) {
+
+        // シナリオレポート出力ステージ
+        executeContext.setStage(StageType.REPORT_SCENARIO);
 
         TemplateEngine templateEngine = ThymeleafReportUtils.getInstance().createEngine();
 

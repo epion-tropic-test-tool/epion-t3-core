@@ -1,16 +1,17 @@
 package com.epion_t3.core.command.reporter.impl;
 
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.command.bean.CommandResult;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.model.scenario.Command;
-import com.epion_t3.core.util.DateTimeUtils;
-import com.epion_t3.core.util.ExecutionFileUtils;
-import com.epion_t3.core.util.ThymeleafReportUtils;
+import com.epion_t3.core.common.bean.scenario.Command;
+import com.epion_t3.core.common.util.DateTimeUtils;
+import com.epion_t3.core.common.util.ExecutionFileUtils;
+import com.epion_t3.core.common.util.ThymeleafReportUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.TemplateEngine;
 
@@ -28,7 +29,10 @@ import java.util.Map;
  */
 @Slf4j
 public abstract class AbstractThymeleafCommandReporter<
-        COMMAND extends Command> implements ThymeleafCommandReporter<COMMAND, ExecuteContext, ExecuteScenario, ExecuteFlow, ExecuteCommand> {
+        COMMAND extends Command,
+        COMMAND_RESULT extends CommandResult>
+        implements ThymeleafCommandReporter<
+        COMMAND, COMMAND_RESULT, ExecuteContext, ExecuteScenario, ExecuteFlow, ExecuteCommand> {
 
     /**
      * コマンドレポートを出力.
@@ -44,6 +48,7 @@ public abstract class AbstractThymeleafCommandReporter<
     @Override
     public void report(
             COMMAND command,
+            COMMAND_RESULT commandResult,
             Context context,
             ExecuteContext executeContext,
             ExecuteScenario executeScenario,
@@ -73,6 +78,7 @@ public abstract class AbstractThymeleafCommandReporter<
             // カスタム実装での変数設定
             setVariables(variable,
                     command,
+                    commandResult,
                     executeContext,
                     executeScenario,
                     executeFlow,

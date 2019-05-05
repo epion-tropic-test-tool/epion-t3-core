@@ -76,7 +76,7 @@ public final class MessageManager {
      * @return
      */
     public String getMessage(Messages messages) {
-        return getMessageFormat(messages.getMessageCode()).format(null);
+        return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(null);
     }
 
     /**
@@ -87,28 +87,6 @@ public final class MessageManager {
      * @return
      */
     public String getMessage(String messageCode, Object... params) {
-        return getMessageFormat(messageCode).format(params);
-    }
-
-    /**
-     * メッセージを取得する.
-     *
-     * @param messages
-     * @param params
-     * @return
-     */
-    public String getMessage(Messages messages, Object... params) {
-        return getMessageFormat(messages.getMessageCode()).format(params);
-    }
-
-    /**
-     * メッセージを取得する.
-     *
-     * @param messageCode
-     * @param params
-     * @return
-     */
-    public String getMessageWithCode(String messageCode, Object... params) {
         return "[" + messageCode + "] " + getMessageFormat(messageCode).format(params);
     }
 
@@ -119,9 +97,31 @@ public final class MessageManager {
      * @param params
      * @return
      */
-    public String getMessageWithCode(Messages messages, Object... params) {
+    public String getMessage(Messages messages, Object... params) {
         return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(params);
     }
+
+//    /**
+//     * メッセージを取得する.
+//     *
+//     * @param messageCode
+//     * @param params
+//     * @return
+//     */
+//    public String getMessageWithCode(String messageCode, Object... params) {
+//        return "[" + messageCode + "] " + getMessageFormat(messageCode).format(params);
+//    }
+//
+//    /**
+//     * メッセージを取得する.
+//     *
+//     * @param messages
+//     * @param params
+//     * @return
+//     */
+//    public String getMessageWithCode(Messages messages, Object... params) {
+//        return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(params);
+//    }
 
 
 }

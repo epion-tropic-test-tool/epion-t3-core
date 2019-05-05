@@ -1,7 +1,6 @@
 package com.epion_t3.core.command.handler.listener;
 
-
-import com.epion_t3.core.holder.CommandListenerHolder;
+import com.epion_t3.core.command.handler.listener.holder.CommandListenerHolder;
 
 import java.util.LinkedList;
 import java.util.List;

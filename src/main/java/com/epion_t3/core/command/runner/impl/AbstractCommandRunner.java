@@ -1,26 +1,28 @@
 package com.epion_t3.core.command.runner.impl;
 
-import com.epion_t3.core.command.model.CommandResult;
+import com.epion_t3.core.command.bean.CommandResult;
 import com.epion_t3.core.command.reporter.CommandReporter;
 import com.epion_t3.core.command.reporter.impl.NoneCommandReporter;
 import com.epion_t3.core.command.runner.CommandRunner;
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.EvidenceInfo;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.bean.EvidenceInfo;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.custom.validator.CommandValidator;
+import com.epion_t3.core.exception.CommandValidationException;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.model.scenario.Command;
-import com.epion_t3.core.model.scenario.Configuration;
-import com.epion_t3.core.type.CommandStatus;
-import com.epion_t3.core.type.ReferenceVariableType;
-import com.epion_t3.core.type.ScenarioScopeVariables;
-import com.epion_t3.core.util.BindUtils;
-import com.epion_t3.core.util.DateTimeUtils;
-import com.epion_t3.core.util.EvidenceUtils;
-import com.epion_t3.core.util.IDUtils;
+import com.epion_t3.core.common.bean.scenario.Command;
+import com.epion_t3.core.common.bean.scenario.Configuration;
+import com.epion_t3.core.common.type.CommandStatus;
+import com.epion_t3.core.common.type.ReferenceVariableType;
+import com.epion_t3.core.common.type.ScenarioScopeVariables;
+import com.epion_t3.core.common.util.BindUtils;
+import com.epion_t3.core.common.util.DateTimeUtils;
+import com.epion_t3.core.common.util.EvidenceUtils;
+import com.epion_t3.core.common.util.IDUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -111,6 +113,14 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
         try {
 
+            executeScenario.getNotifications().addAll(
+                    CommandValidator.getInstance().validate(
+                            context, executeContext, executeScenario, executeFlow, command));
+
+            if (executeScenario.hasErrorNotification()) {
+                throw new CommandValidationException();
+            }
+
             result = execute(command, logger);
 
         } catch (Throwable t) {
@@ -118,6 +128,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
             logger.debug("Error Occurred...", t);
             error = t;
             result = new CommandResult();
+            result.setMessage(t.getMessage());
             result.setStatus(CommandStatus.ERROR);
             throw t;
 
@@ -138,6 +149,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
                     // レポート出力
                     reporter.report(
                             command,
+                            result,
                             context,
                             executeContext,
                             executeScenario,

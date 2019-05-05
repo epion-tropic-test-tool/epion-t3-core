@@ -1,23 +1,20 @@
 package com.epion_t3.core.application.runner.impl;
 
-import com.epion_t3.core.annotation.ApplicationVersion;
 import com.epion_t3.core.application.reporter.impl.ApplicationReporterImpl;
 import com.epion_t3.core.application.runner.ApplicationRunner;
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteScenario;
-import com.epion_t3.core.exception.handler.BaseExceptionHandler;
-import com.epion_t3.core.scenario.parser.impl.BaseScenarioParser;
+import com.epion_t3.core.common.annotation.ApplicationVersion;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.type.*;
+import com.epion_t3.core.common.util.ExecutionFileUtils;
+import com.epion_t3.core.custom.parser.impl.CustomParserImpl;
+import com.epion_t3.core.exception.handler.impl.ExceptionHandlerImpl;
+import com.epion_t3.core.scenario.parser.impl.ScenarioParserImpl;
 import com.epion_t3.core.scenario.runner.ScenarioRunner;
 import com.epion_t3.core.scenario.runner.impl.ScenarioRunnerImpl;
-import com.epion_t3.core.type.ApplicationExecuteStatus;
-import com.epion_t3.core.type.Args;
-import com.epion_t3.core.type.ExitCode;
-import com.epion_t3.core.type.ScenarioExecuteStatus;
-import com.epion_t3.core.util.ExecutionFileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -74,9 +71,6 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         // 実行コンテキストの生成
         ExecuteContext executeContext = new ExecuteContext();
 
-        // エラー
-        Throwable error = null;
-
         try {
 
             // 引数設定
@@ -85,8 +79,11 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             // 結果ディレクトリの作成
             createResultDirectory(context, executeContext);
 
+            // カステム機能の解析（パース処理）
+            CustomParserImpl.getInstance().parse(context, executeContext);
+
             // シナリオの解析（パース処理）
-            BaseScenarioParser.getInstance().parse(context);
+            ScenarioParserImpl.getInstance().parse(context, executeContext);
 
             // 実行
             ScenarioRunner scenarioRunner = new ScenarioRunnerImpl();
@@ -110,12 +107,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
         } catch (Throwable t) {
 
-            error = t;
+            // 例外ハンドリング
+            ExceptionHandlerImpl.getInstance().handle(context, executeContext, t);
 
             executeContext.setStatus(ApplicationExecuteStatus.ERROR);
-
-            // 例外ハンドリング
-            handleGlobalException(context, t);
 
         } finally {
 
@@ -129,23 +124,15 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
             // レポート出力
             if (!cmd.hasOption(Args.NOREPORT.getShortName())) {
-                report(context, executeContext, error);
+                report(context, executeContext);
             }
 
         }
 
+        // 終了ステージ
+        executeContext.setStage(StageType.NORMAL_END);
+
         return executeContext.getExitCode().getExitCode();
-
-    }
-
-    /**
-     * @param context
-     * @param t
-     */
-    @Override
-    public void handleGlobalException(final Context context, final Throwable t) {
-
-        BaseExceptionHandler.getInstance().handle(context, t);
 
     }
 
@@ -153,7 +140,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
      * 実行引数オプションをコンテキストへ設定する.
      *
      * @param context     コンテキスト
-     * @param commandLine
+     * @param commandLine コマンドライン
      */
     private void setOptions(final Context context, final CommandLine commandLine) {
         String version = commandLine.getOptionValue(Args.VERSION.getShortName());
@@ -206,11 +193,9 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
      * @param context コンテキスト
      */
     private void report(final Context context,
-                        final ExecuteContext executeContext,
-                        final Throwable error) {
-
+                        final ExecuteContext executeContext) {
         // レポーターに処理を移譲
-        ApplicationReporterImpl.getInstance().report(context, executeContext, error);
+        ApplicationReporterImpl.getInstance().report(context, executeContext);
 
     }
 }

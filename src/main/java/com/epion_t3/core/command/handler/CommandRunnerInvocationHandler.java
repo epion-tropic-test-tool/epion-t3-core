@@ -2,11 +2,11 @@ package com.epion_t3.core.command.handler;
 
 import com.epion_t3.core.command.handler.listener.CommandListenerFactory;
 import com.epion_t3.core.command.runner.CommandRunner;
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

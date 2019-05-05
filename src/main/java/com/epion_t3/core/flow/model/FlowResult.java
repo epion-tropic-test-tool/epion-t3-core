@@ -1,6 +1,6 @@
 package com.epion_t3.core.flow.model;
 
-import com.epion_t3.core.type.FlowResultStatus;
+import com.epion_t3.core.common.type.FlowResultStatus;
 import lombok.Getter;
 import lombok.Setter;
 

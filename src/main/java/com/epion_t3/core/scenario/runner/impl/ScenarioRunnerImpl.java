@@ -1,26 +1,28 @@
 package com.epion_t3.core.scenario.runner.impl;
 
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.Option;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.bean.Option;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.exception.ScenarioNotFoundException;
+import com.epion_t3.core.common.bean.ET3Notification;
 import com.epion_t3.core.flow.model.FlowResult;
 import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
 import com.epion_t3.core.flow.runner.FlowRunner;
 import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.model.scenario.Flow;
-import com.epion_t3.core.model.scenario.Scenario;
-import com.epion_t3.core.model.scenario.T3Base;
+import com.epion_t3.core.common.bean.scenario.Flow;
+import com.epion_t3.core.common.bean.scenario.Scenario;
+import com.epion_t3.core.common.bean.scenario.ET3Base;
 import com.epion_t3.core.scenario.reporter.impl.ScenarioReporterImpl;
 import com.epion_t3.core.scenario.runner.ScenarioRunner;
-import com.epion_t3.core.type.FlowStatus;
-import com.epion_t3.core.type.ScenarioExecuteStatus;
-import com.epion_t3.core.type.ScenarioScopeVariables;
-import com.epion_t3.core.util.BindUtils;
-import com.epion_t3.core.util.ExecutionFileUtils;
+import com.epion_t3.core.common.type.FlowStatus;
+import com.epion_t3.core.common.type.ScenarioExecuteStatus;
+import com.epion_t3.core.common.type.ScenarioScopeVariables;
+import com.epion_t3.core.common.util.BindUtils;
+import com.epion_t3.core.common.util.ExecutionFileUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,8 +48,11 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     @Override
     public void execute(final Context context, final ExecuteContext executeContext) {
 
+        // シナリオ構築ステージ
+        executeContext.setStage(StageType.BUILD_SCENARIO);
+
         // 実行シナリオの選択
-        T3Base t3 = context.getOriginal().getOriginals().get(context.getOption().getTarget());
+        ET3Base t3 = context.getOriginal().getOriginals().get(context.getOption().getTarget());
 
         if (t3 == null) {
             throw new ScenarioNotFoundException(context.getOption().getTarget());
@@ -74,13 +79,16 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * シナリオ実行.
      *
-     * @param context
-     * @param executeContext
-     * @param scenarioRef
+     * @param context コンテキスト
+     * @param executeContext 実行コンテキスト
+     * @param scenarioRef シナリオ参照
      */
     private void executeScenario(Context context, ExecuteContext executeContext, Scenario scenarioRef) {
 
-        T3Base scenario = context.getOriginal().getOriginals().get(scenarioRef.getRef());
+        // シナリオ実行ステージ
+        executeContext.setStage(StageType.RUN_SCENARIO);
+
+        ET3Base scenario = context.getOriginal().getOriginals().get(scenarioRef.getRef());
 
         if (scenario == null) {
             throw new ScenarioNotFoundException(scenarioRef.getRef());
@@ -214,12 +222,11 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             }
 
         } catch (Throwable t) {
-
             log.debug("Error Occurred...", t);
 
             // 発生したエラーを設定
-            error = t;
-            executeScenario.setError(t);
+            executeScenario.addNotification(
+                    ET3Notification.builder().stage(executeContext.getStage()).error(t).message(t.getMessage()).build());
 
             // シナリオ失敗
             executeScenario.setStatus(ScenarioExecuteStatus.ERROR);
@@ -297,38 +304,38 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * シナリオスコープの変数を設定する.
      *
-     * @param context
-     * @param scenario
+     * @param context コンテキスト
+     * @param executeScenario 実行シナリオ
      */
-    private void settingScenarioVariables(final Context context, final ExecuteScenario scenario) {
-        scenario.getScenarioVariables().put(
+    private void settingScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
+        executeScenario.getScenarioVariables().put(
                 ScenarioScopeVariables.SCENARIO_DIR.getName(),
-                context.getOriginal().getScenarioPlacePaths().get(scenario.getInfo().getId()));
-        scenario.getScenarioVariables().put(
+                context.getOriginal().getScenarioPlacePaths().get(executeScenario.getInfo().getId()));
+        executeScenario.getScenarioVariables().put(
                 ScenarioScopeVariables.EVIDENCE_DIR.getName(),
-                scenario.getEvidencePath());
-        scenario.getScenarioVariables().put(
+                executeScenario.getEvidencePath());
+        executeScenario.getScenarioVariables().put(
                 ScenarioScopeVariables.CURRENT_SCENARIO.getName(),
-                scenario.getFqsn());
+                executeScenario.getFqsn());
     }
 
     /**
      * シナリオスコープの変数を掃除する.
      *
-     * @param context
-     * @param scenario
+     * @param context コンテキスト
+     * @param executeScenario 実行シナリオ
      */
-    private void cleanScenarioVariables(final Context context, final ExecuteScenario scenario) {
-        scenario.getScenarioVariables().remove(
+    private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
+        executeScenario.getScenarioVariables().remove(
                 ScenarioScopeVariables.SCENARIO_DIR.getName());
-        scenario.getScenarioVariables().remove(
+        executeScenario.getScenarioVariables().remove(
                 ScenarioScopeVariables.EVIDENCE_DIR.getName());
-        scenario.getScenarioVariables().remove(
+        executeScenario.getScenarioVariables().remove(
                 ScenarioScopeVariables.CURRENT_SCENARIO.getName());
-        scenario.getScenarioVariables().entrySet().forEach(x -> {
+        executeScenario.getScenarioVariables().entrySet().forEach(x -> {
             if (x.getKey().contains(ExecuteScenario.FLOW_START_VARIABLE_SUFFIX)
                     || x.getKey().contains(ExecuteScenario.FLOW_END_VARIABLE_SUFFIX)) {
-                scenario.getScenarioVariables().remove(x.getKey());
+                executeScenario.getScenarioVariables().remove(x.getKey());
             }
         });
     }
@@ -366,7 +373,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param context
      * @param scenario
      */
-    protected void outputStartScenarioLog(Context context, ExecuteScenario scenario) {
+    protected void outputStartScenarioLog(final Context context, final ExecuteScenario scenario) {
         log.info("######################################################################################");
         log.info("Start Scenario.");
         log.info("Scenario ID         : {}", scenario.getInfo().getId());
@@ -380,7 +387,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param context
      * @param scenario
      */
-    protected void outputEndScenarioLog(Context context, ExecuteScenario scenario) {
+    protected void outputEndScenarioLog(final Context context, final ExecuteScenario scenario) {
         if (scenario.getStatus() == ScenarioExecuteStatus.SUCCESS) {
             log.info("######################################################################################");
             log.info("End Scenario.");

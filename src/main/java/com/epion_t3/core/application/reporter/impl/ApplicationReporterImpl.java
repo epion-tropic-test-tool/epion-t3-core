@@ -1,13 +1,13 @@
 package com.epion_t3.core.application.reporter.impl;
 
-
 import com.epion_t3.core.application.reporter.ThymeleafApplicationReporter;
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteContext;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.util.ExecutionFileUtils;
-import com.epion_t3.core.util.ThymeleafReportUtils;
+import com.epion_t3.core.common.util.ExecutionFileUtils;
+import com.epion_t3.core.common.util.ThymeleafReportUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.TemplateEngine;
 
@@ -33,7 +33,7 @@ public class ApplicationReporterImpl implements ThymeleafApplicationReporter<Exe
     /**
      * インスタンスを取得する.
      *
-     * @return
+     * @return シングルトンインスタンス
      */
     public static ApplicationReporterImpl getInstance() {
         return instance;
@@ -47,12 +47,16 @@ public class ApplicationReporterImpl implements ThymeleafApplicationReporter<Exe
     }
 
     /**
+     * レポート出力.
+     *
      * @param context        コンテキスト
      * @param executeContext 実行情報
-     * @param t              エラー
      */
     @Override
-    public void report(Context context, ExecuteContext executeContext, Throwable t) {
+    public void report(Context context, ExecuteContext executeContext) {
+
+        // レポート出力ステージ
+        executeContext.setStage(StageType.REPORT_ALL);
 
         TemplateEngine templateEngine = ThymeleafReportUtils.getInstance().createEngine();
 

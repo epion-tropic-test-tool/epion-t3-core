@@ -5,7 +5,7 @@ package com.epion_t3.core.exception;
  *
  * @author takashno
  */
-public class MessageNotFoundException extends RuntimeException {
+public class MessageNotFoundException extends SystemException {
 
     private String messageCode;
 

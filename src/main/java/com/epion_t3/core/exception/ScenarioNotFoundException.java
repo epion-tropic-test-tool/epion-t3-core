@@ -1,8 +1,10 @@
 package com.epion_t3.core.exception;
 
-public class ScenarioNotFoundException extends RuntimeException {
+public class ScenarioNotFoundException extends SystemException {
+
+    private String scenarioId;
 
     public ScenarioNotFoundException(String scenarioId) {
-        super("not found scenario: '" + scenarioId + "'");
+        this.scenarioId = scenarioId;
     }
 }

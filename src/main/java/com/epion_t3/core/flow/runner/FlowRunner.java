@@ -1,9 +1,9 @@
 package com.epion_t3.core.flow.runner;
 
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteScenario;
-import com.epion_t3.core.model.scenario.Flow;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.flow.model.FlowResult;
+import com.epion_t3.core.common.bean.scenario.Flow;
 import org.slf4j.Logger;
 
 /**

@@ -5,8 +5,9 @@ import com.fasterxml.jackson.databind.DatabindContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.epion_t3.core.context.FlowInfo;
-import com.epion_t3.core.holder.CustomPackageHolder;
+import com.epion_t3.core.common.bean.FlowInfo;
+import com.epion_t3.core.custom.holder.CustomPackageHolder;
+import com.epion_t3.core.exception.FlowNotFoundException;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ public class FlowTypeIdResolver implements TypeIdResolver {
         if (flowInfo != null) {
             return typeFactory.constructType(flowInfo.getModel());
         }
-        throw new IllegalArgumentException();
+        throw new FlowNotFoundException(id);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.epion_t3.core.exception.handler;
 
-public interface ExceptionHandler<Context> {
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
 
-    void handle(final Context context, final Throwable t);
+public interface ExceptionHandler<C extends Context, E extends ExecuteContext> {
+
+    void handle(final C context,final E executeContext, final Throwable t);
 
 }

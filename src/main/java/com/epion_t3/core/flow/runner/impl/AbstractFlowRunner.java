@@ -1,20 +1,19 @@
 package com.epion_t3.core.flow.runner.impl;
 
-
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.flow.model.FlowResult;
 import com.epion_t3.core.flow.runner.FlowRunner;
-import com.epion_t3.core.holder.FlowLog;
-import com.epion_t3.core.holder.FlowLoggingHolder;
-import com.epion_t3.core.model.scenario.Flow;
-import com.epion_t3.core.type.FlowScopeVariables;
-import com.epion_t3.core.type.FlowStatus;
-import com.epion_t3.core.util.BindUtils;
-import com.epion_t3.core.util.ErrorUtils;
+import com.epion_t3.core.flow.logging.bean.FlowLog;
+import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
+import com.epion_t3.core.common.bean.scenario.Flow;
+import com.epion_t3.core.common.type.FlowScopeVariables;
+import com.epion_t3.core.common.type.FlowStatus;
+import com.epion_t3.core.common.util.BindUtils;
+import com.epion_t3.core.common.util.ErrorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;

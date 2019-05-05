@@ -1,15 +1,15 @@
 package com.epion_t3.core.flow.runner.impl;
 
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.exception.SystemException;
-import com.epion_t3.core.flow.runner.FlowRunner;
-import com.epion_t3.core.model.scenario.Flow;
 import com.epion_t3.core.flow.model.FlowResult;
 import com.epion_t3.core.flow.model.ReadTextFileIterateFlow;
 import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
+import com.epion_t3.core.flow.runner.FlowRunner;
+import com.epion_t3.core.common.bean.scenario.Flow;
 import org.slf4j.Logger;
 
 import java.io.IOException;

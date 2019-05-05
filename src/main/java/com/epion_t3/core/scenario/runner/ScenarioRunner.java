@@ -1,6 +1,6 @@
 package com.epion_t3.core.scenario.runner;
 
-import com.epion_t3.core.context.execute.ExecuteContext;
+import com.epion_t3.core.common.context.ExecuteContext;
 
 /**
  *

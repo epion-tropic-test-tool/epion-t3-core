@@ -61,7 +61,9 @@
                 </tr>
                 <tr>
                     <th class="bg-dark" style="color:white">Status</th>
-                    <td class="table-success" th:text="${executeContext.status}" th:class="${executeContext.status.getCssClass()}">SUCCESS</td>
+                    <td class="table-success" th:text="${executeContext.status}"
+                        th:class="${executeContext.status.getCssClass()}">SUCCESS
+                    </td>
                 </tr>
                 <tr>
                     <th class="bg-dark" style="color:white">Start</th>
@@ -106,8 +108,12 @@
                 </thead>
                 <tbody>
                 <tr th:each="scenario,stat : ${executeContext.scenarios}">
-                    <th scope="row"><a th:href="${#strings.concat('./',scenario.resultPath.getFileName(),'/','scenario_report.html')}" th:text="${scenario.info.id}">scenario-id</a></th>
-                    <td class="table-success" th:text="${scenario.status}" th:class="${scenario.status.getCssClass()}">SUCCESS</td>
+                    <th scope="row"><a
+                            th:href="${#strings.concat('./',scenario.resultPath.getFileName(),'/','scenario_report.html')}"
+                            th:text="${scenario.info.id}">scenario-id</a></th>
+                    <td class="table-success" th:text="${scenario.status}" th:class="${scenario.status.getCssClass()}">
+                        SUCCESS
+                    </td>
                     <td th:text="${scenario.info.summary}">Summary</td>
                     <td th:text="${#strings.concat(dateTimeUtils.formatTimeNormal(scenario.start), ' ~ ', dateTimeUtils.formatTimeNormal(scenario.end), ' (', dateTimeUtils.getMillis(scenario.start, scenario.end), ' ms)')}"></td>
                 </tr>
@@ -135,7 +141,8 @@
 
     </section>
 
-    <section class="row" style="margin-top:20px">
+    <!-- Global Variables -->
+    <section class="row" style="margin-top:20px" th:unless="${executeContext.globalVariables.isEmpty()}">
         <div class="col-md-12">
             <h2>Global Variables</h2>
             <table class="table table-bordered table-hover table-striped">
@@ -150,6 +157,27 @@
                 <tr th:each="globalVariable,stat : ${executeContext.globalVariables}">
                     <th scope="row" th:text="${globalVariable.key}">Key</th>
                     <td th:text="${globalVariable.value}">Value</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Notifications -->
+    <section class="row" style="margin-top:20px" id="notifications" th:unless="${executeContext.notifications.isEmpty()}">
+        <div class="col-md-12">
+            <h2>Notifications</h2>
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="bg-dark" style="color:white">
+                <tr>
+                    <th scope="col">Level</th>
+                    <th scope="col">Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="notification,stat : ${executeContext.notifications}">
+                    <td th:text="${notification.level}" th:class="${notification.level.getCssClass()}">INFO</td>
+                    <td th:text="${notification.message}">メッセージ</td>
                 </tr>
                 </tbody>
             </table>

@@ -3,7 +3,7 @@ package com.epion_t3.core.flow.model;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.epion_t3.core.flow.resolver.FlowTypeIdResolver;
-import com.epion_t3.core.model.scenario.Flow;
+import com.epion_t3.core.common.bean.scenario.Flow;
 import lombok.Getter;
 import lombok.Setter;
 

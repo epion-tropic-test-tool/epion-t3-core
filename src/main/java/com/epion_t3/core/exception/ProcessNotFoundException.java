@@ -5,7 +5,7 @@ package com.epion_t3.core.exception;
  *
  * @author takashno
  */
-public class ProcessNotFoundException extends RuntimeException {
+public class ProcessNotFoundException extends SystemException {
 
     private String messageCode;
 

@@ -2,16 +2,16 @@ package com.epion_t3.core.command.resolver.impl;
 
 import com.epion_t3.core.command.handler.CommandRunnerInvocationHandler;
 import com.epion_t3.core.command.resolver.CommandRunnerResolver;
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
-import com.epion_t3.core.context.CommandInfo;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.bean.CommandInfo;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.command.runner.CommandRunner;
 import com.epion_t3.core.exception.CommandNotFoundException;
-import com.epion_t3.core.holder.CustomPackageHolder;
+import com.epion_t3.core.custom.holder.CustomPackageHolder;
 import com.epion_t3.core.message.impl.CoreMessages;
 import org.apache.commons.lang3.StringUtils;
 

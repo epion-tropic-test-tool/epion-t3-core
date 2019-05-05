@@ -1,13 +1,18 @@
 package com.epion_t3.core.exception;
 
+import lombok.Getter;
+
 /**
  * Flowが見つからない例外.
  *
  * @author takashno
  */
-public class FlowNotFoundException extends RuntimeException {
+@Getter
+public class FlowNotFoundException extends SystemException {
 
-    public FlowNotFoundException(String type) {
-        super("not found flow: '" + type + "'");
+    private String flowId;
+
+    public FlowNotFoundException(String flowId) {
+        super("not found flow: '" + flowId + "'");
     }
 }

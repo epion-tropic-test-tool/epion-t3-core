@@ -1,11 +1,11 @@
 package com.epion_t3.core.command.runner;
 
-import com.epion_t3.core.command.model.CommandResult;
-import com.epion_t3.core.context.execute.ExecuteCommand;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteFlow;
-import com.epion_t3.core.context.execute.ExecuteScenario;
-import com.epion_t3.core.model.scenario.Command;
+import com.epion_t3.core.command.bean.CommandResult;
+import com.epion_t3.core.common.bean.ExecuteCommand;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.bean.scenario.Command;
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;

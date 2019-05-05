@@ -1,8 +1,8 @@
 package com.epion_t3.core.scenario.reporter;
 
-import com.epion_t3.core.context.Context;
-import com.epion_t3.core.context.execute.ExecuteContext;
-import com.epion_t3.core.context.execute.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 
 /**
  * シナリオレポート出力インタフェース.

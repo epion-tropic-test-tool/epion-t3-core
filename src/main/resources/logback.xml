@@ -153,9 +153,9 @@
     </appender>
     -->
 
-    <appender name="FLOW_LOG" class="com.zomu.t.epion.tropic.test.tool.core.logging.appender.FlowLoggingAppender"/>
+    <appender name="FLOW_LOG" class="com.epion_t3.core.flow.logging.appender.FlowLoggingAppender"/>
 
-    <appender name="COMMAND_LOG" class="com.zomu.t.epion.tropic.test.tool.core.logging.appender.CommandLoggingAppender"/>
+    <appender name="COMMAND_LOG" class="com.epion_t3.core.command.logging.appender.CommandLoggingAppender"/>
 
     <logger name="CommandLog" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>

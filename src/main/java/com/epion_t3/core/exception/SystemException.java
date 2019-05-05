@@ -1,7 +1,7 @@
 package com.epion_t3.core.exception;
 
-import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.Messages;
+import com.epion_t3.core.message.MessageManager;
 
 /**
  * 汎用システム例外.
@@ -9,6 +9,13 @@ import com.epion_t3.core.message.Messages;
  * @author takashno
  */
 public class SystemException extends RuntimeException {
+
+    /**
+     * デフォルトコンストラクタ.
+     */
+    public SystemException() {
+        // Default Constructor
+    }
 
     public SystemException(Throwable t, String messageCode) {
         super(MessageManager.getInstance().getMessage(messageCode), t);
@@ -31,19 +38,19 @@ public class SystemException extends RuntimeException {
     }
 
     public SystemException(String messageCode) {
-        super(MessageManager.getInstance().getMessageWithCode(messageCode));
+        super(MessageManager.getInstance().getMessage(messageCode));
     }
 
     public SystemException(Messages messages) {
-        super(MessageManager.getInstance().getMessageWithCode(messages.getMessageCode()));
+        super(MessageManager.getInstance().getMessage(messages.getMessageCode()));
     }
 
     public SystemException(String messageCode, Object... objects) {
-        super(MessageManager.getInstance().getMessageWithCode(messageCode, objects));
+        super(MessageManager.getInstance().getMessage(messageCode, objects));
     }
 
     public SystemException(Messages messages, Object... objects) {
-        super(MessageManager.getInstance().getMessageWithCode(messages.getMessageCode(), objects));
+        super(MessageManager.getInstance().getMessage(messages.getMessageCode(), objects));
     }
 
 }

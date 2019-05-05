@@ -1,0 +1,180 @@
+t3: 1.0
+info:
+  name: selenium
+  customPackage: com.epion_t3.selenium
+  summary:
+    - lang: ja_JP
+      contents: 基本的な動作を行うコマンドを提供します。
+    - lang: en_US
+      contents: Core Functions.
+  description:
+    - lang: ja_JP
+      contents: ETTTを扱うための基本的な動作を行うコマンドおよびFlowを提供します。
+    - lang: en_US
+      contents: It provides interface and driver functions as core functions.
+commands:
+  - id: SetVariable
+    summary:
+      - lang: ja_JP
+        contents: 任意のスコープ変数に対して値を設定します。
+      - lang: ja_JP
+        contents: 設定する値自体も変数のバインドが利用できますが、基本的には固定値で利用されることを想定してます。
+    testItem:
+      - order: 1
+        summary:
+          - lang: ja_JP
+            contents: 試験変数「${target}」に対して値「${value}」を設定します。
+          - lang: en_US
+            contents: Document for Test Item.
+    function:
+      - order: 1
+        summary:
+          - lang: ja_JP
+            contents: 任意のスコープ変数に対して値を設定します。
+          - lang: en_US
+            contents: bbb
+      - order: 2
+        summary:
+          - lang: ja_JP
+            contents: 設定する値自体も変数のバインドが利用できますが、基本的には固定値で利用されることを想定してます。
+          - lang: en_US
+            contents: bbb
+    structure:
+      - order: 1
+        name: id
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドのID
+          - lang: en_US
+            contents: Core Functions.
+      - order: 2
+        name: command
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: 「SetVariable」固定
+          - lang: en_US
+            contents: Fix Value SetVariable
+      - order: 3
+        name: summary
+        required: false
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドの概要（任意）
+          - lang: en_US
+            contents: Fix Value SetVariable
+      - order: 4
+        name: descroption
+        required: false
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドの詳細（任意）
+          - lang: en_US
+            contents: Fix Value SetVariable
+      - order: 5
+        name: descroption
+        required: false
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドの詳細（任意）
+          - lang: en_US
+            contents: Fix Value SetVariable
+      - order: 6
+        name: target
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: 変数名を指定 # (1)
+          - lang: en_US
+            contents: Fix Value SetVariable
+        description:
+          - lang: ja_JP
+            contents: 変数名は「スコープ.変数名」の形式で指定します。「global.hoge」であればグローバルスコープにhogeという変数名で値を定義することになります。
+      - order: 7
+        name: value
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: 値を指定 # (2)
+          - lang: en_US
+            contents: Fix Value SetVariable
+        description:
+          - lang: ja_JP
+            contents: 値は基本的に固定値を指定します。「あああ」と定義した場合は文字列で「あああ」と登録されます。
+  - id: RemoveVariable
+    summary:
+      - lang: ja_JP
+        contents: 任意のスコープ変数に設定してある変数を削除します。
+    testItem:
+      - order: 1
+        summary:
+          - lang: ja_JP
+            contents: 試験変数「${target}」を削除します。
+    function:
+      - order: 1
+        summary:
+          - lang: ja_JP
+            contents: 任意のスコープ変数に設定してある変数を削除します。
+    structure:
+      - order: 1
+        name: id
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドのID
+          - lang: en_US
+            contents: Core Functions.
+      - order: 2
+        name: command
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: 「RemoveVariable」固定
+      - order: 3
+        name: summary
+        required: false
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドの概要（任意）
+      - order: 4
+        name: descroption
+        required: false
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドの詳細（任意）
+      - order: 5
+        name: descroption
+        required: false
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: コマンドの詳細（任意）
+      - order: 6
+        name: target
+        required: true
+        type: string
+        summary:
+          - lang: ja_JP
+            contents: 変数名を指定 # (1)
+        description:
+          - lang: ja_JP
+            contents: 変数名は「スコープ.変数名」の形式で指定します。「global.hoge」であればグローバルスコープにhogeという変数名で値を定義することになります。
+messages:
+  - id: com.epion_t3.core.err.0001
+    message:
+      - lang: ja_JP
+        contents: メッセージ
+      - lang: en_US
+        contents: Message.
