@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'eclipse'
     id 'idea'
     id 'maven'
@@ -36,46 +37,46 @@ repositories {
 dependencies {
 
     // Json & Yaml
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.6'
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.6'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.6'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.6'
+    api group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.6'
 
     // Java Utils
-    implementation group: 'com.google.guava', name: 'guava', version: '25.1-jre'
+    api group: 'com.google.guava', name: 'guava', version: '25.1-jre'
 
     // logging
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    api group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    api group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
     // cli interface
-    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    api group: 'commons-cli', name: 'commons-cli', version: '1.4'
 
     // lang
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    api group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 
     // io
-    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+    api group: 'commons-io', name: 'commons-io', version: '2.6'
 
     // Bean Utils
-    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    api group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
 
     // Text
-    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.4'
+    api group: 'org.apache.commons', name: 'commons-text', version: '1.4'
 
     // BeanValidation
-    implementation group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
-    implementation group: 'org.apache.bval', name: 'bval-jsr', version: '1.1.2'
+    api group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
+    api group: 'org.apache.bval', name: 'bval-jsr', version: '1.1.2'
 
     // Reporting
-    implementation group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.9.RELEASE'
-    implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.1.RELEASE'
+    api group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.9.RELEASE'
+    api group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-java8time', version: '3.0.1.RELEASE'
 
     // JSON Path
-    implementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
+    api group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
 
     // Activity
-    implementation group: 'net.sourceforge.plantuml', name: 'plantuml', version: '8059'
+    api group: 'net.sourceforge.plantuml', name: 'plantuml', version: '8059'
 
     // For Develop
     compileOnly 'org.projectlombok:lombok:1.18.6'
