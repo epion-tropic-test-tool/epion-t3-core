@@ -74,10 +74,6 @@ public class CustomSpecValidator {
         CommandSpecInfo commandSpec =
                 CustomPackageHolder.getInstance().getCommandSpec(customName, commandInfo.getId());
 
-        // ここで初めてコマンドIDとコマンドモデルクラスの付き合わせが行えるため、
-        // このタイミングでCustomPackageHolderへ登録を行う.
-        CustomPackageHolder.getInstance().addCustomCommandSpec(commandInfo.getModel(), commandSpec);
-
         if (commandSpec == null) {
             executeContext.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
@@ -87,6 +83,10 @@ public class CustomSpecValidator {
                     .build());
             return result;
         }
+
+        // ここで初めてコマンドIDとコマンドモデルクラスの付き合わせが行えるため、
+        // このタイミングでCustomPackageHolderへ登録を行う.
+        CustomPackageHolder.getInstance().addCustomCommandSpec(commandInfo.getModel(), commandSpec);
 
         for (CommandSpecStructure css : commandSpec.getStructures().values()) {
             try {
