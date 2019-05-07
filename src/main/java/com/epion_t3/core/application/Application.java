@@ -151,21 +151,7 @@ public class Application {
         try (InputStream is = classLoader.getResourceAsStream("banners/banner.txt");
              InputStreamReader stream = new InputStreamReader(is, "UTF-8");
              BufferedReader buffer = new BufferedReader(stream);) {
-            String str;
-            //ファイルの最終行まで読み込む
-            while((str = buffer.readLine()) != null){
-                byte[] b = str.getBytes();
-                //文字コードをShift-JISに変換する
-                str = new String(b, "Shift-JIS");
-
-                String[] col = str.split(",", -1);
-
-                for ( int i=0; i<col.length; i++){
-                    System.out.println(col[i]);
-                }
-            }
-
-//            IOUtils.readLines(stream).stream().forEach(System.out::println);
+            IOUtils.readLines(stream).stream().forEach(System.out::println);
         } catch (IOException e) {
             // ignore
         }
