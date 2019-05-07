@@ -558,7 +558,6 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * バインド.
      *
      * @param target
-     * @return
      */
     protected void bind(Object target) {
         // 変数バインド

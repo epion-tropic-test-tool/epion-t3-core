@@ -14,8 +14,10 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
@@ -145,11 +147,25 @@ public class Application {
      * 標準出力に対してバナーを出力する.
      */
     private static void outputBanner() {
-
         ClassLoader classLoader = Application.class.getClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream("banners/banner.txt");
+             InputStreamReader stream = new InputStreamReader(is, "UTF-8");
+             BufferedReader buffer = new BufferedReader(stream);) {
+            String str;
+            //ファイルの最終行まで読み込む
+            while((str = buffer.readLine()) != null){
+                byte[] b = str.getBytes();
+                //文字コードをShift-JISに変換する
+                str = new String(b, "Shift-JIS");
 
-        try (InputStream is = classLoader.getResourceAsStream("banners/banner.txt")) {
-            IOUtils.readLines(is, Charset.forName("UTF-8")).stream().forEach(System.out::println);
+                String[] col = str.split(",", -1);
+
+                for ( int i=0; i<col.length; i++){
+                    System.out.println(col[i]);
+                }
+            }
+
+//            IOUtils.readLines(stream).stream().forEach(System.out::println);
         } catch (IOException e) {
             // ignore
         }

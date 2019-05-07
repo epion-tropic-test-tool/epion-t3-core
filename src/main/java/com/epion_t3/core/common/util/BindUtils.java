@@ -5,6 +5,8 @@ import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.common.type.ReferenceVariableType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.beans.IntrospectionException;
@@ -103,9 +105,9 @@ public final class BindUtils {
                 Class<?> fieldClass = f.getType();
 
                 try {
-
-                    PropertyDescriptor pd = new PropertyDescriptor(f.getName(), target.getClass());
-                    Object value = pd.getReadMethod().invoke(target);
+                    //PropertyDescriptor pd = new PropertyDescriptor(f.getName(), target.getClass());
+                    //Object value = pd.getReadMethod().invoke(target);
+                    Object value = PropertyUtils.getProperty(target, f.getName());
                     if (value != null) {
 
                         if (String.class.isAssignableFrom(fieldClass)) {
@@ -114,7 +116,8 @@ public final class BindUtils {
                                     globalVariables,
                                     scenarioVariables,
                                     flowVariables);
-                            pd.getWriteMethod().invoke(target, value.toString());
+                            BeanUtils.setProperty(target, f.getName(), value);
+                            //pd.getWriteMethod().invoke(target, value.toString());
 
                         } else if (fieldClass.isArray()) {
                             Object[] array = (Object[]) value;
@@ -165,7 +168,7 @@ public final class BindUtils {
                         }
                     }
 
-                } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                     log.debug("Ignore...", e);
                 }
 

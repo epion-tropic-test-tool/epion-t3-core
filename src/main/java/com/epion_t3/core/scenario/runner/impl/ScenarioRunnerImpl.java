@@ -5,7 +5,7 @@ import com.epion_t3.core.common.bean.Option;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.common.type.StageType;
+import com.epion_t3.core.common.type.*;
 import com.epion_t3.core.exception.ScenarioNotFoundException;
 import com.epion_t3.core.common.bean.ET3Notification;
 import com.epion_t3.core.flow.model.FlowResult;
@@ -18,9 +18,6 @@ import com.epion_t3.core.common.bean.scenario.Scenario;
 import com.epion_t3.core.common.bean.scenario.ET3Base;
 import com.epion_t3.core.scenario.reporter.impl.ScenarioReporterImpl;
 import com.epion_t3.core.scenario.runner.ScenarioRunner;
-import com.epion_t3.core.common.type.FlowStatus;
-import com.epion_t3.core.common.type.ScenarioExecuteStatus;
-import com.epion_t3.core.common.type.ScenarioScopeVariables;
 import com.epion_t3.core.common.util.BindUtils;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +52,11 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
         ET3Base t3 = context.getOriginal().getOriginals().get(context.getOption().getTarget());
 
         if (t3 == null) {
+            executeContext.addNotification(ET3Notification.builder()
+                    .stage(executeContext.getStage())
+                    .level(NotificationType.ERROR)
+                    .message(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0045,context.getOption().getTarget()))
+                    .build());
             throw new ScenarioNotFoundException(context.getOption().getTarget());
         }
 
