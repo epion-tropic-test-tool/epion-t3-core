@@ -1,0 +1,69 @@
+t3: 1.0
+info:
+  name: core
+  customPackage: com.epion_t3.core
+  summary:
+    - lang: ja_JP
+      contents: コア機能
+    - lang: en_US
+      contents: Core Functions.
+  description:
+    - lang: ja_JP
+      contents: コア機能として、インタフェースやドライバ的機能を提供します。
+    - lang: en_US
+      contents: It provides interface and driver functions as core functions.
+commands:
+  - id: Command
+    summary:
+      - lang: ja_JP
+        contents: コア機能
+      - lang: en_US
+        contents: Core Functions.
+    testItem:
+      - order: 1
+        summary:
+          - lang: ja_JP
+            contents: 試験項目書を作成するときの文章。
+          - lang: en_US
+            contents: Document for Test Item.
+    function:
+      - order: 1
+        summary:
+          - lang: ja_JP
+            contents: aaaa
+          - lang: en_US
+            contents: bbb
+      - order: 2
+        summary:
+          - lang: ja_JP
+            contents: aaaa
+          - lang: en_US
+            contents: bbb
+    structure:
+      - order: 1
+        name: id
+        required: true
+        pattern: 'regexp'
+        type: (string|number|boolean|array|object)
+        summary:
+          - lang: ja_JP
+            contents: コア機能
+          - lang: en_US
+            contents: Core Functions.
+      - order: 2
+        name: hoge
+        required: true
+        pattern: 'regexp'
+        type: (string|number|boolean|array|object)
+        summary:
+          - lang: ja_JP
+            contents: コア機能
+          - lang: en_US
+            contents: Core Functions.
+messages:
+  - id: com.epion_t3.core.err.0001
+    message:
+      - lang: ja_JP
+        contents: メッセージ
+      - lang: en_US
+        contents: Message.

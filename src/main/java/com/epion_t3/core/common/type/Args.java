@@ -26,7 +26,9 @@ public enum Args {
 
     DEBUG("d", "debug", false, "run tool for debug.", false),
 
-    NOREPORT("n", "noreport", false, "no report output", false),
+    NO_REPORT("n", "noreport", false, "no report output", false),
+
+    WEB_ASSET_PATH("a", "webassert", true, "web asserts base path.", false),
 
     HELP("h", "help", true, "show the tool help.", false);
 

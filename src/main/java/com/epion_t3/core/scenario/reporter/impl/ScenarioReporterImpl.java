@@ -17,6 +17,7 @@ import net.sourceforge.plantuml.FileFormat;
 import net.sourceforge.plantuml.FileFormatOption;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.thymeleaf.TemplateEngine;
 
@@ -116,7 +117,7 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
                             try {
                                 // Getterメソッドを参照
                                 Method getterMethod = executeCommand.getCommand().getClass().getDeclaredMethod(
-                                        "get" + WordUtils.capitalize(field.getName()), null);
+                                        "get" + WordUtils.capitalize(field.getName()), new Class[0]);
                                 // 値抽出
                                 Object value = getterMethod.invoke(executeCommand.getCommand());
                                 executeCommand.getExtensionProcessFields().put(field.getName(), value);
@@ -131,6 +132,9 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
 
             // 変数の設定
             // variable.put("activity", generateSvg(executeScenario));
+            if (StringUtils.isNotEmpty(context.getOption().getWebAssetPath())) {
+                variable.put("webAssetPath", context.getOption().getWebAssetPath());
+            }
             variable.put("executeContext", executeContext);
             variable.put("executeScenario", executeScenario);
             variable.put("error", t);

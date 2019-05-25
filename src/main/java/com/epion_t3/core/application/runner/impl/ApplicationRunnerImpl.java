@@ -91,6 +91,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
             // 終了判定
             executeContext.setStatus(ApplicationExecuteStatus.SUCCESS);
+
             // 全シナリオを走査
             for (ExecuteScenario executeScenario : executeContext.getScenarios()) {
                 if (executeScenario.getStatus() == ScenarioExecuteStatus.ERROR) {
@@ -123,7 +124,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
                             executeContext.getEnd()));
 
             // レポート出力
-            if (!cmd.hasOption(Args.NOREPORT.getShortName())) {
+            if (!cmd.hasOption(Args.NO_REPORT.getShortName())) {
                 report(context, executeContext);
             }
 
@@ -168,8 +169,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         }
 
         // レポート出力無の設定
-        if (commandLine.hasOption(Args.NOREPORT.getShortName())) {
+        if (commandLine.hasOption(Args.NO_REPORT.getShortName())) {
             context.getOption().setNoreport(true);
+        }
+
+        // WEBアセット基底パス
+        if (commandLine.hasOption(Args.WEB_ASSET_PATH.getShortName())) {
+            context.getOption().setWebAssetPath(commandLine.getOptionValue(Args.WEB_ASSET_PATH.getShortName()));
         }
 
         // デバッグの設定
