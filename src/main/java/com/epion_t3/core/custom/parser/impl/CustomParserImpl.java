@@ -273,12 +273,13 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                 );
 
                 // メッセージ設定
-                et3Spec.getMessages().stream().forEach(
-                        x -> {
-                            x.getMessage().forEach(y ->
-                                    customSpecInfo.addMessage(y.getLang(), x.getId(), y.getContents()));
-                        });
-
+                if (et3Spec.getMessages() != null) {
+                    et3Spec.getMessages().stream().forEach(
+                            x -> {
+                                x.getMessage().forEach(y ->
+                                        customSpecInfo.addMessage(y.getLang(), x.getId(), y.getContents()));
+                            });
+                }
 
             } catch (JsonMappingException e) {
                 executeContext.addNotification(ET3Notification.builder()
