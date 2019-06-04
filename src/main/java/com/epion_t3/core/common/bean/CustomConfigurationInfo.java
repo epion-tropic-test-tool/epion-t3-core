@@ -42,6 +42,6 @@ public class CustomConfigurationInfo implements Serializable {
      * 対応するモデルクラス.
      */
     @NonNull
-    private Class<?> model;
+    private Class model;
 
 }

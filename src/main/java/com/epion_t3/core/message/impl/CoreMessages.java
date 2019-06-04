@@ -59,6 +59,7 @@ public enum CoreMessages implements Messages {
     CORE_ERR_0044("com.epion_t3.core.err.0044"),
     CORE_ERR_0045("com.epion_t3.core.err.0045"),
     CORE_ERR_0046("com.epion_t3.core.err.0046"),
+    CORE_ERR_0047("com.epion_t3.core.err.0047"),
     CORE_ERR_1001("com.zomu.t.epion.t3.core.err.1001"),
     CORE_ERR_1002("com.zomu.t.epion.t3.core.err.1002"),
     CORE_ERR_1003("com.zomu.t.epion.t3.core.err.1003"),

@@ -272,6 +272,42 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                         }
                 );
 
+
+                // カスタム設定情報設定
+                et3Spec.getConfigurations().stream().forEach(
+                        x -> {
+                            // 設定情報設計を作成
+                            CustomConfigurationSpecInfo customConfigurationSpecInfo = new CustomConfigurationSpecInfo();
+                            customConfigurationSpecInfo.setId(x.getId());
+
+                            // 機能をLocale毎に分けて設定
+                            x.getSummary().stream().forEach(y -> customConfigurationSpecInfo.addFunction(y.getLang(), y.getContents()));
+
+                            // コマンド構成を設定
+                            x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                                    .forEach(s -> {
+                                        CustomConfigurationSpecStructure customConfigurationSpecStructure = new CustomConfigurationSpecStructure();
+                                        customConfigurationSpecStructure.setName(s.getName());
+                                        customConfigurationSpecStructure.setRequired(s.getRequired());
+                                        customConfigurationSpecStructure.setPattern(s.getPattern());
+                                        customConfigurationSpecStructure.setType(s.getType());
+                                        s.getSummary().stream()
+                                                .forEach(sm -> customConfigurationSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                                        if (s.getDescription() != null) {
+                                            s.getDescription().stream()
+                                                    .forEach(sm -> customConfigurationSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                                        }
+                                        if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                                            parseCustomConfigurationStructureRecursive(customConfigurationSpecStructure, s.getProperty());
+                                        }
+                                        customConfigurationSpecInfo.addStructure(customConfigurationSpecStructure);
+                                    });
+
+                            // 設定情報追加
+                            customSpecInfo.putCustomConfiguration(customConfigurationSpecInfo);
+                        }
+                );
+
                 // メッセージ設定
                 if (et3Spec.getMessages() != null) {
                     et3Spec.getMessages().stream().forEach(
@@ -324,8 +360,31 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                 });
     }
 
+    private void parseCustomConfigurationStructureRecursive(CustomConfigurationSpecStructure parent, List<Structure> structures) {
+
+        // コマンド構成を設定
+        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                .forEach(s -> {
+                    CustomConfigurationSpecStructure customConfigurationSpecStructure = new CustomConfigurationSpecStructure();
+                    customConfigurationSpecStructure.setName(s.getName());
+                    customConfigurationSpecStructure.setRequired(s.getRequired());
+                    customConfigurationSpecStructure.setPattern(s.getPattern());
+                    customConfigurationSpecStructure.setType(s.getType());
+                    s.getSummary().stream()
+                            .forEach(sm -> customConfigurationSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                    if (s.getDescription() != null) {
+                        s.getDescription().stream()
+                                .forEach(sm -> customConfigurationSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                    }
+                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                        parseCustomConfigurationStructureRecursive(customConfigurationSpecStructure, s.getProperty());
+                    }
+                    parent.getProperty().add(customConfigurationSpecStructure);
+                });
+    }
+
     /**
-     * カスタムコマンド解析.
+     * カスタム機能解析.
      *
      * @param context コンテキスト
      */
