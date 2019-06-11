@@ -19,6 +19,11 @@ public class ET3Spec implements Serializable {
     private String et3 = "1.0";
 
     /**
+     * 対応言語.
+     */
+    private List<String> languages;
+
+    /**
      * カスタム機能情報.
      */
     @NotNull
