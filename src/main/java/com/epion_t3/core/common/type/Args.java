@@ -28,7 +28,7 @@ public enum Args {
 
     NO_REPORT("n", "noreport", false, "no report output", false),
 
-    WEB_ASSET_PATH("a", "webassert", true, "web asserts base path.", false),
+    WEB_ASSET_PATH("a", "webassets", true, "web assets base path.", false),
 
     HELP("h", "help", true, "show the tool help.", false);
 
