@@ -9,6 +9,7 @@ import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
 import com.epion_t3.core.common.util.ThymeleafReportUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.TemplateEngine;
 
 import java.io.IOException;
@@ -67,6 +68,9 @@ public class ApplicationReporterImpl implements ThymeleafApplicationReporter<Exe
         ThymeleafReportUtils.setUtility(variable);
 
         try {
+            if (StringUtils.isNotEmpty(context.getOption().getWebAssetPath())) {
+                variable.put("webAssetPath", context.getOption().getWebAssetPath());
+            }
             variable.put("context", context);
             variable.put("executeContext", executeContext);
 

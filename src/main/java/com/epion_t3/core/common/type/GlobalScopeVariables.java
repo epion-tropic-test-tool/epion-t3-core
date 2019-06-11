@@ -13,6 +13,8 @@ public enum GlobalScopeVariables {
     SCENARIO_DIR("scenarioDir"),
 
     SCENARIO_EVIDENCE_DIR("scenarioDir"),
+
+    WEB_ASSETS_ROOT("webAssertsRoot"),
     ;
 
     private String name;

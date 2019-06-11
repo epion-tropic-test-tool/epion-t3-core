@@ -13,6 +13,7 @@ import com.epion_t3.core.common.util.DateTimeUtils;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
 import com.epion_t3.core.common.util.ThymeleafReportUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.thymeleaf.TemplateEngine;
 
 import java.io.IOException;
@@ -74,6 +75,9 @@ public abstract class AbstractThymeleafCommandReporter<
             variable.put("executeCommand", executeCommand);
             variable.put("error", t);
             variable.put("hasError", t != null);
+            if (StringUtils.isNotEmpty(context.getOption().getWebAssetPath())) {
+                variable.put("webAssetPath", context.getOption().getWebAssetPath());
+            }
 
             // カスタム実装での変数設定
             setVariables(variable,

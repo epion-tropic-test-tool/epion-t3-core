@@ -46,6 +46,11 @@ public class CustomSpecInfo implements Serializable {
     private final Map<Locale, String> descriptions = new ConcurrentHashMap<>();
 
     /**
+     * 設定情報
+     */
+    private final Map<String, CustomConfigurationSpecInfo> configurations = new ConcurrentHashMap<>();
+
+    /**
      * コマンド情報
      */
     private final Map<String, CommandSpecInfo> commands = new ConcurrentHashMap<>();
@@ -80,12 +85,21 @@ public class CustomSpecInfo implements Serializable {
     }
 
     /**
-     * コマンド設計情報へ追加.
+     * コマンドへ追加.
      *
-     * @param commandSpecInfo
+     * @param commandSpecInfo コマンド設計
      */
     public void putCommandSpec(CommandSpecInfo commandSpecInfo) {
         commands.put(commandSpecInfo.getId(), commandSpecInfo);
+    }
+
+    /**
+     * 設計情報へ追加.
+     *
+     * @param customConfigurationSpecInfo 設定情報設計
+     */
+    public void putCustomConfiguration(CustomConfigurationSpecInfo customConfigurationSpecInfo) {
+        configurations.put(customConfigurationSpecInfo.getId(), customConfigurationSpecInfo);
     }
 
     /**

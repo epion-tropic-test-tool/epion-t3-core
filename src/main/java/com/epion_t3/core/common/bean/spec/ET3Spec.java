@@ -30,6 +30,12 @@ public class ET3Spec implements Serializable {
     private Information info;
 
     /**
+     * 設定情報.
+     */
+    @Valid
+    private List<Configuration> configurations;
+
+    /**
      * コマンド.
      */
     @NotEmpty

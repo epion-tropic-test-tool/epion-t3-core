@@ -83,6 +83,13 @@ public final class CustomPackageHolder {
      */
     private final Map<Class<? extends Command>, CommandSpecInfo> customCommandSpecs = new ConcurrentHashMap<>();
 
+    /**
+     * カスタム設定情報設計情報.
+     * Key: カスタム設定情報モデルクラス
+     * Value: カスタム設定情報設計情報
+     */
+    private final Map<Class<? extends Configuration>, CustomConfigurationSpecInfo> customConfigurationSpecs = new ConcurrentHashMap<>();
+
 
     /**
      * プライベートコンストラクタ.
@@ -212,14 +219,28 @@ public final class CustomPackageHolder {
         return getCustomSpec(customName).getCommands().get(commandId);
     }
 
+    public CustomConfigurationSpecInfo getConfigurationSpec(String customName, String commandId) {
+        return getCustomSpec(customName).getConfigurations().get(commandId);
+    }
+
     // -----------------------------------------------------------------------------------------------------------
 
-    public void addCustomCommandSpec(Class<? extends Command>  commandModelClass, CommandSpecInfo commandSpecInfo) {
+    public void addCustomCommandSpec(Class<? extends Command> commandModelClass, CommandSpecInfo commandSpecInfo) {
         customCommandSpecs.put(commandModelClass, commandSpecInfo);
     }
 
     public CommandSpecInfo getCustomCommandSpec(Class<? extends Command> commandModelClass) {
         return customCommandSpecs.get(commandModelClass);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------
+
+    public void addCustomConfigurationSpec(Class<? extends Configuration> commandModelClass, CustomConfigurationSpecInfo customConfigurationSpecInfo) {
+        customConfigurationSpecs.put(commandModelClass, customConfigurationSpecInfo);
+    }
+
+    public CustomConfigurationSpecInfo getCustomConfigurationSpec(Class<? extends Command> commandModelClass) {
+        return customConfigurationSpecs.get(commandModelClass);
     }
 
     // -----------------------------------------------------------------------------------------------------------
