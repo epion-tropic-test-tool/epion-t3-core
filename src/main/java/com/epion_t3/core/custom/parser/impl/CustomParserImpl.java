@@ -233,80 +233,83 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                         .forEach(x -> customSpecInfo.putDescription(x.getLang(), x.getContents()));
 
                 // カスタムコマンド設定
-                et3Spec.getCommands().stream().forEach(
-                        x -> {
-                            // コマンド設計を作成
-                            CommandSpecInfo commandSpecInfo = new CommandSpecInfo();
-                            commandSpecInfo.setId(x.getId());
+                if (et3Spec.getCommands() != null) {
+                    et3Spec.getCommands().stream().forEach(
+                            x -> {
+                                // コマンド設計を作成
+                                CommandSpecInfo commandSpecInfo = new CommandSpecInfo();
+                                commandSpecInfo.setId(x.getId());
 
-                            // 機能をLocale毎に分けて設定
-                            x.getSummary().stream().forEach(y -> commandSpecInfo.addFunction(y.getLang(), y.getContents()));
+                                // 機能をLocale毎に分けて設定
+                                x.getSummary().stream().forEach(y -> commandSpecInfo.addFunction(y.getLang(), y.getContents()));
 
-                            // 試験項目をorderでソートしたのち、Locale毎に分けて設定
-                            x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
-                                    .forEach(ti -> ti.getSummary()
-                                            .forEach(c -> commandSpecInfo.addTestItem(c.getLang(), c.getContents())));
+                                // 試験項目をorderでソートしたのち、Locale毎に分けて設定
+                                x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
+                                        .forEach(ti -> ti.getSummary()
+                                                .forEach(c -> commandSpecInfo.addTestItem(c.getLang(), c.getContents())));
 
-                            // コマンド構成を設定
-                            x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                                    .forEach(s -> {
-                                        CommandSpecStructure commandSpecStructure = new CommandSpecStructure();
-                                        commandSpecStructure.setName(s.getName());
-                                        commandSpecStructure.setRequired(s.getRequired());
-                                        commandSpecStructure.setPattern(s.getPattern());
-                                        commandSpecStructure.setType(s.getType());
-                                        s.getSummary().stream()
-                                                .forEach(sm -> commandSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                                        if (s.getDescription() != null) {
-                                            s.getDescription().stream()
-                                                    .forEach(sm -> commandSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                                        }
-                                        if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                                            parseCustomCommandStructureRecursive(commandSpecStructure, s.getProperty());
-                                        }
-                                        commandSpecInfo.addStructure(commandSpecStructure);
-                                    });
+                                // コマンド構成を設定
+                                x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                                        .forEach(s -> {
+                                            CommandSpecStructure commandSpecStructure = new CommandSpecStructure();
+                                            commandSpecStructure.setName(s.getName());
+                                            commandSpecStructure.setRequired(s.getRequired());
+                                            commandSpecStructure.setPattern(s.getPattern());
+                                            commandSpecStructure.setType(s.getType());
+                                            s.getSummary().stream()
+                                                    .forEach(sm -> commandSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                                            if (s.getDescription() != null) {
+                                                s.getDescription().stream()
+                                                        .forEach(sm -> commandSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                                            }
+                                            if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                                                parseCustomCommandStructureRecursive(commandSpecStructure, s.getProperty());
+                                            }
+                                            commandSpecInfo.addStructure(commandSpecStructure);
+                                        });
 
-                            // コマンド追加
-                            customSpecInfo.putCommandSpec(commandSpecInfo);
-                        }
-                );
-
+                                // コマンド追加
+                                customSpecInfo.putCommandSpec(commandSpecInfo);
+                            }
+                    );
+                }
 
                 // カスタム設定情報設定
-                et3Spec.getConfigurations().stream().forEach(
-                        x -> {
-                            // 設定情報設計を作成
-                            CustomConfigurationSpecInfo customConfigurationSpecInfo = new CustomConfigurationSpecInfo();
-                            customConfigurationSpecInfo.setId(x.getId());
+                if (et3Spec.getConfigurations() != null) {
+                    et3Spec.getConfigurations().stream().forEach(
+                            x -> {
+                                // 設定情報設計を作成
+                                CustomConfigurationSpecInfo customConfigurationSpecInfo = new CustomConfigurationSpecInfo();
+                                customConfigurationSpecInfo.setId(x.getId());
 
-                            // 機能をLocale毎に分けて設定
-                            x.getSummary().stream().forEach(y -> customConfigurationSpecInfo.addFunction(y.getLang(), y.getContents()));
+                                // 機能をLocale毎に分けて設定
+                                x.getSummary().stream().forEach(y -> customConfigurationSpecInfo.addFunction(y.getLang(), y.getContents()));
 
-                            // コマンド構成を設定
-                            x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                                    .forEach(s -> {
-                                        CustomConfigurationSpecStructure customConfigurationSpecStructure = new CustomConfigurationSpecStructure();
-                                        customConfigurationSpecStructure.setName(s.getName());
-                                        customConfigurationSpecStructure.setRequired(s.getRequired());
-                                        customConfigurationSpecStructure.setPattern(s.getPattern());
-                                        customConfigurationSpecStructure.setType(s.getType());
-                                        s.getSummary().stream()
-                                                .forEach(sm -> customConfigurationSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                                        if (s.getDescription() != null) {
-                                            s.getDescription().stream()
-                                                    .forEach(sm -> customConfigurationSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                                        }
-                                        if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                                            parseCustomConfigurationStructureRecursive(customConfigurationSpecStructure, s.getProperty());
-                                        }
-                                        customConfigurationSpecInfo.addStructure(customConfigurationSpecStructure);
-                                    });
+                                // コマンド構成を設定
+                                x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                                        .forEach(s -> {
+                                            CustomConfigurationSpecStructure customConfigurationSpecStructure = new CustomConfigurationSpecStructure();
+                                            customConfigurationSpecStructure.setName(s.getName());
+                                            customConfigurationSpecStructure.setRequired(s.getRequired());
+                                            customConfigurationSpecStructure.setPattern(s.getPattern());
+                                            customConfigurationSpecStructure.setType(s.getType());
+                                            s.getSummary().stream()
+                                                    .forEach(sm -> customConfigurationSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                                            if (s.getDescription() != null) {
+                                                s.getDescription().stream()
+                                                        .forEach(sm -> customConfigurationSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                                            }
+                                            if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                                                parseCustomConfigurationStructureRecursive(customConfigurationSpecStructure, s.getProperty());
+                                            }
+                                            customConfigurationSpecInfo.addStructure(customConfigurationSpecStructure);
+                                        });
 
-                            // 設定情報追加
-                            customSpecInfo.putCustomConfiguration(customConfigurationSpecInfo);
-                        }
-                );
+                                // 設定情報追加
+                                customSpecInfo.putCustomConfiguration(customConfigurationSpecInfo);
+                            }
+                    );
+                }
 
                 // メッセージ設定
                 if (et3Spec.getMessages() != null) {
