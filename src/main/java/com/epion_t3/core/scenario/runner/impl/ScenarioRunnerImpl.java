@@ -189,7 +189,10 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 }
 
                 // Flowの実行処理を解決
+                ExecuteFlow executeFlow = new ExecuteFlow();
+                executeFlow.setFlow(flow);
                 FlowRunner runner = FlowRunnerResolverImpl.getInstance().getFlowRunner(flow.getType());
+                executeScenario.getFlows().add(executeFlow);
 
                 // バインド
                 bind(context, executeContext, executeScenario, flow);
@@ -199,10 +202,9 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                         context,
                         executeContext,
                         executeScenario,
+                        executeFlow,
                         flow,
                         LoggerFactory.getLogger("FlowLog"));
-
-                ExecuteFlow executeFlow = executeScenario.getFlows().get(executeScenario.getFlows().size() - 1);
 
                 // 終了判定
                 if (executeScenario.getStatus() == ScenarioExecuteStatus.WAIT

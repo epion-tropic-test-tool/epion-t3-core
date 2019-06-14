@@ -1,19 +1,19 @@
 package com.epion_t3.core.flow.runner.impl;
 
-import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.bean.ExecuteCommand;
-import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.flow.model.FlowResult;
-import com.epion_t3.core.flow.runner.FlowRunner;
-import com.epion_t3.core.flow.logging.bean.FlowLog;
-import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
 import com.epion_t3.core.common.bean.scenario.Flow;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.FlowScopeVariables;
 import com.epion_t3.core.common.type.FlowStatus;
 import com.epion_t3.core.common.util.BindUtils;
 import com.epion_t3.core.common.util.ErrorUtils;
+import com.epion_t3.core.flow.logging.bean.FlowLog;
+import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
+import com.epion_t3.core.flow.model.FlowResult;
+import com.epion_t3.core.flow.runner.FlowRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
@@ -24,39 +24,55 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * 全てのFlowの基底クラス.
  *
- * @param <EXECUTE_CONTEXT>
- * @param <EXECUTE_SCENARIO>
- * @param <EXECUTE_FLOW>
  * @param <FLOW>
+ * @author takashno
  */
 @Slf4j
-public abstract class AbstractFlowRunner<
-        EXECUTE_CONTEXT extends ExecuteContext,
-        EXECUTE_SCENARIO extends ExecuteScenario,
-        EXECUTE_FLOW extends ExecuteFlow,
-        FLOW extends Flow>
-        implements FlowRunner<Context, EXECUTE_CONTEXT, EXECUTE_SCENARIO, FLOW> {
+public abstract class AbstractFlowRunner<FLOW extends Flow>
+        implements FlowRunner<FLOW, ExecuteContext, ExecuteScenario, ExecuteFlow> {
+
+    /**
+     * コンテキスト.
+     */
+    Context context;
+
+    /**
+     * 実行コンテキスト情報.
+     */
+    ExecuteContext executeContext;
+
+    /**
+     * 実行シナリオ情報.
+     */
+    ExecuteScenario executeScenario;
+
+    /**
+     * 実行Flow情報.
+     */
+    ExecuteFlow executeFlow;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public FlowResult execute(
-            Context context,
-            EXECUTE_CONTEXT executeContext,
-            EXECUTE_SCENARIO executeScenario,
-            FLOW flow,
-            Logger logger) {
+            final Context context,
+            final ExecuteContext executeContext,
+            final ExecuteScenario executeScenario,
+            final ExecuteFlow executeFlow,
+            final FLOW flow,
+            final Logger logger) {
 
-        // process実行情報を作成
-        EXECUTE_FLOW executeFlow = getExecuteFlowInstance();
-        executeScenario.getFlows().add(executeFlow);
-        executeFlow.setFlow(flow);
+        this.context = context;
+        this.executeContext = executeContext;
+        this.executeScenario = executeScenario;
+        this.executeFlow = executeFlow;
 
         // Flow実行開始時間を設定
         LocalDateTime start = LocalDateTime.now();
@@ -94,10 +110,6 @@ public abstract class AbstractFlowRunner<
 
             // 実行
             flowResult = execute(
-                    context,
-                    executeContext,
-                    executeScenario,
-                    executeFlow,
                     flow,
                     logger);
 
@@ -176,14 +188,14 @@ public abstract class AbstractFlowRunner<
     /**
      * @return
      */
-    private EXECUTE_FLOW getExecuteFlowInstance() {
+    private ExecuteFlow getExecuteFlowInstance() {
         try {
             Class<?> clazz = this.getClass();
             Type type = clazz.getGenericSuperclass();
             ParameterizedType pt = (ParameterizedType) type;
             Type[] actualTypeArguments = pt.getActualTypeArguments();
             Class<?> entityClass = (Class<?>) actualTypeArguments[2];
-            return (EXECUTE_FLOW) entityClass.newInstance();
+            return (ExecuteFlow) entityClass.newInstance();
         } catch (ReflectiveOperationException e) {
             // TODO:ErrorProcess
             throw new RuntimeException(e);
@@ -200,9 +212,9 @@ public abstract class AbstractFlowRunner<
      * @param flow            Flow
      */
     private void bind(final Context context,
-                      final EXECUTE_CONTEXT executeContext,
-                      final EXECUTE_SCENARIO executeScenario,
-                      final EXECUTE_FLOW executeFlow,
+                      final ExecuteContext executeContext,
+                      final ExecuteScenario executeScenario,
+                      final ExecuteFlow executeFlow,
                       final FLOW flow) {
 
         BindUtils.getInstance().bind(
@@ -215,18 +227,11 @@ public abstract class AbstractFlowRunner<
 
 
     /**
-     * @param context         コンテキスト
-     * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
+     * @param flow Flow
      */
     protected abstract FlowResult execute(
-            Context context,
-            EXECUTE_CONTEXT execute_context,
-            EXECUTE_SCENARIO executeScenario,
-            EXECUTE_FLOW executeFlow,
-            FLOW flow,
-            Logger logger);
+            final FLOW flow,
+            final Logger logger);
 
 
     /**
@@ -240,13 +245,13 @@ public abstract class AbstractFlowRunner<
      * @param t               例外
      */
     protected void onError(
-            Context context,
-            EXECUTE_CONTEXT execute_context,
-            EXECUTE_SCENARIO executeScenario,
-            EXECUTE_FLOW executeFlow,
-            FLOW flow,
-            Throwable t,
-            Logger logger) {
+            final Context context,
+            final ExecuteContext execute_context,
+            final ExecuteScenario executeScenario,
+            final ExecuteFlow executeFlow,
+            final FLOW flow,
+            final Throwable t,
+            final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 
@@ -261,9 +266,9 @@ public abstract class AbstractFlowRunner<
      */
     protected void onFinally(
             final Context context,
-            final EXECUTE_CONTEXT execute_context,
-            final EXECUTE_SCENARIO executeScenario,
-            final EXECUTE_FLOW executeFlow,
+            final ExecuteContext execute_context,
+            final ExecuteScenario executeScenario,
+            final ExecuteFlow executeFlow,
             final FLOW flow,
             final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
@@ -278,8 +283,8 @@ public abstract class AbstractFlowRunner<
      * @param executeFlow     FLOW実行情報
      */
     private void settingFlowVariables(final Context context,
-                                      final EXECUTE_CONTEXT execute_context,
-                                      final EXECUTE_SCENARIO executeScenario,
+                                      final ExecuteContext execute_context,
+                                      final ExecuteScenario executeScenario,
                                       final ExecuteFlow executeFlow) {
 
         // 現在の処理Flow
@@ -302,8 +307,8 @@ public abstract class AbstractFlowRunner<
      * @param executeFlow     FLOW実行情報
      */
     private void cleanFlowVariables(final Context context,
-                                    final EXECUTE_CONTEXT executeContext,
-                                    final EXECUTE_SCENARIO executeScenario,
+                                    final ExecuteContext executeContext,
+                                    final ExecuteScenario executeScenario,
                                     final ExecuteFlow executeFlow) {
 
         // 現在の処理Flow
@@ -315,6 +320,41 @@ public abstract class AbstractFlowRunner<
                 FlowScopeVariables.CURRENT_FLOW_EXECUTE_ID.getName());
     }
 
+    /**
+     * プロファイル定数を取得.
+     *
+     * @return プロファイル定数マップ
+     */
+    protected Map<String, String> getProfileConstants() {
+        return executeScenario.getProfileConstants();
+    }
+
+    /**
+     * グローバル変数マップを取得.
+     *
+     * @return グローバル変数マップ
+     */
+    protected Map<String, Object> getGlobalScopeVariables() {
+        return executeContext.getGlobalVariables();
+    }
+
+    /**
+     * シナリオ変数マップを取得.
+     *
+     * @return シナリオ変数マップ
+     */
+    protected Map<String, Object> getScenarioScopeVariables() {
+        return executeScenario.getScenarioVariables();
+    }
+
+    /**
+     * Flow変数マップを取得.
+     *
+     * @return Flow変数マップ
+     */
+    protected Map<String, Object> getFlowScopeVariables() {
+        return executeFlow.getFlowVariables();
+    }
 
     /**
      * Flow開始ログ出力.
@@ -323,12 +363,11 @@ public abstract class AbstractFlowRunner<
      * @param executeScenario 実行シナリオ
      * @param executeFlow     実行Flow
      */
-    protected void outputStartFlowLog(Context context, ExecuteScenario executeScenario, ExecuteFlow executeFlow) {
-        //log.info("--------------------------------------------------------------------------------------");
+    protected void outputStartFlowLog(
+            final Context context,
+            final ExecuteScenario executeScenario,
+            final ExecuteFlow executeFlow) {
         log.info("■ Start Flow    ■ Scenario ID : {}, Flow ID : {}", executeScenario.getInfo().getId(), executeFlow.getFlow().getId());
-        //log.info("Scenario ID         : {}", executeScenario.getInfo().getId());
-        //log.info("Execute Flow ID  : {}", executeFlow.getExecuteId());
-        //log.info("--------------------------------------------------------------------------------------");
     }
 
     /**
@@ -338,28 +377,16 @@ public abstract class AbstractFlowRunner<
      * @param executeScenario 実行シナリオ
      * @param executeFlow     実行Flow
      */
-    protected void outputEndFlowLog(Context context, ExecuteScenario executeScenario, ExecuteFlow executeFlow) {
+    protected void outputEndFlowLog(
+            final Context context,
+            final ExecuteScenario executeScenario,
+            final ExecuteFlow executeFlow) {
         if (executeFlow.getStatus() == FlowStatus.SUCCESS) {
-            // log.error("--------------------------------------------------------------------------------------");
             log.info("■ End Flow      ■ Scenario ID : {}, Flow ID : {}, Flow Status : {}", executeScenario.getInfo().getId(), executeFlow.getFlow().getId(), executeFlow.getStatus().name());
-            // log.info("Scenario ID         : {}", executeScenario.getInfo().getId());
-            // log.info("Execute Flow ID  : {}", executeFlow.getExecuteId());
-            // log.info("Flow Status      : {}", executeFlow.getStatus().name());
-            // log.info("--------------------------------------------------------------------------------------");
         } else if (executeFlow.getStatus() == FlowStatus.ERROR) {
-            // log.error("--------------------------------------------------------------------------------------");
             log.error("■ End Flow      ■ Scenario ID : {}, Flow ID : {}, Flow Status : {}", executeScenario.getInfo().getId(), executeFlow.getFlow().getId(), executeFlow.getStatus().name());
-            // log.error("Scenario ID         : {}", executeScenario.getInfo().getId());
-            // log.error("Execute Flow ID  : {}", executeFlow.getExecuteId());
-            // log.error("Flow Status      : {}", executeFlow.getStatus().name());
-            // log.error("--------------------------------------------------------------------------------------");
         } else {
-            // log.warn("--------------------------------------------------------------------------------------");
             log.warn("■ End Flow      ■ Scenario ID : {}, Flow ID : {}, Flow Status : {}", executeScenario.getInfo().getId(), executeFlow.getFlow().getId(), executeFlow.getStatus().name());
-            // log.warn("Scenario ID         : {}", executeScenario.getInfo().getId());
-            // log.warn("Execute Flow ID  : {}", executeFlow.getExecuteId());
-            // log.warn("Flow Status      : {}", executeFlow.getStatus().name());
-            // log.warn("--------------------------------------------------------------------------------------");
         }
 
     }

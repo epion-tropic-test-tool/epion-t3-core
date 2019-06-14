@@ -39,17 +39,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Slf4j
 public class CommandExecuteFlowRunner
-        extends AbstractFlowRunner<ExecuteContext, ExecuteScenario, ExecuteFlow, CommandExecuteFlow> {
+        extends AbstractFlowRunner<CommandExecuteFlow> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected FlowResult execute(
-            Context context, ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            CommandExecuteFlow flow, Logger logger) {
+            final CommandExecuteFlow flow,
+            final Logger logger) {
 
         // コマンド識別子
         String fqcn = flow.getRef();
