@@ -25,13 +25,21 @@ import java.util.List;
  * @author takashno
  */
 public class ReadFileIterateFlowRunner
-        extends AbstractFlowRunner<ReadTextFileIterateFlow> {
+        extends AbstractFlowRunner<
+        ExecuteContext,
+        ExecuteScenario,
+        ExecuteFlow,
+        ReadTextFileIterateFlow> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected FlowResult execute(
+            final Context context,
+            final ExecuteContext executeContext,
+            final ExecuteScenario executeScenario,
+            final ExecuteFlow executeFlow,
             final ReadTextFileIterateFlow flow,
             final Logger logger) {
 
@@ -66,7 +74,11 @@ public class ReadFileIterateFlowRunner
             for (Flow child : flow.getChildren()) {
 
                 FlowRunner flowRunner = FlowRunnerResolverImpl.getInstance().getFlowRunner(child.getType());
-                flowRunner.execute(context, executeContext, executeScenario, executeFlow, child, logger);
+                flowRunner.execute(context,
+                        executeContext,
+                        executeScenario,
+                        child,
+                        logger);
             }
         }
 

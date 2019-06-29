@@ -67,7 +67,3 @@ messages:
         contents: メッセージ
       - lang: en_US
         contents: Message.
-  - id: com.epion_t3.core.wrn.0004
-    message:
-      - lang: ja_JP
-        contents: Flowのタイムアウトが発生しました.タイムアウト値：{0} ms

@@ -21,6 +21,8 @@ public class Information implements Serializable {
     @NonNull
     private String name;
 
+    private String labelName;
+
     private String customPackage;
 
     /**
