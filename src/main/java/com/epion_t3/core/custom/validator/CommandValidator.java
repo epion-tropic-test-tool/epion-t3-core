@@ -139,6 +139,25 @@ public class CommandValidator {
                         }
                         break;
                     case ARRAY:
+
+                        // 必須チェックのみ先に実施する
+                        if (css.getRequired() && propertyValue == null) {
+                            result.add(CommandValidateError
+                                    .commandValidateErrorBuilder()
+                                    .stage(executeContext.getStage())
+                                    .level(NotificationType.ERROR)
+                                    .message(MessageManager.getInstance().getMessage(
+                                            CoreMessages.CORE_ERR_0042,
+                                            executeFlow.getFlow().getId(),
+                                            command.getCommand(),
+                                            css.getName()))
+                                    .commandId(command.getId())
+                                    .flowId(executeFlow.getFlow().getId())
+                                    .build());
+                            // 必須チェック以降は行わない
+                            break;
+                        }
+
                         if (propertyValue.getClass().isArray()) {
                             // 配列型である場合
                             Object[] array = (Object[]) propertyValue;
@@ -172,6 +191,26 @@ public class CommandValidator {
                         }
                         break;
                     case OBJECT:
+
+                        // 必須チェックのみ先に実施する
+                        if (css.getRequired() && propertyValue == null) {
+                            result.add(CommandValidateError
+                                    .commandValidateErrorBuilder()
+                                    .stage(executeContext.getStage())
+                                    .level(NotificationType.ERROR)
+                                    .message(MessageManager.getInstance().getMessage(
+                                            CoreMessages.CORE_ERR_0042,
+                                            executeFlow.getFlow().getId(),
+                                            command.getCommand(),
+                                            css.getName()))
+                                    .commandId(command.getId())
+                                    .flowId(executeFlow.getFlow().getId())
+                                    .build());
+                            // 必須チェック以降は行わない
+                            break;
+                        }
+
+
                         validateRecursive(
                                 context,
                                 executeContext,
