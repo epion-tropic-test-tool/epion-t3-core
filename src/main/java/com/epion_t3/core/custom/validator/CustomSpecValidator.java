@@ -30,7 +30,7 @@ import java.util.Map;
  * @author takashno
  */
 @Slf4j
-public class CustomSpecValidator {
+public final class CustomSpecValidator {
 
     /**
      * シングルトンインスタンス.

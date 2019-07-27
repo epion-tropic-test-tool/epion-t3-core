@@ -30,10 +30,10 @@ public class ET3Spec implements Serializable {
     private Information info;
 
     /**
-     * 設定情報.
+     * Flow.
      */
     @Valid
-    private List<Configuration> configurations;
+    private List<Flow> flows;
 
     /**
      * コマンド.
@@ -41,6 +41,12 @@ public class ET3Spec implements Serializable {
     @NotEmpty
     @Valid
     private List<Command> commands;
+
+    /**
+     * 設定情報.
+     */
+    @Valid
+    private List<Configuration> configurations;
 
     /**
      * メッセージ定義.

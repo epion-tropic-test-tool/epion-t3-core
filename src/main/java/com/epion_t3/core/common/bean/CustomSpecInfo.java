@@ -51,6 +51,11 @@ public class CustomSpecInfo implements Serializable {
     private final Map<String, CustomConfigurationSpecInfo> configurations = new ConcurrentHashMap<>();
 
     /**
+     * Flow設計情報
+     */
+    private final Map<String, FlowSpecInfo> flows = new ConcurrentHashMap<>();
+
+    /**
      * コマンド情報
      */
     private final Map<String, CommandSpecInfo> commands = new ConcurrentHashMap<>();
@@ -82,6 +87,15 @@ public class CustomSpecInfo implements Serializable {
         if (lang != null && StringUtils.isNotEmpty(contents)) {
             descriptions.put(Locale.forLanguageTag(lang), contents);
         }
+    }
+
+    /**
+     * Flowへ追加.
+     *
+     * @param flowSpecInfo Flow設計
+     */
+    public void putFlowSpec(FlowSpecInfo flowSpecInfo) {
+        flows.put(flowSpecInfo.getId(), flowSpecInfo);
     }
 
     /**

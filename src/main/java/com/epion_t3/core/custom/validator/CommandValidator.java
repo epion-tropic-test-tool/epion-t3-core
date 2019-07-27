@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  *
  * @author takashno
  */
-public class CommandValidator {
+public final class CommandValidator {
 
     /**
      * シングルトンインスタンス.

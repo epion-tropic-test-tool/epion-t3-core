@@ -26,7 +26,7 @@ import java.util.Map;
  * @author takashno
  */
 @Slf4j
-public class CustomConfigurationSpecValidator {
+public final class CustomConfigurationSpecValidator {
 
     /**
      * シングルトンインスタンス.
@@ -54,10 +54,10 @@ public class CustomConfigurationSpecValidator {
      * この検証の意図は、設計＝ユーザーが頼りにする情報と実装に相違がある場合、解析にとても時間がかかる.
      * ユーザビリティの観点から、ツールとしても設計と実装の生合成がある程度取れていることを確認するため.
      *
-     * @param context        コンテキスト
-     * @param executeContext 実行コンテキスト
-     * @param customName     カスタム名
-     * @param customConfigurationInfo    コマンド情報
+     * @param context                 コンテキスト
+     * @param executeContext          実行コンテキスト
+     * @param customName              カスタム名
+     * @param customConfigurationInfo コマンド情報
      * @return 検証結果（エラーのみ）
      */
     public List<CommandSpecValidateError> validateCommandSpec(

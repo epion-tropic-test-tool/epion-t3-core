@@ -232,6 +232,48 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                 et3Spec.getInfo().getDescription().stream()
                         .forEach(x -> customSpecInfo.putDescription(x.getLang(), x.getContents()));
 
+                // カスタムFlow設定
+                if (et3Spec.getFlows() != null) {
+                    et3Spec.getFlows().stream().forEach(
+                            x -> {
+                                // コマンド設計を作成
+                                FlowSpecInfo flowSpecInfo = new FlowSpecInfo();
+                                flowSpecInfo.setId(x.getId());
+
+                                // 機能をLocale毎に分けて設定
+                                x.getSummary().stream().forEach(y -> flowSpecInfo.addFunction(y.getLang(), y.getContents()));
+
+                                // 試験項目をorderでソートしたのち、Locale毎に分けて設定
+                                x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
+                                        .forEach(ti -> ti.getSummary()
+                                                .forEach(c -> flowSpecInfo.addTestItem(c.getLang(), c.getContents())));
+
+                                // Flow構成を設定
+                                x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                                        .forEach(s -> {
+                                            FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
+                                            flowSpecStructure.setName(s.getName());
+                                            flowSpecStructure.setRequired(s.getRequired());
+                                            flowSpecStructure.setPattern(s.getPattern());
+                                            flowSpecStructure.setType(s.getType());
+                                            s.getSummary().stream()
+                                                    .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                                            if (s.getDescription() != null) {
+                                                s.getDescription().stream()
+                                                        .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                                            }
+                                            if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                                                parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
+                                            }
+                                            flowSpecInfo.addStructure(flowSpecStructure);
+                                        });
+
+                                // Flow追加
+                                customSpecInfo.putFlowSpec(flowSpecInfo);
+                            }
+                    );
+                }
+
                 // カスタムコマンド設定
                 et3Spec.getCommands().stream().forEach(
                         x -> {
@@ -337,6 +379,42 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
 
     }
 
+
+    /**
+     * カスタムFlow構成を再帰的に解析します.
+     *
+     * @param parent     親構成
+     * @param structures 対象構成リスト
+     */
+    private void parseCustomFlowStructureRecursive(FlowSpecStructure parent, List<Structure> structures) {
+
+        // コマンド構成を設定
+        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                .forEach(s -> {
+                    FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
+                    flowSpecStructure.setName(s.getName());
+                    flowSpecStructure.setRequired(s.getRequired());
+                    flowSpecStructure.setPattern(s.getPattern());
+                    flowSpecStructure.setType(s.getType());
+                    s.getSummary().stream()
+                            .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                    if (s.getDescription() != null) {
+                        s.getDescription().stream()
+                                .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                    }
+                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                        parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
+                    }
+                    parent.getProperty().add(flowSpecStructure);
+                });
+    }
+
+    /**
+     * カスタムコマンド構成を再帰的に解析します.
+     *
+     * @param parent     親構成
+     * @param structures 対象構成リスト
+     */
     private void parseCustomCommandStructureRecursive(CommandSpecStructure parent, List<Structure> structures) {
 
         // コマンド構成を設定
@@ -360,6 +438,12 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                 });
     }
 
+    /**
+     * カスタム設定情報定義構成を再帰的に解析します.
+     *
+     * @param parent     親構成
+     * @param structures 対象構成リスト
+     */
     private void parseCustomConfigurationStructureRecursive(CustomConfigurationSpecStructure parent, List<Structure> structures) {
 
         // コマンド構成を設定
