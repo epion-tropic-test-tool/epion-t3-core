@@ -1,8 +1,8 @@
 package com.epion_t3.core.custom.validator;
 
-import com.epion_t3.core.common.bean.CustomConfigurationInfo;
-import com.epion_t3.core.common.bean.CustomConfigurationSpecInfo;
-import com.epion_t3.core.common.bean.CustomConfigurationSpecStructure;
+import com.epion_t3.core.common.bean.CommandInfo;
+import com.epion_t3.core.common.bean.CommandSpecInfo;
+import com.epion_t3.core.common.bean.CommandSpecStructure;
 import com.epion_t3.core.common.bean.ET3Notification;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
@@ -11,8 +11,8 @@ import com.epion_t3.core.common.type.StructureType;
 import com.epion_t3.core.custom.holder.CustomPackageHolder;
 import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.scenario.bean.ConfigurationSpecStructureValidateError;
-import com.epion_t3.core.scenario.bean.ConfigurationSpecValidateError;
+import com.epion_t3.core.scenario.bean.CommandSpecStructureValidateError;
+import com.epion_t3.core.scenario.bean.CommandSpecValidateError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 
@@ -24,25 +24,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * カスタム設定定義の設計検証処理.
- * 設計の検証処理が存在する目的は、カスタム設定定義を実装されたものが設計通り（＝YAMLの定義通り）かを
+ * カスタムコマンドの設計検証処理.
+ * 設計の検証処理が存在する目的は、カスタム設定を実装されたものが設計通り（＝YAMLの定義通り）かを
  * 実行時にも再確認することによってテスト実行時の無駄なトラブルを抑制すること。
  * 3rdParty製のカスタム機能が増えるかもしれないと楽観的に考えて、入れている機能...
  *
  * @author takashno
  */
 @Slf4j
-public final class CustomConfigurationSpecValidator {
+public final class CustomCommandSpecValidator {
 
     /**
      * シングルトンインスタンス.
      */
-    private static final CustomConfigurationSpecValidator instance = new CustomConfigurationSpecValidator();
+    private static final CustomCommandSpecValidator instance = new CustomCommandSpecValidator();
 
     /**
      * プライベートコンストラクタ.
      */
-    private CustomConfigurationSpecValidator() {
+    private CustomCommandSpecValidator() {
         // Do Nothing...
     }
 
@@ -51,54 +51,53 @@ public final class CustomConfigurationSpecValidator {
      *
      * @return シングルトンインスタンス
      */
-    public static CustomConfigurationSpecValidator getInstance() {
+    public static CustomCommandSpecValidator getInstance() {
         return instance;
     }
 
     /**
-     * カスタム設定意義の設計と実装の検証を行う.
+     * カスタムコマンドの設計と実装の検証を行う.
      * この検証の意図は、設計＝ユーザーが頼りにする情報と実装に相違がある場合、解析にとても時間がかかる.
      * ユーザビリティの観点から、ツールとしても設計と実装の生合成がある程度取れていることを確認するため.
      *
-     * @param context                 コンテキスト
-     * @param executeContext          実行コンテキスト
-     * @param customName              カスタム名
-     * @param customConfigurationInfo コマンド情報
+     * @param context        コンテキスト
+     * @param executeContext 実行コンテキスト
+     * @param customName     カスタム名
+     * @param commandInfo    コマンド情報
      * @return 検証結果（エラーのみ）
      */
-    public List<ConfigurationSpecValidateError> validateCommandSpec(
-            final Context context, final ExecuteContext executeContext, String customName, final CustomConfigurationInfo customConfigurationInfo) {
+    public List<CommandSpecValidateError> validateCommandSpec(
+            final Context context, final ExecuteContext executeContext, String customName, final CommandInfo commandInfo) {
 
-        log.debug("validate configuration spec start {}.{}", customName, customConfigurationInfo.getId());
+        log.debug("validate command spec start {}.{}", customName, commandInfo.getId());
 
-        List<ConfigurationSpecValidateError> result = new ArrayList<>();
+        List<CommandSpecValidateError> result = new ArrayList<>();
 
+        CommandSpecInfo commandSpec =
+                CustomPackageHolder.getInstance().getCustomCommandSpec(customName, commandInfo.getId());
 
-        CustomConfigurationSpecInfo customConfigurationSpecInfo =
-                CustomPackageHolder.getInstance().getCustomConfigurationSpec(customName, customConfigurationInfo.getId());
-
-        if (customConfigurationSpecInfo == null) {
+        if (commandSpec == null) {
             executeContext.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
                     .level(NotificationType.ERROR)
                     .message(MessageManager.getInstance()
-                            .getMessage(CoreMessages.CORE_ERR_0047, customName, customConfigurationInfo.getId()))
+                            .getMessage(CoreMessages.CORE_ERR_0038, customName, commandInfo.getId()))
                     .build());
             return result;
         }
 
         // ここで初めてコマンドIDとコマンドモデルクラスの付き合わせが行えるため、
         // このタイミングでCustomPackageHolderへ登録を行う.
-        CustomPackageHolder.getInstance().addCustomConfigurationSpec(customConfigurationInfo.getModel(), customConfigurationSpecInfo);
+        CustomPackageHolder.getInstance().addCustomCommandSpec(commandInfo.getModel(), commandSpec);
 
-        for (CustomConfigurationSpecStructure ccss : customConfigurationSpecInfo.getStructures().values()) {
+        for (CommandSpecStructure css : commandSpec.getStructures().values()) {
             try {
                 // フィールドの取得
-                Class.forName(customConfigurationInfo.getModel().getName());
-                Field structure = getFieldFromClass(customConfigurationInfo.getModel(), ccss.getName());
+                Class.forName(commandInfo.getModel().getName());
+                Field structure = getFieldFromClass(commandInfo.getModel(), css.getName());
 
                 // 設計定義の型
-                StructureType type = StructureType.valueOfByValue(ccss.getType());
+                StructureType type = StructureType.valueOfByValue(css.getType());
 
                 // 実際の実装型
                 Class implType = structure.getType();
@@ -106,53 +105,53 @@ public final class CustomConfigurationSpecValidator {
                 switch (type) {
                     case STRING:
                         if (!String.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(ccss.getName())
+                                    .structureName(css.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0058, customName, customConfigurationInfo.getId(), ccss.getName()
+                                            CoreMessages.CORE_ERR_0026, customName, commandInfo.getId(), css.getName()
                                     )).build());
                         }
                         break;
                     case NUMBER:
                         if (!Number.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(ccss.getName())
+                                    .structureName(css.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0059, customName, customConfigurationInfo.getId(), ccss.getName()
+                                            CoreMessages.CORE_ERR_0027, customName, commandInfo.getId(), css.getName()
                                     )).build());
                         }
                         break;
                     case BOOLEAN:
                         if (!(Boolean.class.isAssignableFrom(implType) || boolean.class.isAssignableFrom(implType))) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(ccss.getName())
+                                    .structureName(css.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0060, customName, customConfigurationInfo.getId(), ccss.getName()
+                                            CoreMessages.CORE_ERR_0028, customName, commandInfo.getId(), css.getName()
                                     )).build());
                         }
                         break;
                     case ARRAY:
                         if (!implType.isArray() && !List.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(ccss.getName())
+                                    .structureName(css.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0061, customName, customConfigurationInfo.getId(), ccss.getName()
+                                            CoreMessages.CORE_ERR_0029, customName, commandInfo.getId(), css.getName()
                                     )).build());
                         } else {
                             Type genericType = structure.getGenericType();
@@ -160,50 +159,50 @@ public final class CustomConfigurationSpecValidator {
                                     .getActualTypeArguments()[0];
 
                             // 要素型のチェック
-                            validateCustomConfigurationSpecRecursive(
+                            validateCommandSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
-                                    customConfigurationInfo,
+                                    commandInfo,
                                     result,
                                     (Class) genericActualType,
-                                    ccss.getProperty(),
-                                    ccss.getName());
+                                    css.getProperty(),
+                                    css.getName());
                         }
                         break;
                     case MAP:
                         if (!Map.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(ccss.getName())
+                                    .structureName(css.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0063, customName, customConfigurationInfo.getId(), ccss.getName()
+                                            CoreMessages.CORE_ERR_0041, customName, commandInfo.getId(), css.getName()
                                     )).build());
                         }
                         break;
                     case OBJECT:
                         if (ClassUtils.isPrimitiveOrWrapper(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(ccss.getName())
+                                    .structureName(css.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0062, customName, customConfigurationInfo.getId(), ccss.getName()
+                                            CoreMessages.CORE_ERR_0030, customName, commandInfo.getId(), css.getName()
                                     )).build());
                         } else {
-                            validateCustomConfigurationSpecRecursive(
+                            validateCommandSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
-                                    customConfigurationInfo,
+                                    commandInfo,
                                     result, implType,
-                                    ccss.getProperty(),
-                                    ccss.getName());
+                                    css.getProperty(),
+                                    css.getName());
                         }
                         break;
                     default:
@@ -212,25 +211,25 @@ public final class CustomConfigurationSpecValidator {
 
 
             } catch (NoSuchFieldException e) {
-                result.add(ConfigurationSpecStructureValidateError
-                        .configurationSpecStructureValidateErrorBuilder()
+                result.add(CommandSpecStructureValidateError
+                        .commandSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
-                        .structureName(ccss.getName())
+                        .structureName(css.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0064, customName, customConfigurationInfo.getId(), ccss.getName())).build());
+                                CoreMessages.CORE_ERR_0031, customName, commandInfo.getId(), css.getName())).build());
             } catch (ClassNotFoundException e) {
-                result.add(ConfigurationSpecStructureValidateError
-                        .configurationSpecStructureValidateErrorBuilder()
+                result.add(CommandSpecStructureValidateError
+                        .commandSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
-                        .structureName(ccss.getName())
+                        .structureName(css.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0057, customName, customConfigurationInfo.getId())).build());
+                                CoreMessages.CORE_ERR_0039, customName, commandInfo.getId())).build());
             }
         }
         return result;
@@ -248,15 +247,15 @@ public final class CustomConfigurationSpecValidator {
      * @param properties     構成リスト
      * @param parentPath     ネストパス
      */
-    private void validateCustomConfigurationSpecRecursive(Context context,
-                                                          ExecuteContext executeContext,
-                                                          String customName, final
-                                                          CustomConfigurationInfo commandInfo,
-                                                          List<ConfigurationSpecValidateError> result,
-                                                          Class clazz,
-                                                          List<CustomConfigurationSpecStructure> properties,
-                                                          String parentPath) {
-        for (CustomConfigurationSpecStructure property : properties) {
+    private void validateCommandSpecRecursive(Context context,
+                                              ExecuteContext executeContext,
+                                              String customName, final
+                                              CommandInfo commandInfo,
+                                              List<CommandSpecValidateError> result,
+                                              Class clazz,
+                                              List<CommandSpecStructure> properties,
+                                              String parentPath) {
+        for (CommandSpecStructure property : properties) {
 
             String nowPath = parentPath + "." + property.getName();
 
@@ -275,53 +274,53 @@ public final class CustomConfigurationSpecValidator {
                 switch (type) {
                     case STRING:
                         if (!String.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0058, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0026, customName, commandInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case NUMBER:
                         if (!Number.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0059, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0027, customName, commandInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case BOOLEAN:
                         if (!(Boolean.class.isAssignableFrom(implType) || boolean.class.isAssignableFrom(implType))) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0060, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0028, customName, commandInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case ARRAY:
                         if (!implType.isArray() && !List.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0061, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0029, customName, commandInfo.getId(), nowPath
                                     )).build());
                         } else {
                             Type genericType = structure.getGenericType();
@@ -329,7 +328,7 @@ public final class CustomConfigurationSpecValidator {
                                     .getActualTypeArguments()[0];
 
                             // 要素型のチェック
-                            validateCustomConfigurationSpecRecursive(
+                            validateCommandSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
@@ -342,30 +341,30 @@ public final class CustomConfigurationSpecValidator {
                         break;
                     case MAP:
                         if (!Map.class.isAssignableFrom(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0063, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0041, customName, commandInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case OBJECT:
                         if (ClassUtils.isPrimitiveOrWrapper(implType)) {
-                            result.add(ConfigurationSpecStructureValidateError
-                                    .configurationSpecStructureValidateErrorBuilder()
+                            result.add(CommandSpecStructureValidateError
+                                    .commandSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0062, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0030, customName, commandInfo.getId(), nowPath
                                     )).build());
                         } else {
-                            validateCustomConfigurationSpecRecursive(
+                            validateCommandSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
@@ -380,26 +379,26 @@ public final class CustomConfigurationSpecValidator {
 
 
             } catch (NoSuchFieldException e) {
-                result.add(ConfigurationSpecStructureValidateError
-                        .configurationSpecStructureValidateErrorBuilder()
+                result.add(CommandSpecStructureValidateError
+                        .commandSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
                         .structureName(property.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0064, customName, commandInfo.getId(),
+                                CoreMessages.CORE_ERR_0031, customName, commandInfo.getId(),
                                 nowPath)).build());
             } catch (ClassNotFoundException e) {
-                result.add(ConfigurationSpecStructureValidateError
-                        .configurationSpecStructureValidateErrorBuilder()
+                result.add(CommandSpecStructureValidateError
+                        .commandSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
                         .structureName(property.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0057, customName, commandInfo.getId())).build());
+                                CoreMessages.CORE_ERR_0039, customName, commandInfo.getId())).build());
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.epion_t3.core.custom.parser.impl;
 
+import com.epion_t3.core.custom.validator.CustomFlowSpecValidator;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.reflect.ClassPath;
 import com.epion_t3.core.command.handler.listener.CommandAfterListener;
@@ -23,7 +24,7 @@ import com.epion_t3.core.common.type.NotificationType;
 import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.custom.holder.CustomPackageHolder;
 import com.epion_t3.core.custom.parser.CustomParser;
-import com.epion_t3.core.custom.validator.CustomSpecValidator;
+import com.epion_t3.core.custom.validator.CustomCommandSpecValidator;
 import com.epion_t3.core.exception.ScenarioParseException;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.MessageManager;
@@ -177,6 +178,13 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
 
     /**
      * カスタム機能設計の解析.
+     * 処理概要
+     * - 設計と実装との検証に利用するため、カスタム機能として定義されたパッケージは以下のクラスを走査
+     * -- 各カスタム機能毎の設計情報キャッシュ
+     * -- カスタムFlowを解析、設計情報キャッシュ
+     * -- カスタムコマンドを解析、設計情報キャッシュ
+     * -- カスタム設定を解析、設計情報キャッシュ
+     * -- カスタムメッセージを解析、設計情報キャッシュ
      *
      * @param context コンテキスト
      */
@@ -379,96 +387,13 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
 
     }
 
-
-    /**
-     * カスタムFlow構成を再帰的に解析します.
-     *
-     * @param parent     親構成
-     * @param structures 対象構成リスト
-     */
-    private void parseCustomFlowStructureRecursive(FlowSpecStructure parent, List<Structure> structures) {
-
-        // コマンド構成を設定
-        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                .forEach(s -> {
-                    FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
-                    flowSpecStructure.setName(s.getName());
-                    flowSpecStructure.setRequired(s.getRequired());
-                    flowSpecStructure.setPattern(s.getPattern());
-                    flowSpecStructure.setType(s.getType());
-                    s.getSummary().stream()
-                            .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                    if (s.getDescription() != null) {
-                        s.getDescription().stream()
-                                .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                    }
-                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                        parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
-                    }
-                    parent.getProperty().add(flowSpecStructure);
-                });
-    }
-
-    /**
-     * カスタムコマンド構成を再帰的に解析します.
-     *
-     * @param parent     親構成
-     * @param structures 対象構成リスト
-     */
-    private void parseCustomCommandStructureRecursive(CommandSpecStructure parent, List<Structure> structures) {
-
-        // コマンド構成を設定
-        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                .forEach(s -> {
-                    CommandSpecStructure commandSpecStructure = new CommandSpecStructure();
-                    commandSpecStructure.setName(s.getName());
-                    commandSpecStructure.setRequired(s.getRequired());
-                    commandSpecStructure.setPattern(s.getPattern());
-                    commandSpecStructure.setType(s.getType());
-                    s.getSummary().stream()
-                            .forEach(sm -> commandSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                    if (s.getDescription() != null) {
-                        s.getDescription().stream()
-                                .forEach(sm -> commandSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                    }
-                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                        parseCustomCommandStructureRecursive(commandSpecStructure, s.getProperty());
-                    }
-                    parent.getProperty().add(commandSpecStructure);
-                });
-    }
-
-    /**
-     * カスタム設定情報定義構成を再帰的に解析します.
-     *
-     * @param parent     親構成
-     * @param structures 対象構成リスト
-     */
-    private void parseCustomConfigurationStructureRecursive(CustomConfigurationSpecStructure parent, List<Structure> structures) {
-
-        // コマンド構成を設定
-        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                .forEach(s -> {
-                    CustomConfigurationSpecStructure customConfigurationSpecStructure = new CustomConfigurationSpecStructure();
-                    customConfigurationSpecStructure.setName(s.getName());
-                    customConfigurationSpecStructure.setRequired(s.getRequired());
-                    customConfigurationSpecStructure.setPattern(s.getPattern());
-                    customConfigurationSpecStructure.setType(s.getType());
-                    s.getSummary().stream()
-                            .forEach(sm -> customConfigurationSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                    if (s.getDescription() != null) {
-                        s.getDescription().stream()
-                                .forEach(sm -> customConfigurationSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                    }
-                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                        parseCustomConfigurationStructureRecursive(customConfigurationSpecStructure, s.getProperty());
-                    }
-                    parent.getProperty().add(customConfigurationSpecStructure);
-                });
-    }
-
     /**
      * カスタム機能解析.
+     * 処理概要
+     * - カスタム機能として定義されたパッケージ配下のクラスを走査
+     * -- カスタムFlowを解析、検証、登録
+     * -- カスタムコマンドを解析、検証、登録
+     * -- カスタム設定を解析、検証、登録
      *
      * @param context コンテキスト
      */
@@ -497,7 +422,20 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
 
             for (Class<?> clazz : allClasses) {
 
-                if (clazz.getDeclaredAnnotation(CommandDefinition.class) != null
+                if (clazz.getDeclaredAnnotation(FlowDefinition.class) != null
+                        && Flow.class.isAssignableFrom(clazz)) {
+                    // カスタムFlowを解析
+                    FlowDefinition flow =
+                            clazz.getDeclaredAnnotation(FlowDefinition.class);
+                    FlowInfo flowInfo = FlowInfo.builder().id(flow.id()).model(clazz).runner(flow.runner()).build();
+                    CustomPackageHolder.getInstance().addCustomFlowInfo(
+                            flow.id(), flowInfo);
+
+                    // Flowの設計と実装の整合性検証
+                    executeContext.getNotifications().addAll(CustomFlowSpecValidator.getInstance().validateCommandSpec(
+                            context, executeContext, entry.getKey(), flowInfo));
+
+                } else if (clazz.getDeclaredAnnotation(CommandDefinition.class) != null
                         && Command.class.isAssignableFrom(clazz)) {
                     // カスタムコマンドを解析
                     CommandDefinition command = clazz.getDeclaredAnnotation(CommandDefinition.class);
@@ -508,19 +446,9 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                     CustomPackageHolder.getInstance().addCustomCommandInfo(
                             command.id(), commandInfo);
 
-                    // コマンドの設計と実装の検証
-                    executeContext.getNotifications().addAll(CustomSpecValidator.getInstance().validateCommandSpec(
+                    // コマンドの設計と実装の整合性検証
+                    executeContext.getNotifications().addAll(CustomCommandSpecValidator.getInstance().validateCommandSpec(
                             context, executeContext, entry.getKey(), commandInfo));
-
-
-                } else if (clazz.getDeclaredAnnotation(FlowDefinition.class) != null
-                        && Flow.class.isAssignableFrom(clazz)) {
-                    // カスタムFlowを解析
-                    FlowDefinition flow =
-                            clazz.getDeclaredAnnotation(FlowDefinition.class);
-                    FlowInfo flowInfo = FlowInfo.builder().id(flow.id()).model(clazz).runner(flow.runner()).build();
-                    CustomPackageHolder.getInstance().addCustomFlowInfo(
-                            flow.id(), flowInfo);
 
                 } else if (clazz.getDeclaredAnnotation(CustomConfigurationDefinition.class) != null
                         && Configuration.class.isAssignableFrom(clazz)) {
@@ -546,14 +474,101 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
 
                 }
 
+                // >>他機能のカスタムがあれば随時追加<<
 
             }
-
-            // >>他機能のカスタムがあれば随時追加<<
 
             log.debug("end parse custom package function -> {}:{}", entry.getKey(), entry.getValue());
         }
 
+    }
+
+
+    /**
+     * カスタムFlow構成を再帰的に解析.
+     *
+     * @param parent     親構成
+     * @param structures 対象構成リスト
+     */
+    private void parseCustomFlowStructureRecursive(FlowSpecStructure parent, List<Structure> structures) {
+
+        // コマンド構成を設定
+        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                .forEach(s -> {
+                    FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
+                    flowSpecStructure.setName(s.getName());
+                    flowSpecStructure.setRequired(s.getRequired());
+                    flowSpecStructure.setPattern(s.getPattern());
+                    flowSpecStructure.setType(s.getType());
+                    s.getSummary().stream()
+                            .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                    if (s.getDescription() != null) {
+                        s.getDescription().stream()
+                                .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                    }
+                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                        parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
+                    }
+                    parent.getProperty().add(flowSpecStructure);
+                });
+    }
+
+    /**
+     * カスタムコマンド構成を再帰的に解析.
+     *
+     * @param parent     親構成
+     * @param structures 対象構成リスト
+     */
+    private void parseCustomCommandStructureRecursive(CommandSpecStructure parent, List<Structure> structures) {
+
+        // コマンド構成を設定
+        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                .forEach(s -> {
+                    CommandSpecStructure commandSpecStructure = new CommandSpecStructure();
+                    commandSpecStructure.setName(s.getName());
+                    commandSpecStructure.setRequired(s.getRequired());
+                    commandSpecStructure.setPattern(s.getPattern());
+                    commandSpecStructure.setType(s.getType());
+                    s.getSummary().stream()
+                            .forEach(sm -> commandSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                    if (s.getDescription() != null) {
+                        s.getDescription().stream()
+                                .forEach(sm -> commandSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                    }
+                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                        parseCustomCommandStructureRecursive(commandSpecStructure, s.getProperty());
+                    }
+                    parent.getProperty().add(commandSpecStructure);
+                });
+    }
+
+    /**
+     * カスタム設定情報定義構成を再帰的に解析.
+     *
+     * @param parent     親構成
+     * @param structures 対象構成リスト
+     */
+    private void parseCustomConfigurationStructureRecursive(CustomConfigurationSpecStructure parent, List<Structure> structures) {
+
+        // コマンド構成を設定
+        structures.stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                .forEach(s -> {
+                    CustomConfigurationSpecStructure customConfigurationSpecStructure = new CustomConfigurationSpecStructure();
+                    customConfigurationSpecStructure.setName(s.getName());
+                    customConfigurationSpecStructure.setRequired(s.getRequired());
+                    customConfigurationSpecStructure.setPattern(s.getPattern());
+                    customConfigurationSpecStructure.setType(s.getType());
+                    s.getSummary().stream()
+                            .forEach(sm -> customConfigurationSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                    if (s.getDescription() != null) {
+                        s.getDescription().stream()
+                                .forEach(sm -> customConfigurationSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                    }
+                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                        parseCustomConfigurationStructureRecursive(customConfigurationSpecStructure, s.getProperty());
+                    }
+                    parent.getProperty().add(customConfigurationSpecStructure);
+                });
     }
 
 }

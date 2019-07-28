@@ -3,6 +3,7 @@ package com.epion_t3.core.custom.holder;
 import com.epion_t3.core.common.bean.*;
 import com.epion_t3.core.common.bean.scenario.Command;
 import com.epion_t3.core.common.bean.scenario.Configuration;
+import com.epion_t3.core.common.bean.scenario.Flow;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,12 +70,12 @@ public final class CustomPackageHolder {
      */
     private final Map<String, CustomSpecInfo> customSpecs = new ConcurrentHashMap<>();
 
-//    /**
-//     * カスタムコマンド設計情報.
-//     * Key: カスタムコマンドID
-//     * Value: カスタムコマンド設計情報
-//     */
-//    private final Map<String, CommandSpecInfo> customCommandSpecs = new ConcurrentHashMap<>();
+    /**
+     * カスタムFlow設計情報.
+     * Key: カスタムコマンドモデルクラス
+     * Value: カスタムコマンド設計情報
+     */
+    private final Map<Class<? extends Flow>, FlowSpecInfo> customFlowSpecs = new ConcurrentHashMap<>();
 
     /**
      * カスタムコマンド設計情報.
@@ -112,8 +113,8 @@ public final class CustomPackageHolder {
     /**
      * カスタムパッケージを追加する.
      *
-     * @param customName
-     * @param packageaName
+     * @param customName   カスタム機能名
+     * @param packageaName カスタムパッケージ
      */
     public void addCustomPackage(String customName, String packageaName) {
         customPackages.put(customName, packageaName);
@@ -122,8 +123,8 @@ public final class CustomPackageHolder {
     /**
      * カスタムパッケージを取得する.
      *
-     * @param customName
-     * @return
+     * @param customName カスタム機能名
+     * @return カスタムパッケージ
      */
     public String getCustomPackage(String customName) {
         return customPackages.get(customName);
@@ -153,8 +154,8 @@ public final class CustomPackageHolder {
     /**
      * カスタムFlowを追加する.
      *
-     * @param flowId
-     * @param flowInfo
+     * @param flowId   FlowID
+     * @param flowInfo カスタムFlow情報
      */
     public void addCustomFlowInfo(String flowId, FlowInfo flowInfo) {
         customFlows.put(flowId, flowInfo);
@@ -163,8 +164,8 @@ public final class CustomPackageHolder {
     /**
      * カスタムFlowを取得する.
      *
-     * @param flowId
-     * @return
+     * @param flowId FlowID
+     * @return カスタムFlow情報
      */
     public FlowInfo getCustomFlowInfo(String flowId) {
         return customFlows.get(flowId);
@@ -215,18 +216,34 @@ public final class CustomPackageHolder {
         return customSpecs.get(customName);
     }
 
-    public CommandSpecInfo getCommandSpec(String customName, String commandId) {
-        return getCustomSpec(customName).getCommands().get(commandId);
+    // -----------------------------------------------------------------------------------------------------------
+
+    /**
+     * カスタムFlow設計情報を追加.
+     *
+     * @param flowModelClass カスタムFlowのモデルクラス（ユーザがYAMLで扱うクラス）
+     * @param flowSpecInfo カスタムFlowの設計情報クラス（カスタムFlow作成者が定義した設計情報YAMLの情報）
+     */
+    public void addCustomFlowSpec(Class<? extends Flow> flowModelClass, FlowSpecInfo flowSpecInfo) {
+        customFlowSpecs.put(flowModelClass, flowSpecInfo);
     }
 
-    public CustomConfigurationSpecInfo getConfigurationSpec(String customName, String commandId) {
-        return getCustomSpec(customName).getConfigurations().get(commandId);
+    public FlowSpecInfo getCustomFlowSpec(String customName, String flowId) {
+        return getCustomSpec(customName).getFlows().get(flowId);
+    }
+
+    public FlowSpecInfo getCustomFlowSpec(Class<? extends Flow> flowModelClass) {
+        return customFlowSpecs.get(flowModelClass);
     }
 
     // -----------------------------------------------------------------------------------------------------------
 
     public void addCustomCommandSpec(Class<? extends Command> commandModelClass, CommandSpecInfo commandSpecInfo) {
         customCommandSpecs.put(commandModelClass, commandSpecInfo);
+    }
+
+    public CommandSpecInfo getCustomCommandSpec(String customName, String commandId) {
+        return getCustomSpec(customName).getCommands().get(commandId);
     }
 
     public CommandSpecInfo getCustomCommandSpec(Class<? extends Command> commandModelClass) {
@@ -237,6 +254,10 @@ public final class CustomPackageHolder {
 
     public void addCustomConfigurationSpec(Class<? extends Configuration> commandModelClass, CustomConfigurationSpecInfo customConfigurationSpecInfo) {
         customConfigurationSpecs.put(commandModelClass, customConfigurationSpecInfo);
+    }
+
+    public CustomConfigurationSpecInfo getCustomConfigurationSpec(String customName, String commandId) {
+        return getCustomSpec(customName).getConfigurations().get(commandId);
     }
 
     public CustomConfigurationSpecInfo getCustomConfigurationSpec(Class<? extends Command> commandModelClass) {

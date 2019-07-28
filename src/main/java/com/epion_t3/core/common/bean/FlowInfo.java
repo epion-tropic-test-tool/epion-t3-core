@@ -12,8 +12,7 @@ import java.io.Serializable;
 @Setter
 @Builder
 public class FlowInfo implements Serializable {
-
-    /**
+  /**
      * デフォルトシリアルバージョンUID.
      */
     private static final long serialVersionUID = 1L;
@@ -26,7 +25,7 @@ public class FlowInfo implements Serializable {
     private String description;
 
     @NonNull
-    private Class<?> model;
+    private Class model;
 
     @NonNull
     private Class<? extends FlowRunner> runner;

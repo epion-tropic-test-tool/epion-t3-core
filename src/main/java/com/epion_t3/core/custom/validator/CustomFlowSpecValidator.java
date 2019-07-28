@@ -1,9 +1,6 @@
 package com.epion_t3.core.custom.validator;
 
-import com.epion_t3.core.common.bean.CommandInfo;
-import com.epion_t3.core.common.bean.CommandSpecInfo;
-import com.epion_t3.core.common.bean.CommandSpecStructure;
-import com.epion_t3.core.common.bean.ET3Notification;
+import com.epion_t3.core.common.bean.*;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.NotificationType;
@@ -13,10 +10,11 @@ import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.scenario.bean.CommandSpecStructureValidateError;
 import com.epion_t3.core.scenario.bean.CommandSpecValidateError;
+import com.epion_t3.core.scenario.bean.FlowSpecStructureValidateError;
+import com.epion_t3.core.scenario.bean.FlowSpecValidateError;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ClassUtils;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -25,22 +23,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * カスタム機能の設計検証処理.
+ * カスタムFlowの設計検証処理.
+ * 設計の検証処理が存在する目的は、カスタム設定を実装されたものが設計通り（＝YAMLの定義通り）かを
+ * 実行時にも再確認することによってテスト実行時の無駄なトラブルを抑制すること。
+ * 3rdParty製のカスタム機能が増えるかもしれないと楽観的に考えて、入れている機能...
  *
  * @author takashno
  */
 @Slf4j
-public final class CustomSpecValidator {
+public final class CustomFlowSpecValidator {
 
     /**
      * シングルトンインスタンス.
      */
-    private static final CustomSpecValidator instance = new CustomSpecValidator();
+    private static final CustomFlowSpecValidator instance = new CustomFlowSpecValidator();
 
     /**
      * プライベートコンストラクタ.
      */
-    private CustomSpecValidator() {
+    private CustomFlowSpecValidator() {
         // Do Nothing...
     }
 
@@ -49,7 +50,7 @@ public final class CustomSpecValidator {
      *
      * @return シングルトンインスタンス
      */
-    public static CustomSpecValidator getInstance() {
+    public static CustomFlowSpecValidator getInstance() {
         return instance;
     }
 
@@ -61,41 +62,41 @@ public final class CustomSpecValidator {
      * @param context        コンテキスト
      * @param executeContext 実行コンテキスト
      * @param customName     カスタム名
-     * @param commandInfo    コマンド情報
+     * @param flowInfo       Flow情報
      * @return 検証結果（エラーのみ）
      */
-    public List<CommandSpecValidateError> validateCommandSpec(
-            final Context context, final ExecuteContext executeContext, String customName, final CommandInfo commandInfo) {
+    public List<FlowSpecValidateError> validateCommandSpec(
+            final Context context, final ExecuteContext executeContext, String customName, final FlowInfo flowInfo) {
 
-        log.debug("validate start {}.{}", customName, commandInfo.getId());
+        log.debug("validate flow spec start {}.{}", customName, flowInfo.getId());
 
-        List<CommandSpecValidateError> result = new ArrayList<>();
+        List<FlowSpecValidateError> result = new ArrayList<>();
 
-        CommandSpecInfo commandSpec =
-                CustomPackageHolder.getInstance().getCommandSpec(customName, commandInfo.getId());
+        FlowSpecInfo customFlowSpec =
+                CustomPackageHolder.getInstance().getCustomFlowSpec(customName, flowInfo.getId());
 
-        if (commandSpec == null) {
+        if (customFlowSpec == null) {
             executeContext.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
                     .level(NotificationType.ERROR)
                     .message(MessageManager.getInstance()
-                            .getMessage(CoreMessages.CORE_ERR_0038, customName, commandInfo.getId()))
+                            .getMessage(CoreMessages.CORE_ERR_0048, customName, flowInfo.getId()))
                     .build());
             return result;
         }
 
-        // ここで初めてコマンドIDとコマンドモデルクラスの付き合わせが行えるため、
+        // ここで初めてFlowIDとFlowモデルクラスの付き合わせが行えるため、
         // このタイミングでCustomPackageHolderへ登録を行う.
-        CustomPackageHolder.getInstance().addCustomCommandSpec(commandInfo.getModel(), commandSpec);
+        CustomPackageHolder.getInstance().addCustomFlowSpec(flowInfo.getModel(), customFlowSpec);
 
-        for (CommandSpecStructure css : commandSpec.getStructures().values()) {
+        for (FlowSpecStructure fss : customFlowSpec.getStructures().values()) {
             try {
                 // フィールドの取得
-                Class.forName(commandInfo.getModel().getName());
-                Field structure = getFieldFromClass(commandInfo.getModel(), css.getName());
+                Class.forName(flowInfo.getModel().getName());
+                Field structure = getFieldFromClass(flowInfo.getModel(), fss.getName());
 
                 // 設計定義の型
-                StructureType type = StructureType.valueOfByValue(css.getType());
+                StructureType type = StructureType.valueOfByValue(fss.getType());
 
                 // 実際の実装型
                 Class implType = structure.getType();
@@ -103,53 +104,53 @@ public final class CustomSpecValidator {
                 switch (type) {
                     case STRING:
                         if (!String.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(css.getName())
+                                    .structureName(fss.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0026, customName, commandInfo.getId(), css.getName()
+                                            CoreMessages.CORE_ERR_0050, customName, flowInfo.getId(), fss.getName()
                                     )).build());
                         }
                         break;
                     case NUMBER:
                         if (!Number.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(css.getName())
+                                    .structureName(fss.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0027, customName, commandInfo.getId(), css.getName()
+                                            CoreMessages.CORE_ERR_0051, customName, flowInfo.getId(), fss.getName()
                                     )).build());
                         }
                         break;
                     case BOOLEAN:
                         if (!(Boolean.class.isAssignableFrom(implType) || boolean.class.isAssignableFrom(implType))) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(css.getName())
+                                    .structureName(fss.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0028, customName, commandInfo.getId(), css.getName()
+                                            CoreMessages.CORE_ERR_0052, customName, flowInfo.getId(), fss.getName()
                                     )).build());
                         }
                         break;
                     case ARRAY:
                         if (!implType.isArray() && !List.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(css.getName())
+                                    .structureName(fss.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0029, customName, commandInfo.getId(), css.getName()
+                                            CoreMessages.CORE_ERR_0053, customName, flowInfo.getId(), fss.getName()
                                     )).build());
                         } else {
                             Type genericType = structure.getGenericType();
@@ -157,50 +158,50 @@ public final class CustomSpecValidator {
                                     .getActualTypeArguments()[0];
 
                             // 要素型のチェック
-                            validateCommandSpecRecursive(
+                            validateFlowSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
-                                    commandInfo,
+                                    flowInfo,
                                     result,
                                     (Class) genericActualType,
-                                    css.getProperty(),
-                                    css.getName());
+                                    fss.getProperty(),
+                                    fss.getName());
                         }
                         break;
                     case MAP:
                         if (!Map.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(css.getName())
+                                    .structureName(fss.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0041, customName, commandInfo.getId(), css.getName()
+                                            CoreMessages.CORE_ERR_0055, customName, flowInfo.getId(), fss.getName()
                                     )).build());
                         }
                         break;
                     case OBJECT:
                         if (ClassUtils.isPrimitiveOrWrapper(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
-                                    .structureName(css.getName())
+                                    .structureName(fss.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0030, customName, commandInfo.getId(), css.getName()
+                                            CoreMessages.CORE_ERR_0054, customName, flowInfo.getId(), fss.getName()
                                     )).build());
                         } else {
-                            validateCommandSpecRecursive(
+                            validateFlowSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
-                                    commandInfo,
+                                    flowInfo,
                                     result, implType,
-                                    css.getProperty(),
-                                    css.getName());
+                                    fss.getProperty(),
+                                    fss.getName());
                         }
                         break;
                     default:
@@ -209,25 +210,25 @@ public final class CustomSpecValidator {
 
 
             } catch (NoSuchFieldException e) {
-                result.add(CommandSpecStructureValidateError
-                        .commandSpecStructureValidateErrorBuilder()
+                result.add(FlowSpecStructureValidateError
+                        .flowSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
-                        .structureName(css.getName())
+                        .structureName(fss.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0031, customName, commandInfo.getId(), css.getName())).build());
+                                CoreMessages.CORE_ERR_0056, customName, flowInfo.getId(), fss.getName())).build());
             } catch (ClassNotFoundException e) {
-                result.add(CommandSpecStructureValidateError
-                        .commandSpecStructureValidateErrorBuilder()
+                result.add(FlowSpecStructureValidateError
+                        .flowSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
-                        .structureName(css.getName())
+                        .structureName(fss.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0039, customName, commandInfo.getId())).build());
+                                CoreMessages.CORE_ERR_0049, customName, flowInfo.getId())).build());
             }
         }
         return result;
@@ -239,21 +240,21 @@ public final class CustomSpecValidator {
      * @param context        コンテキスト
      * @param executeContext 実行コンテキスト
      * @param customName     カスタム名
-     * @param commandInfo    コマンド情報
+     * @param flowInfo       Flow情報
      * @param result         結果
      * @param clazz          対象クラス
      * @param properties     構成リスト
      * @param parentPath     ネストパス
      */
-    private void validateCommandSpecRecursive(Context context,
-                                              ExecuteContext executeContext,
-                                              String customName, final
-                                              CommandInfo commandInfo,
-                                              List<CommandSpecValidateError> result,
-                                              Class clazz,
-                                              List<CommandSpecStructure> properties,
-                                              String parentPath) {
-        for (CommandSpecStructure property : properties) {
+    private void validateFlowSpecRecursive(Context context,
+                                           ExecuteContext executeContext,
+                                           String customName, final
+                                           FlowInfo flowInfo,
+                                           List<FlowSpecValidateError> result,
+                                           Class clazz,
+                                           List<FlowSpecStructure> properties,
+                                           String parentPath) {
+        for (FlowSpecStructure property : properties) {
 
             String nowPath = parentPath + "." + property.getName();
 
@@ -272,53 +273,53 @@ public final class CustomSpecValidator {
                 switch (type) {
                     case STRING:
                         if (!String.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0026, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0050, customName, flowInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case NUMBER:
                         if (!Number.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0027, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0051, customName, flowInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case BOOLEAN:
                         if (!(Boolean.class.isAssignableFrom(implType) || boolean.class.isAssignableFrom(implType))) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0028, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0052, customName, flowInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case ARRAY:
                         if (!implType.isArray() && !List.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0029, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0053, customName, flowInfo.getId(), nowPath
                                     )).build());
                         } else {
                             Type genericType = structure.getGenericType();
@@ -326,11 +327,11 @@ public final class CustomSpecValidator {
                                     .getActualTypeArguments()[0];
 
                             // 要素型のチェック
-                            validateCommandSpecRecursive(
+                            validateFlowSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
-                                    commandInfo,
+                                    flowInfo,
                                     result,
                                     (Class) genericActualType,
                                     property.getProperty(),
@@ -339,34 +340,34 @@ public final class CustomSpecValidator {
                         break;
                     case MAP:
                         if (!Map.class.isAssignableFrom(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0041, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0055, customName, flowInfo.getId(), nowPath
                                     )).build());
                         }
                         break;
                     case OBJECT:
                         if (ClassUtils.isPrimitiveOrWrapper(implType)) {
-                            result.add(CommandSpecStructureValidateError
-                                    .commandSpecStructureValidateErrorBuilder()
+                            result.add(FlowSpecStructureValidateError
+                                    .flowSpecStructureValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .customName(customName)
                                     .structureName(property.getName())
                                     .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0030, customName, commandInfo.getId(), nowPath
+                                            CoreMessages.CORE_ERR_0054, customName, flowInfo.getId(), nowPath
                                     )).build());
                         } else {
-                            validateCommandSpecRecursive(
+                            validateFlowSpecRecursive(
                                     context,
                                     executeContext,
                                     customName,
-                                    commandInfo,
+                                    flowInfo,
                                     result, implType, property.getProperty(),
                                     nowPath);
                         }
@@ -377,26 +378,26 @@ public final class CustomSpecValidator {
 
 
             } catch (NoSuchFieldException e) {
-                result.add(CommandSpecStructureValidateError
-                        .commandSpecStructureValidateErrorBuilder()
+                result.add(FlowSpecStructureValidateError
+                        .flowSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
                         .structureName(property.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0031, customName, commandInfo.getId(),
+                                CoreMessages.CORE_ERR_0056, customName, flowInfo.getId(),
                                 nowPath)).build());
             } catch (ClassNotFoundException e) {
-                result.add(CommandSpecStructureValidateError
-                        .commandSpecStructureValidateErrorBuilder()
+                result.add(FlowSpecStructureValidateError
+                        .flowSpecStructureValidateErrorBuilder()
                         .stage(executeContext.getStage())
                         .level(NotificationType.ERROR)
                         .error(e)
                         .customName(customName)
                         .structureName(property.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0039, customName, commandInfo.getId())).build());
+                                CoreMessages.CORE_ERR_0049, customName, flowInfo.getId())).build());
             }
         }
     }
