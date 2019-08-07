@@ -218,7 +218,7 @@ public final class CustomFlowSpecValidator {
                         .customName(customName)
                         .structureName(fss.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0056, customName, flowInfo.getId(), fss.getName())).build());
+                                CoreMessages.CORE_ERR_0057, customName, flowInfo.getId(), fss.getName())).build());
             } catch (ClassNotFoundException e) {
                 result.add(FlowSpecStructureValidateError
                         .flowSpecStructureValidateErrorBuilder()
@@ -386,7 +386,7 @@ public final class CustomFlowSpecValidator {
                         .customName(customName)
                         .structureName(property.getName())
                         .message(MessageManager.getInstance().getMessage(
-                                CoreMessages.CORE_ERR_0056, customName, flowInfo.getId(),
+                                CoreMessages.CORE_ERR_0057, customName, flowInfo.getId(),
                                 nowPath)).build());
             } catch (ClassNotFoundException e) {
                 result.add(FlowSpecStructureValidateError

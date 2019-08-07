@@ -8,7 +8,7 @@ import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.type.*;
 import com.epion_t3.core.exception.ScenarioNotFoundException;
 import com.epion_t3.core.common.bean.ET3Notification;
-import com.epion_t3.core.flow.model.FlowResult;
+import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
 import com.epion_t3.core.flow.runner.FlowRunner;
 import com.epion_t3.core.message.MessageManager;

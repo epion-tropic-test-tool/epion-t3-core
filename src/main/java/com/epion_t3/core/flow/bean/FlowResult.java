@@ -1,4 +1,4 @@
-package com.epion_t3.core.flow.model;
+package com.epion_t3.core.flow.bean;
 
 import com.epion_t3.core.common.type.FlowResultStatus;
 import lombok.Getter;

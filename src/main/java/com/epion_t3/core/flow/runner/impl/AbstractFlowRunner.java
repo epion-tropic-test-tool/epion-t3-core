@@ -5,7 +5,7 @@ import com.epion_t3.core.common.bean.ExecuteCommand;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.flow.model.FlowResult;
+import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.runner.FlowRunner;
 import com.epion_t3.core.flow.logging.bean.FlowLog;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;

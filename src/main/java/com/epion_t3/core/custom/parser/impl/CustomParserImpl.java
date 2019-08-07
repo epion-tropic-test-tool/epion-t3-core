@@ -39,11 +39,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * カスタム機能の定義を解析するクラス.
@@ -242,89 +240,97 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
 
                 // カスタムFlow設定
                 if (et3Spec.getFlows() != null) {
-                    et3Spec.getFlows().stream().forEach(
-                            x -> {
-                                // コマンド設計を作成
-                                FlowSpecInfo flowSpecInfo = new FlowSpecInfo();
-                                flowSpecInfo.setId(x.getId());
+                    Optional.ofNullable(et3Spec.getFlows())
+                            .map(Collection::stream)
+                            .orElseGet(Stream::empty)
+                            .forEach(
+                                    x -> {
+                                        // コマンド設計を作成
+                                        FlowSpecInfo flowSpecInfo = new FlowSpecInfo();
+                                        flowSpecInfo.setId(x.getId());
 
-                                // 機能をLocale毎に分けて設定
-                                x.getSummary().stream().forEach(y -> flowSpecInfo.addFunction(y.getLang(), y.getContents()));
+                                        // 機能をLocale毎に分けて設定
+                                        x.getSummary().stream().forEach(y -> flowSpecInfo.addFunction(y.getLang(), y.getContents()));
 
-                                // 試験項目をorderでソートしたのち、Locale毎に分けて設定
-                                x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
-                                        .forEach(ti -> ti.getSummary()
-                                                .forEach(c -> flowSpecInfo.addTestItem(c.getLang(), c.getContents())));
+                                        // 試験項目をorderでソートしたのち、Locale毎に分けて設定
+                                        x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
+                                                .forEach(ti -> ti.getSummary()
+                                                        .forEach(c -> flowSpecInfo.addTestItem(c.getLang(), c.getContents())));
 
-                                // Flow構成を設定
-                                x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                                        .forEach(s -> {
-                                            FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
-                                            flowSpecStructure.setName(s.getName());
-                                            flowSpecStructure.setRequired(s.getRequired());
-                                            flowSpecStructure.setPattern(s.getPattern());
-                                            flowSpecStructure.setType(s.getType());
-                                            s.getSummary().stream()
-                                                    .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                                            if (s.getDescription() != null) {
-                                                s.getDescription().stream()
-                                                        .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                                            }
-                                            if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                                                parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
-                                            }
-                                            flowSpecInfo.addStructure(flowSpecStructure);
-                                        });
+                                        // Flow構成を設定
+                                        x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                                                .forEach(s -> {
+                                                    FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
+                                                    flowSpecStructure.setName(s.getName());
+                                                    flowSpecStructure.setRequired(s.getRequired());
+                                                    flowSpecStructure.setPattern(s.getPattern());
+                                                    flowSpecStructure.setType(s.getType());
+                                                    s.getSummary().stream()
+                                                            .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                                                    if (s.getDescription() != null) {
+                                                        s.getDescription().stream()
+                                                                .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                                                    }
+                                                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                                                        parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
+                                                    }
+                                                    flowSpecInfo.addStructure(flowSpecStructure);
+                                                });
 
-                                // Flow追加
-                                customSpecInfo.putFlowSpec(flowSpecInfo);
-                            }
-                    );
+                                        // Flow追加
+                                        customSpecInfo.putFlowSpec(flowSpecInfo);
+                                    }
+                            );
                 }
 
                 // カスタムコマンド設定
-                et3Spec.getCommands().stream().forEach(
-                        x -> {
-                            // コマンド設計を作成
-                            CommandSpecInfo commandSpecInfo = new CommandSpecInfo();
-                            commandSpecInfo.setId(x.getId());
+                Optional.ofNullable(et3Spec.getCommands())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .forEach(
+                                x -> {
+                                    // コマンド設計を作成
+                                    CommandSpecInfo commandSpecInfo = new CommandSpecInfo();
+                                    commandSpecInfo.setId(x.getId());
 
-                            // 機能をLocale毎に分けて設定
-                            x.getSummary().stream().forEach(y -> commandSpecInfo.addFunction(y.getLang(), y.getContents()));
+                                    // 機能をLocale毎に分けて設定
+                                    x.getSummary().stream().forEach(y -> commandSpecInfo.addFunction(y.getLang(), y.getContents()));
 
-                            // 試験項目をorderでソートしたのち、Locale毎に分けて設定
-                            x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
-                                    .forEach(ti -> ti.getSummary()
-                                            .forEach(c -> commandSpecInfo.addTestItem(c.getLang(), c.getContents())));
+                                    // 試験項目をorderでソートしたのち、Locale毎に分けて設定
+                                    x.getTestItem().stream().sorted(Comparator.comparing(ti -> ti.getOrder()))
+                                            .forEach(ti -> ti.getSummary()
+                                                    .forEach(c -> commandSpecInfo.addTestItem(c.getLang(), c.getContents())));
 
-                            // コマンド構成を設定
-                            x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
-                                    .forEach(s -> {
-                                        CommandSpecStructure commandSpecStructure = new CommandSpecStructure();
-                                        commandSpecStructure.setName(s.getName());
-                                        commandSpecStructure.setRequired(s.getRequired());
-                                        commandSpecStructure.setPattern(s.getPattern());
-                                        commandSpecStructure.setType(s.getType());
-                                        s.getSummary().stream()
-                                                .forEach(sm -> commandSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                                        if (s.getDescription() != null) {
-                                            s.getDescription().stream()
-                                                    .forEach(sm -> commandSpecStructure.putDescription(sm.getLang(), sm.getContents()));
-                                        }
-                                        if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                                            parseCustomCommandStructureRecursive(commandSpecStructure, s.getProperty());
-                                        }
-                                        commandSpecInfo.addStructure(commandSpecStructure);
-                                    });
+                                    // コマンド構成を設定
+                                    x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder()))
+                                            .forEach(s -> {
+                                                CommandSpecStructure commandSpecStructure = new CommandSpecStructure();
+                                                commandSpecStructure.setName(s.getName());
+                                                commandSpecStructure.setRequired(s.getRequired());
+                                                commandSpecStructure.setPattern(s.getPattern());
+                                                commandSpecStructure.setType(s.getType());
+                                                s.getSummary().stream()
+                                                        .forEach(sm -> commandSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                                                if (s.getDescription() != null) {
+                                                    s.getDescription().stream()
+                                                            .forEach(sm -> commandSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                                                }
+                                                if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                                                    parseCustomCommandStructureRecursive(commandSpecStructure, s.getProperty());
+                                                }
+                                                commandSpecInfo.addStructure(commandSpecStructure);
+                                            });
 
-                            // コマンド追加
-                            customSpecInfo.putCommandSpec(commandSpecInfo);
-                        }
-                );
+                                    // コマンド追加
+                                    customSpecInfo.putCommandSpec(commandSpecInfo);
+                                }
+                        );
 
 
                 // カスタム設定情報設定
-                et3Spec.getConfigurations().stream().forEach(
+                Optional.ofNullable(et3Spec.getConfigurations())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty).forEach(
                         x -> {
                             // 設定情報設計を作成
                             CustomConfigurationSpecInfo customConfigurationSpecInfo = new CustomConfigurationSpecInfo();
@@ -359,13 +365,14 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                 );
 
                 // メッセージ設定
-                if (et3Spec.getMessages() != null) {
-                    et3Spec.getMessages().stream().forEach(
-                            x -> {
-                                x.getMessage().forEach(y ->
-                                        customSpecInfo.addMessage(y.getLang(), x.getId(), y.getContents()));
-                            });
-                }
+                Optional.ofNullable(et3Spec.getMessages())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .forEach(
+                                x -> {
+                                    x.getMessage().forEach(y ->
+                                            customSpecInfo.addMessage(y.getLang(), x.getId(), y.getContents()));
+                                });
 
             } catch (JsonMappingException e) {
                 executeContext.addNotification(ET3Notification.builder()
