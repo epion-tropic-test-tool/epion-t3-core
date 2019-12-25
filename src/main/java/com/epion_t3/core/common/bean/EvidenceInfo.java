@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -21,32 +22,27 @@ public class EvidenceInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * エビデンスID.
-     * 内部的に割り振っているのみ
+     * エビデンスID. 内部的に割り振っているのみ
      */
     private UUID evidenceId = UUID.randomUUID();
 
     /**
-     * 完全シナリオ名称.
-     * Full Query Scenario Name.
+     * 完全シナリオ名称. Full Query Scenario Name.
      */
     private String fqsn;
 
     /**
-     * 完全Flow名称.
-     * Full Query Flow Name.
+     * 完全Flow名称. Full Query Flow Name.
      */
     private String fqfn;
 
     /**
-     * Flowの実行ID.
-     * レポートのアンカーリンクのために必要.
+     * Flowの実行ID. レポートのアンカーリンクのために必要.
      */
     private String executeFlowId;
 
     /**
-     * エビデンス名.
-     * ユーザーがつけるエビデンスへの論理名.
+     * エビデンス名. ユーザーがつけるエビデンスへの論理名.
      */
     private String name;
 

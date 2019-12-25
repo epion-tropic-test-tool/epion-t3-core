@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
 import lombok.AllArgsConstructor;
@@ -48,8 +49,6 @@ public enum ReferenceVariableType {
      */
     @Nullable
     public static ReferenceVariableType valueOfByName(String name) {
-        return Arrays.stream(values())
-                .filter(x -> x.getName().equals(name))
-                .findFirst().orElse(null);
+        return Arrays.stream(values()).filter(x -> x.getName().equals(name)).findFirst().orElse(null);
     }
 }

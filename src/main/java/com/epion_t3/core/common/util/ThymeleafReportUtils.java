@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import lombok.extern.slf4j.Slf4j;

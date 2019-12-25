@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.common.type.NotificationType;
@@ -53,8 +54,7 @@ public class ExecuteScenario implements Serializable {
     private Information info;
 
     /**
-     * 完全シナリオ名称.
-     * Full Query Scenario Name.
+     * 完全シナリオ名称. Full Query Scenario Name.
      */
     private String fqsn;
 
@@ -108,16 +108,13 @@ public class ExecuteScenario implements Serializable {
      */
     private Path evidencePath;
 
-
     /**
-     * エビデンスマップ.
-     * 順序保証を持たせる.
+     * エビデンスマップ. 順序保証を持たせる.
      */
     LinkedHashMap<String, EvidenceInfo> evidences = new LinkedHashMap<>();
 
     /**
-     * フローIDとエビデンスIDの変換マップ.
-     * 順序保証を持たせる.
+     * フローIDとエビデンスIDの変換マップ. 順序保証を持たせる.
      * FlowIDをベースでエビデンスを逆引きする場合、繰り返しFlowに対応するにはリストで保持するほかない.
      * エビデンス参照を行う場合には、直近のFlowIDのエビデンスを参照することになる.
      */

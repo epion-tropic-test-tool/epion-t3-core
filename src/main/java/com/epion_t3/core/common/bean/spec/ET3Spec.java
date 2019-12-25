@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.spec;
 
 import lombok.Getter;
@@ -54,6 +55,5 @@ public class ET3Spec implements Serializable {
     @NotEmpty
     @Valid
     private List<Message> messages;
-
 
 }

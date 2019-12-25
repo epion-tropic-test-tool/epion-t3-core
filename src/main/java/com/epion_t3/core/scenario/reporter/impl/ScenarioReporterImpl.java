@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.reporter.impl;
 
 import com.epion_t3.core.common.annotation.OriginalProcessField;
@@ -85,11 +86,7 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
      * {@inheritDoc}
      */
     @Override
-    public void report(
-            Context context,
-            ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            Throwable t) {
+    public void report(Context context, ExecuteContext executeContext, ExecuteScenario executeScenario, Throwable t) {
 
         // シナリオレポート出力ステージ
         executeContext.setStage(StageType.REPORT_SCENARIO);
@@ -116,8 +113,9 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
                             }
                             try {
                                 // Getterメソッドを参照
-                                Method getterMethod = executeCommand.getCommand().getClass().getDeclaredMethod(
-                                        "get" + WordUtils.capitalize(field.getName()), new Class[0]);
+                                Method getterMethod = executeCommand.getCommand()
+                                        .getClass()
+                                        .getDeclaredMethod("get" + WordUtils.capitalize(field.getName()), new Class[0]);
                                 // 値抽出
                                 Object value = getterMethod.invoke(executeCommand.getCommand());
                                 executeCommand.getExtensionProcessFields().put(field.getName(), value);
@@ -146,9 +144,8 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
             Path scenarioReportPath = ExecutionFileUtils.getScenarioReportPath(executeContext, executeScenario);
 
             // HTML変換＆出力
-            Files.write(scenarioReportPath,
-                    templateEngine.process(
-                            templatePath(), thymeleafContext).getBytes(ThymeleafReportUtils.TEMPLATE_ENCODING));
+            Files.write(scenarioReportPath, templateEngine.process(templatePath(), thymeleafContext)
+                    .getBytes(ThymeleafReportUtils.TEMPLATE_ENCODING));
 
         } catch (IOException e) {
 
@@ -158,7 +155,6 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
         }
 
     }
-
 
     /**
      * 実行Flowのアクティビティ図のSVGを出力する.
@@ -180,24 +176,24 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
                 activity.append(executeFlow.getFlow().getId());
             }
             switch (executeFlow.getStatus()) {
-                case WAIT:
-                    activity.append("<<WAIT>>");
-                    break;
-                case SKIP:
-                    activity.append("<<SKIP>>");
-                    break;
-                case SUCCESS:
-                    activity.append("<<SUCCESS>>");
-                    break;
-                case ASSERT_ERROR:
-                    activity.append("<<ASSERT_ERROR>>");
-                    break;
-                case ERROR:
-                    activity.append("<<ERROR>>");
-                    break;
-                case WARN:
-                    activity.append("<<WARN>>");
-                    break;
+            case WAIT:
+                activity.append("<<WAIT>>");
+                break;
+            case SKIP:
+                activity.append("<<SKIP>>");
+                break;
+            case SUCCESS:
+                activity.append("<<SUCCESS>>");
+                break;
+            case ASSERT_ERROR:
+                activity.append("<<ASSERT_ERROR>>");
+                break;
+            case ERROR:
+                activity.append("<<ERROR>>");
+                break;
+            case WARN:
+                activity.append("<<WARN>>");
+                break;
             }
             activity.append("\n");
         }

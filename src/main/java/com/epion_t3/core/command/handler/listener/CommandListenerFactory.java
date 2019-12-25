@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.handler.listener;
 
 import com.epion_t3.core.command.handler.listener.holder.CommandListenerHolder;
@@ -39,15 +40,13 @@ public final class CommandListenerFactory {
      */
     public List<CommandBeforeListener> getBeforeListener() {
         final List<CommandBeforeListener> result = new LinkedList<>();
-        CommandListenerHolder.getInstance().getCommandBeforeListenerClasses().forEach(
-                x -> {
-                    try {
-                        result.add(x.newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
+        CommandListenerHolder.getInstance().getCommandBeforeListenerClasses().forEach(x -> {
+            try {
+                result.add(x.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return result;
     }
 
@@ -57,15 +56,13 @@ public final class CommandListenerFactory {
      */
     public List<CommandAfterListener> getAfterListener() {
         final List<CommandAfterListener> result = new LinkedList<>();
-        CommandListenerHolder.getInstance().getCommandAfterListenerClasses().forEach(
-                x -> {
-                    try {
-                        result.add(x.newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
+        CommandListenerHolder.getInstance().getCommandAfterListenerClasses().forEach(x -> {
+            try {
+                result.add(x.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return result;
     }
 
@@ -75,17 +72,14 @@ public final class CommandListenerFactory {
      */
     public List<CommandErrorListener> getErrorListener() {
         final List<CommandErrorListener> result = new LinkedList<>();
-        CommandListenerHolder.getInstance().getCommandErrorListenerClasses().forEach(
-                x -> {
-                    try {
-                        result.add(x.newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
+        CommandListenerHolder.getInstance().getCommandErrorListenerClasses().forEach(x -> {
+            try {
+                result.add(x.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return result;
     }
-
 
 }

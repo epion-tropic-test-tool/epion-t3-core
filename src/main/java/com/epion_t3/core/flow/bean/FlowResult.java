@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.flow.bean;
 
 import com.epion_t3.core.common.type.FlowResultStatus;
@@ -26,8 +27,7 @@ public class FlowResult implements Serializable {
     private FlowResultStatus status = FlowResultStatus.NEXT;
 
     /**
-     * Flowとして次に実行するID.
-     * 結果ステータスが「CHOICE」の時のみ利用する.
+     * Flowとして次に実行するID. 結果ステータスが「CHOICE」の時のみ利用する.
      */
     private String choiceId;
 

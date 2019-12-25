@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -53,15 +54,14 @@ public class FlowSpecStructure implements Serializable {
     private Map<Locale, String> descriptions = new ConcurrentHashMap<>();
 
     /**
-     * プロパティ.
-     * typeがobjectの場合に、ネスト構造となるため子階層を表す.
+     * プロパティ. typeがobjectの場合に、ネスト構造となるため子階層を表す.
      */
     private List<FlowSpecStructure> property = new ArrayList<>();
 
     /**
      * 概要を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void putSummary(String lang, String contents) {
@@ -71,7 +71,7 @@ public class FlowSpecStructure implements Serializable {
     /**
      * 詳細を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void putDescription(String lang, String contents) {

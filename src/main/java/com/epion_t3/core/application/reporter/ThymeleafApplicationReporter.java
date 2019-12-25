@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.application.reporter;
 
 import com.epion_t3.core.common.context.ExecuteContext;
@@ -10,8 +11,7 @@ import java.util.Map;
  * @param <EXECUTE_CONTEXT>
  * @author takashno
  */
-public interface ThymeleafApplicationReporter<
-        EXECUTE_CONTEXT extends ExecuteContext>
+public interface ThymeleafApplicationReporter<EXECUTE_CONTEXT extends ExecuteContext>
         extends ApplicationReporter<EXECUTE_CONTEXT> {
 
     /**

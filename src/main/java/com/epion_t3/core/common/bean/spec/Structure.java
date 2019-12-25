@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.spec;
 
 import lombok.Getter;
@@ -42,12 +43,9 @@ public class Structure implements Serializable {
     private List<Content> description;
 
     /**
-     * プロパティ.
-     * typeがobjectの場合に、子階層を表す.
-     * typeがarrayの場合に、要素型を表す.
+     * プロパティ. typeがobjectの場合に、子階層を表す. typeがarrayの場合に、要素型を表す.
      */
     @Valid
     private List<Structure> property;
-
 
 }

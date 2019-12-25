@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.resolver;
 
 import com.epion_t3.core.command.runner.CommandRunner;
@@ -15,19 +16,13 @@ import com.epion_t3.core.common.bean.ExecuteScenario;
 public interface CommandRunnerResolver {
 
     /**
-     * コマンド実行処理を取得する.
-     * コマンド実行処理はProxyによって任意の拡張リスナー処理を実装できるようにする.
+     * コマンド実行処理を取得する. コマンド実行処理はProxyによって任意の拡張リスナー処理を実装できるようにする.
      * そのため、InvocationHandlerにてラップする形で提供を行うこと.
      *
      * @param commandId コマンドID
      * @return コマンド実行処理
      */
-    CommandRunner getCommandRunner(
-            String commandId,
-            Context context,
-            ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            ExecuteCommand executeCommand);
+    CommandRunner getCommandRunner(String commandId, Context context, ExecuteContext executeContext,
+            ExecuteScenario executeScenario, ExecuteFlow executeFlow, ExecuteCommand executeCommand);
 
 }

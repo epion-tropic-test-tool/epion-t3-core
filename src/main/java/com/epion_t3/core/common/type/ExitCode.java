@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
 import lombok.AllArgsConstructor;
@@ -27,12 +28,10 @@ public enum ExitCode {
      */
     ERROR(9),
 
-
     /**
      * 割り当てられていない.
      */
     UNASSIGNED(100);
-
 
     private int exitCode;
 }

@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.message;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,6 @@ public final class MessageManager {
         return getMessageFormat(messageCode).format(null);
     }
 
-
     /**
      * メッセージを取得する.
      *
@@ -122,6 +122,5 @@ public final class MessageManager {
 //    public String getMessageWithCode(Messages messages, Object... params) {
 //        return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(params);
 //    }
-
 
 }

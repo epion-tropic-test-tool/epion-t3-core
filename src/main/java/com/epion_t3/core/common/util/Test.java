@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import java.lang.reflect.Type;
@@ -21,14 +22,14 @@ public class Test {
         Class<?> clazz = checkTarget.getClass().getComponentType();
         System.out.println(clazz);
 
-        Arrays.stream(checkTarget.getClass().getTypeParameters()).forEach(x->{
-            for (Type t: x.getBounds()) {
+        Arrays.stream(checkTarget.getClass().getTypeParameters()).forEach(x -> {
+            for (Type t : x.getBounds()) {
                 System.out.println(t.getTypeName());
             }
 
         });
 
-        //TypeVariable<Class<List>>[] av = checkTarget.getClass().getTypeParameters();
+        // TypeVariable<Class<List>>[] av = checkTarget.getClass().getTypeParameters();
         Object obj = checkTarget.getClass().getTypeParameters();
         System.out.println(obj);
 

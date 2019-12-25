@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -39,16 +40,14 @@ public class CommandSpecInfo implements Serializable {
     private Map<Locale, List<String>> testItems = new ConcurrentHashMap<>();
 
     /**
-     * コマンド構成.
-     * 指定しなければいけない要素等を記載する.
+     * コマンド構成. 指定しなければいけない要素等を記載する.
      */
     private Map<String, CommandSpecStructure> structures = new ConcurrentHashMap<>();
-
 
     /**
      * 機能を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void addFunction(String lang, String contents) {
@@ -62,7 +61,7 @@ public class CommandSpecInfo implements Serializable {
     /**
      * 試験項目を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void addTestItem(String lang, String contents) {

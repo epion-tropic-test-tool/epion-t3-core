@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
 import lombok.Getter;
@@ -16,6 +17,4 @@ public class ProcessReference implements Serializable {
 
     private Map<String, Object> results;
 
-
 }
-

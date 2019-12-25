@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.bean;
 
 import com.epion_t3.core.common.bean.ET3Notification;
@@ -20,7 +21,8 @@ public class ConfigurationSpecValidateError extends ET3Notification {
      * コンストラクタ.
      */
     @Builder(builderMethodName = "configurationSpecValidateErrorBuilder")
-    public ConfigurationSpecValidateError(StageType stage, NotificationType level, String message, Throwable error, String customName) {
+    public ConfigurationSpecValidateError(StageType stage, NotificationType level, String message, Throwable error,
+            String customName) {
         super(stage, level, message, error);
         this.customName = customName;
     }

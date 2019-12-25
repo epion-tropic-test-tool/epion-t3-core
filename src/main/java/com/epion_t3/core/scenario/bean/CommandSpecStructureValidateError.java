@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.bean;
 
 import com.epion_t3.core.common.type.NotificationType;
@@ -20,7 +21,8 @@ public class CommandSpecStructureValidateError extends CommandSpecValidateError 
      * コンストラクタ.
      */
     @Builder(builderMethodName = "commandSpecStructureValidateErrorBuilder")
-    public CommandSpecStructureValidateError(StageType stage, NotificationType level, String message, Throwable error, String customName, String structureName) {
+    public CommandSpecStructureValidateError(StageType stage, NotificationType level, String message, Throwable error,
+            String customName, String structureName) {
         super(stage, level, message, error, customName);
         this.structureName = structureName;
     }

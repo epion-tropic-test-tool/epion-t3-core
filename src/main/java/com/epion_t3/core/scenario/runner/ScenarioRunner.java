@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.runner;
 
 import com.epion_t3.core.common.context.ExecuteContext;
@@ -7,7 +8,6 @@ import com.epion_t3.core.common.context.ExecuteContext;
  * @param <EXECUTE_CONTEXT>
  */
 public interface ScenarioRunner<Context, EXECUTE_CONTEXT extends ExecuteContext> {
-
 
     /**
      * @param context

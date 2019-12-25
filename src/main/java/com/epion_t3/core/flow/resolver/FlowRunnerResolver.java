@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.flow.resolver;
 
 import com.epion_t3.core.flow.runner.FlowRunner;

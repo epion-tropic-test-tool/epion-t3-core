@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.flow.logging.bean.FlowLog;
@@ -50,7 +51,6 @@ public class ExecuteFlow extends ExecuteElement {
      * Flowログ.
      */
     private List<FlowLog> flowLogs;
-
 
     public boolean hasCommandError() {
         return commands.stream().anyMatch(x -> x.getCommandResult().getStatus() == CommandStatus.ERROR);

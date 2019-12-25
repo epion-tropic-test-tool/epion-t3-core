@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.bean;
 
 import com.epion_t3.core.common.type.NotificationType;
@@ -22,7 +23,8 @@ public class FlowSpecStructureValidateError extends FlowSpecValidateError {
      * コンストラクタ.
      */
     @Builder(builderMethodName = "flowSpecStructureValidateErrorBuilder")
-    public FlowSpecStructureValidateError(StageType stage, NotificationType level, String message, Throwable error, String customName, String structureName) {
+    public FlowSpecStructureValidateError(StageType stage, NotificationType level, String message, Throwable error,
+            String customName, String structureName) {
         super(stage, level, message, error, customName);
         this.structureName = structureName;
     }

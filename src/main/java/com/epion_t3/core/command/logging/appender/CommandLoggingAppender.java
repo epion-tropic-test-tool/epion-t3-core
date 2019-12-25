@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.logging.appender;
 
 import ch.qos.logback.classic.Level;
@@ -21,10 +22,7 @@ public class CommandLoggingAppender extends AppenderBase<ILoggingEvent> {
         Level level = eventObject.getLevel();
         String message = eventObject.getFormattedMessage();
         LocalDateTime now = LocalDateTime.now();
-        CommandLoggingHolder.append(CommandLog.builder()
-                .level(level)
-                .message(message)
-                .dateTime(now).build());
+        CommandLoggingHolder.append(CommandLog.builder().level(level).message(message).dateTime(now).build());
     }
 
 }

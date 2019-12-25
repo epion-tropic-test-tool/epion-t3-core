@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.context;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -65,6 +66,5 @@ public class Context implements Serializable {
     protected Option createOption() {
         return new Option();
     }
-
 
 }

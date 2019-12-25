@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.command.bean.AssertCommandResult;
@@ -36,8 +37,7 @@ public class ExecuteCommand extends ExecuteElement {
     private CommandResult commandResult;
 
     /**
-     * コマンド情報.
-     * コマンドからコマンド情報を解決した際に保持しておく.
+     * コマンド情報. コマンドからコマンド情報を解決した際に保持しておく.
      */
     private CommandInfo commandInfo;
 
@@ -61,7 +61,6 @@ public class ExecuteCommand extends ExecuteElement {
      */
     private String customReportRelativePath;
 
-
     /**
      * アサート系コマンドか判定する.
      *
@@ -78,10 +77,8 @@ public class ExecuteCommand extends ExecuteElement {
      */
     public boolean hasAssertError() {
         if (isAssertCommand()) {
-            if (commandResult != null
-                    && AssertCommandResult.class.isAssignableFrom(commandResult.getClass())) {
-                return ((AssertCommandResult) commandResult).getAssertStatus()
-                        == AssertStatus.NG;
+            if (commandResult != null && AssertCommandResult.class.isAssignableFrom(commandResult.getClass())) {
+                return ((AssertCommandResult) commandResult).getAssertStatus() == AssertStatus.NG;
             } else {
                 return false;
             }

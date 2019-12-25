@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.bean;
 
 import com.epion_t3.core.common.type.NotificationType;
@@ -16,8 +17,7 @@ public class ScenarioValidateError extends ScenarioParseError {
      * コンストラクタ.
      */
     @Builder(builderMethodName = "scenarioValidateErrorBuilder")
-    public ScenarioValidateError(
-            StageType stage, NotificationType level, String message, Throwable error,
+    public ScenarioValidateError(StageType stage, NotificationType level, String message, Throwable error,
             String filePath, String target, Object value) {
         super(stage, level, message, error, filePath);
         this.target = target;

@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.annotation;
 
 import com.epion_t3.core.command.reporter.CommandReporter;
@@ -14,7 +15,7 @@ import java.lang.annotation.Target;
  *
  * @author takashno
  */
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandDefinition {
 

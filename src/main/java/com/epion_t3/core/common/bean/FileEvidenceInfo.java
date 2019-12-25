@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -20,8 +21,7 @@ public class FileEvidenceInfo extends EvidenceInfo {
     private Path path;
 
     /**
-     * 【レポート用】
-     * シナリオディレクトリからの相対パス.
+     * 【レポート用】 シナリオディレクトリからの相対パス.
      */
     private String relativePath;
 

@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.runner.impl;
 
 import com.epion_t3.core.common.context.Context;
@@ -55,7 +56,8 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             executeContext.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
                     .level(NotificationType.ERROR)
-                    .message(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0045,context.getOption().getTarget()))
+                    .message(MessageManager.getInstance()
+                            .getMessage(CoreMessages.CORE_ERR_0045, context.getOption().getTarget()))
                     .build());
             throw new ScenarioNotFoundException(context.getOption().getTarget());
         }
@@ -99,8 +101,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
         // オプション解決
         Option option = SerializationUtils.clone(context.getOption());
         // プロファイルのオーバーライド
-        if (StringUtils.isNotEmpty(scenarioRef.getProfile())
-                && StringUtils.isNotEmpty(option.getProfile())
+        if (StringUtils.isNotEmpty(scenarioRef.getProfile()) && StringUtils.isNotEmpty(option.getProfile())
                 && !option.getProfile().contains(scenarioRef.getProfile())) {
             option.setProfile(option.getProfile() + "," + scenarioRef.getProfile());
         }
@@ -153,33 +154,33 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 if (flowResult != null) {
                     // 前Flowの結果によって処理を振り分ける
                     switch (flowResult.getStatus()) {
-                        case NEXT:
-                            // 単純に次のFlowへ遷移
-                            log.debug("Execute Next Flow.");
-                            break;
-                        case CHOICE:
-                            log.debug("Choice Execute Next Flow.");
-                            // 指定された後続Flowへ遷移
-                            if (StringUtils.equals(flowResult.getChoiceId(), flow.getId())) {
-                                // 合致したため実行する
-                                log.debug("Find To Be Executed Flow.");
-                            } else {
-                                // SKIP扱いとする
-                                log.debug("Can't Find Execute Flow. -> SKIP");
-                                // TODO:ちょっと微妙だな・・・
-                                ExecuteFlow executeFlow = new ExecuteFlow();
-                                executeFlow.setStatus(FlowStatus.SKIP);
-                                executeFlow.setFlow(flow);
-                                executeScenario.getFlows().add(executeFlow);
-                                // 次のループまで
-                                continue;
-                            }
-                            break;
-                        case EXIT:
-                            // 即時終了
-                            log.debug("Force Exit Scenario.");
-                            exitFlg = true;
-                            break;
+                    case NEXT:
+                        // 単純に次のFlowへ遷移
+                        log.debug("Execute Next Flow.");
+                        break;
+                    case CHOICE:
+                        log.debug("Choice Execute Next Flow.");
+                        // 指定された後続Flowへ遷移
+                        if (StringUtils.equals(flowResult.getChoiceId(), flow.getId())) {
+                            // 合致したため実行する
+                            log.debug("Find To Be Executed Flow.");
+                        } else {
+                            // SKIP扱いとする
+                            log.debug("Can't Find Execute Flow. -> SKIP");
+                            // TODO:ちょっと微妙だな・・・
+                            ExecuteFlow executeFlow = new ExecuteFlow();
+                            executeFlow.setStatus(FlowStatus.SKIP);
+                            executeFlow.setFlow(flow);
+                            executeScenario.getFlows().add(executeFlow);
+                            // 次のループまで
+                            continue;
+                        }
+                        break;
+                    case EXIT:
+                        // 即時終了
+                        log.debug("Force Exit Scenario.");
+                        exitFlg = true;
+                        break;
                     }
                 }
 
@@ -195,11 +196,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 bind(context, executeContext, executeScenario, flow);
 
                 // 実行
-                flowResult = runner.execute(
-                        context,
-                        executeContext,
-                        executeScenario,
-                        flow,
+                flowResult = runner.execute(context, executeContext, executeScenario, flow,
                         LoggerFactory.getLogger("FlowLog"));
 
                 ExecuteFlow executeFlow = executeScenario.getFlows().get(executeScenario.getFlows().size() - 1);
@@ -227,8 +224,11 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             log.debug("Error Occurred...", t);
 
             // 発生したエラーを設定
-            executeScenario.addNotification(
-                    ET3Notification.builder().stage(executeContext.getStage()).error(t).message(t.getMessage()).build());
+            executeScenario.addNotification(ET3Notification.builder()
+                    .stage(executeContext.getStage())
+                    .error(t)
+                    .message(t.getMessage())
+                    .build());
 
             // シナリオ失敗
             executeScenario.setStatus(ScenarioExecuteStatus.ERROR);
@@ -258,29 +258,26 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * 実行時に指定されたプロファイルを元に、実行コンテキストに設定する.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario 実行コンテキスト
      */
     private void setProfiles(final Context context, final ExecuteScenario executeScenario) {
 
         if (StringUtils.isNotEmpty(executeScenario.getOption().getProfile())) {
             // プロファイルを抽出
-            Arrays.stream(executeScenario.getOption().getProfile().split(","))
-                    .forEach(x -> {
-                        if (context.getOriginal().getProfiles().containsKey(x)) {
-                            executeScenario.getProfileConstants().putAll(context.getOriginal().getProfiles().get(x));
-                        } else {
-                            // 起動時に指定されたプロファイルが、
-                            // シナリオの中に存在しないため実質有効ではないことをWARNログにて通知
-                            log.warn(
-                                    MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_WRN_0002, context.getOption().getProfile()));
-                        }
-                    });
+            Arrays.stream(executeScenario.getOption().getProfile().split(",")).forEach(x -> {
+                if (context.getOriginal().getProfiles().containsKey(x)) {
+                    executeScenario.getProfileConstants().putAll(context.getOriginal().getProfiles().get(x));
+                } else {
+                    // 起動時に指定されたプロファイルが、
+                    // シナリオの中に存在しないため実質有効ではないことをWARNログにて通知
+                    log.warn(MessageManager.getInstance()
+                            .getMessage(CoreMessages.CORE_WRN_0002, context.getOption().getProfile()));
+                }
+            });
         }
 
     }
-
 
     /**
      * Flowに対して、変数をバインドする.
@@ -289,19 +286,13 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param executeScenario
      * @param flow
      */
-    private void bind(final Context context,
-                      final ExecuteContext executeContext,
-                      final ExecuteScenario executeScenario,
-                      final Flow flow) {
+    private void bind(final Context context, final ExecuteContext executeContext, final ExecuteScenario executeScenario,
+            final Flow flow) {
 
-        BindUtils.getInstance().bind(
-                flow,
-                executeScenario.getProfileConstants(),
-                executeContext.getGlobalVariables(),
-                executeScenario.getScenarioVariables(),
-                null);
+        BindUtils.getInstance()
+                .bind(flow, executeScenario.getProfileConstants(), executeContext.getGlobalVariables(),
+                        executeScenario.getScenarioVariables(), null);
     }
-
 
     /**
      * シナリオスコープの変数を設定する.
@@ -310,15 +301,13 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param executeScenario 実行シナリオ
      */
     private void settingScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
-        executeScenario.getScenarioVariables().put(
-                ScenarioScopeVariables.SCENARIO_DIR.getName(),
-                context.getOriginal().getScenarioPlacePaths().get(executeScenario.getInfo().getId()));
-        executeScenario.getScenarioVariables().put(
-                ScenarioScopeVariables.EVIDENCE_DIR.getName(),
-                executeScenario.getEvidencePath());
-        executeScenario.getScenarioVariables().put(
-                ScenarioScopeVariables.CURRENT_SCENARIO.getName(),
-                executeScenario.getFqsn());
+        executeScenario.getScenarioVariables()
+                .put(ScenarioScopeVariables.SCENARIO_DIR.getName(),
+                        context.getOriginal().getScenarioPlacePaths().get(executeScenario.getInfo().getId()));
+        executeScenario.getScenarioVariables()
+                .put(ScenarioScopeVariables.EVIDENCE_DIR.getName(), executeScenario.getEvidencePath());
+        executeScenario.getScenarioVariables()
+                .put(ScenarioScopeVariables.CURRENT_SCENARIO.getName(), executeScenario.getFqsn());
     }
 
     /**
@@ -328,12 +317,9 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param executeScenario 実行シナリオ
      */
     private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
-        executeScenario.getScenarioVariables().remove(
-                ScenarioScopeVariables.SCENARIO_DIR.getName());
-        executeScenario.getScenarioVariables().remove(
-                ScenarioScopeVariables.EVIDENCE_DIR.getName());
-        executeScenario.getScenarioVariables().remove(
-                ScenarioScopeVariables.CURRENT_SCENARIO.getName());
+        executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.SCENARIO_DIR.getName());
+        executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.EVIDENCE_DIR.getName());
+        executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.CURRENT_SCENARIO.getName());
         executeScenario.getScenarioVariables().entrySet().forEach(x -> {
             if (x.getKey().contains(ExecuteScenario.FLOW_START_VARIABLE_SUFFIX)
                     || x.getKey().contains(ExecuteScenario.FLOW_END_VARIABLE_SUFFIX)) {
@@ -347,27 +333,23 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      *
      * @param context
      */
-    private void createResultDirectory(final Context context, final ExecuteContext executeContext, final ExecuteScenario scenario) {
+    private void createResultDirectory(final Context context, final ExecuteContext executeContext,
+            final ExecuteScenario scenario) {
         ExecutionFileUtils.createResultDirectory(context, executeContext);
     }
 
     /**
      * レポート出力.
      *
-     * @param context         コンテキスト
-     * @param executeContext  実行情報
+     * @param context コンテキスト
+     * @param executeContext 実行情報
      * @param executeScenario シナリオ実行情報
-     * @param t               エラー
+     * @param t エラー
      */
-    private void report(
-            final Context context,
-            final ExecuteContext executeContext,
-            final ExecuteScenario executeScenario,
-            final Throwable t) {
-        ScenarioReporterImpl.getInstance().report(
-                context, executeContext, executeScenario, t);
+    private void report(final Context context, final ExecuteContext executeContext,
+            final ExecuteScenario executeScenario, final Throwable t) {
+        ScenarioReporterImpl.getInstance().report(context, executeContext, executeScenario, t);
     }
-
 
     /**
      * シナリオ開始ログ出力.

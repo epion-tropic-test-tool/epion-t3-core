@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
 import lombok.Getter;
@@ -35,6 +36,5 @@ public class Scenario implements Serializable {
      * デバッグ指定
      */
     private Boolean debug;
-
 
 }

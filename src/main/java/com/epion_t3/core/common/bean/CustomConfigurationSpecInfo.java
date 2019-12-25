@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -30,18 +31,15 @@ public class CustomConfigurationSpecInfo implements Serializable {
      */
     private Map<Locale, List<String>> functions = new ConcurrentHashMap<>();
 
-
     /**
-     * 設定構成.
-     * 指定しなければいけない要素等を記載する.
+     * 設定構成. 指定しなければいけない要素等を記載する.
      */
     private Map<String, CustomConfigurationSpecStructure> structures = new ConcurrentHashMap<>();
-
 
     /**
      * 機能を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void addFunction(String lang, String contents) {

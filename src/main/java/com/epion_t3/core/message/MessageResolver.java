@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.message;
 
 import com.google.common.reflect.ClassPath;
@@ -62,7 +63,8 @@ public final class MessageResolver {
                 .filter(x -> x.containsKey(messageCode))
                 .findFirst()
                 .orElseThrow(() -> new MessageNotFoundException(messageCode))
-                .getObject(messageCode).toString();
+                .getObject(messageCode)
+                .toString();
     }
 
     /**
@@ -75,11 +77,11 @@ public final class MessageResolver {
         List<ResourceBundle> loadingResourceBundles = new ArrayList<>();
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        List<ClassPath.ResourceInfo> messageResources
-                = null;
+        List<ClassPath.ResourceInfo> messageResources = null;
         try {
             messageResources = ClassPath.from(loader)
-                    .getResources().stream()
+                    .getResources()
+                    .stream()
                     .filter(info -> info.getResourceName().endsWith(MESSAGE_SUFFIX_PATTERN))
                     .collect(Collectors.toList());
         } catch (IOException e) {
@@ -88,8 +90,8 @@ public final class MessageResolver {
 
         for (ClassPath.ResourceInfo resource : messageResources) {
             try {
-                ResourceBundle rb =
-                        ResourceBundle.getBundle(FilenameUtils.getBaseName(resource.getResourceName()), Locale.getDefault());
+                ResourceBundle rb = ResourceBundle.getBundle(FilenameUtils.getBaseName(resource.getResourceName()),
+                        Locale.getDefault());
                 loadingResourceBundles.add(rb);
                 log.debug("load resource bundle: {}", resource.getResourceName());
             } catch (MissingResourceException e) {

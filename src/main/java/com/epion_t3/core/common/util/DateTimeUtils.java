@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import com.epion_t3.core.common.bean.ExecuteScenario;
@@ -22,10 +23,10 @@ public final class DateTimeUtils {
     /**
      * 日時分秒ミリ秒までの標準フォーマット.
      */
-    public static final DateTimeFormatter YYYYMMDD_HHMMSS_NORMAL = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final DateTimeFormatter YYYYMMDD_HHMMSS_NORMAL = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     public static final DateTimeFormatter HHMMSS_NORMAL = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-
 
     public static DateTimeUtils getInstance() {
         return instance;
@@ -90,6 +91,5 @@ public final class DateTimeUtils {
             throw new SystemException(CoreMessages.CORE_ERR_0015, flowId);
         }
     }
-
 
 }

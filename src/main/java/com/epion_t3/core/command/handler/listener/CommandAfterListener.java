@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.handler.listener;
 
 import com.epion_t3.core.command.runner.CommandRunner;
@@ -13,7 +14,6 @@ import com.epion_t3.core.common.bean.ExecuteScenario;
  */
 public interface CommandAfterListener {
 
-
     /**
      * コマンド後処理.
      *
@@ -23,11 +23,7 @@ public interface CommandAfterListener {
      * @param executeFlow
      * @param executeCommand
      */
-    void afterCommand(CommandRunner commandRunner,
-                      ExecuteContext executeContext,
-                      ExecuteScenario executeScenario,
-                      ExecuteFlow executeFlow,
-                      ExecuteCommand executeCommand);
-
+    void afterCommand(CommandRunner commandRunner, ExecuteContext executeContext, ExecuteScenario executeScenario,
+            ExecuteFlow executeFlow, ExecuteCommand executeCommand);
 
 }

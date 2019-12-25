@@ -1,8 +1,8 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.exception;
 
 /**
- * シナリオが解析できない例外.
- * マーカー的としてのExceptionとなる.
+ * シナリオが解析できない例外. マーカー的としてのExceptionとなる.
  *
  * @author takashno
  */

@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.logging.bean;
 
 import ch.qos.logback.classic.Level;
@@ -23,6 +24,5 @@ public class CommandLog implements Serializable {
 
     @NonNull
     private LocalDateTime dateTime;
-
 
 }

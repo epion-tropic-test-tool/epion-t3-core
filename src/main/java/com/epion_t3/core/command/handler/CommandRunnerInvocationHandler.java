@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.handler;
 
 import com.epion_t3.core.command.handler.listener.CommandListenerFactory;
@@ -12,8 +13,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * コマンド実行時のプロキシクラス.
- * このプロキシクラスでは、以下のハンドリングを行う.
+ * コマンド実行時のプロキシクラス. このプロキシクラスでは、以下のハンドリングを行う.
  *
  * @author takashno
  */
@@ -30,20 +30,14 @@ public class CommandRunnerInvocationHandler<COMMAND_RUNNER extends CommandRunner
     private final ExecuteFlow executeFlow;
 
     private final ExecuteCommand executeCommand;
-    
 
     /**
      * コンストラクタ.
      *
      * @param commandRunner
      */
-    public CommandRunnerInvocationHandler(
-            COMMAND_RUNNER commandRunner,
-            Context context,
-            ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            ExecuteCommand executeCommand) {
+    public CommandRunnerInvocationHandler(COMMAND_RUNNER commandRunner, Context context, ExecuteContext executeContext,
+            ExecuteScenario executeScenario, ExecuteFlow executeFlow, ExecuteCommand executeCommand) {
         this.commandRunner = commandRunner;
         this.context = context;
         this.executeContext = executeContext;
@@ -71,14 +65,10 @@ public class CommandRunnerInvocationHandler<COMMAND_RUNNER extends CommandRunner
         try {
 
             // コマンド前処理リスナーを実行
-            CommandListenerFactory.getInstance().getBeforeListener().forEach(x -> x.beforeCommand(
-                    commandRunner,
-                    executeContext,
-                    executeScenario,
-                    executeFlow,
-                    executeCommand
-            ));
-
+            CommandListenerFactory.getInstance()
+                    .getBeforeListener()
+                    .forEach(x -> x.beforeCommand(commandRunner, executeContext, executeScenario, executeFlow,
+                            executeCommand));
 
             // Before Handle
             beforeHandle(proxy, method, args);
@@ -90,25 +80,18 @@ public class CommandRunnerInvocationHandler<COMMAND_RUNNER extends CommandRunner
             afterHandle(proxy, method, args);
 
             // コマンド後処理リスナーを実行
-            CommandListenerFactory.getInstance().getAfterListener().forEach(x -> x.afterCommand(
-                    commandRunner,
-                    executeContext,
-                    executeScenario,
-                    executeFlow,
-                    executeCommand
-            ));
+            CommandListenerFactory.getInstance()
+                    .getAfterListener()
+                    .forEach(x -> x.afterCommand(commandRunner, executeContext, executeScenario, executeFlow,
+                            executeCommand));
 
         } catch (Throwable e) {
 
             // コマンド後処理リスナーを実行
-            CommandListenerFactory.getInstance().getErrorListener().forEach(x -> x.afterCommand(
-                    commandRunner,
-                    executeContext,
-                    executeScenario,
-                    executeFlow,
-                    executeCommand,
-                    e
-            ));
+            CommandListenerFactory.getInstance()
+                    .getErrorListener()
+                    .forEach(x -> x.afterCommand(commandRunner, executeContext, executeScenario, executeFlow,
+                            executeCommand, e));
 
             throw e;
 
@@ -120,34 +103,34 @@ public class CommandRunnerInvocationHandler<COMMAND_RUNNER extends CommandRunner
     /**
      * 処理前ハンドリング.
      *
-     * @param proxy  対象オブジェクト
+     * @param proxy 対象オブジェクト
      * @param method メソッド
-     * @param args   引数
+     * @param args 引数
      */
     private void beforeHandle(Object proxy, Method method, Object[] args) {
         // Do Nothing...
         // 実行対象のメソッド名を取得
         // String methodName = method.getName();
         // switch (methodName) {
-        //     default:
-        //         break;
+        // default:
+        // break;
         // }
     }
 
     /**
      * 処理後ハンドリング.
      *
-     * @param proxy  対象オブジェクト
+     * @param proxy 対象オブジェクト
      * @param method メソッド
-     * @param args   引数
+     * @param args 引数
      */
     private void afterHandle(Object proxy, Method method, Object[] args) {
         // Do Nothing...
         // 実行対象のメソッド名を取得
         // String methodName = method.getName();
         // switch (methodName) {
-        //     default:
-        //         break;
+        // default:
+        // break;
         // }
     }
 

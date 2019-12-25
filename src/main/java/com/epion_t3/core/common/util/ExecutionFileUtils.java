@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import com.epion_t3.core.common.context.Context;
@@ -48,12 +49,8 @@ public final class ExecutionFileUtils {
             resultRootPath = Paths.get(context.getOption().getResultRootPath());
         } else {
 
-            resultRootPath = Paths.get(
-                    SystemUtils.getUserDir()
-                            + File.separator
-                            + "result"
-                            + File.separator
-                            + DTF.format(executeContext.getStart()));
+            resultRootPath = Paths.get(SystemUtils.getUserDir() + File.separator + "result" + File.separator
+                    + DTF.format(executeContext.getStart()));
         }
 
         try {
@@ -67,30 +64,23 @@ public final class ExecutionFileUtils {
     /**
      * @param context
      */
-    public static void createScenarioResultDirectory(
-            final Context context,
-            final ExecuteContext executeContext,
+    public static void createScenarioResultDirectory(final Context context, final ExecuteContext executeContext,
             final ExecuteScenario executeScenario) {
 
         try {
-            Path resultPath = Paths.get(
-                    executeContext.getResultRootPath().toFile().getPath()
-                            + File.separator
-                            + executeScenario.getInfo().getId()
-                            + "_"
-                            + DTF.format(executeScenario.getStart()));
+            Path resultPath = Paths.get(executeContext.getResultRootPath().toFile().getPath() + File.separator
+                    + executeScenario.getInfo().getId() + "_" + DTF.format(executeScenario.getStart()));
 
             Files.createDirectories(resultPath);
             executeScenario.setResultPath(resultPath);
 
-            Path evidencePath = Paths.get(
-                    executeScenario.getResultPath().toFile().getPath()
-                            + File.separator
-                            + EVIDENCE_DIR_NAME);
+            Path evidencePath = Paths
+                    .get(executeScenario.getResultPath().toFile().getPath() + File.separator + EVIDENCE_DIR_NAME);
 
             Files.createDirectories(evidencePath);
             executeScenario.setEvidencePath(evidencePath);
-            executeScenario.getScenarioVariables().put(ScenarioScopeVariables.EVIDENCE_DIR.getName(), evidencePath.toString());
+            executeScenario.getScenarioVariables()
+                    .put(ScenarioScopeVariables.EVIDENCE_DIR.getName(), evidencePath.toString());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -117,13 +107,9 @@ public final class ExecutionFileUtils {
      * @param extention
      * @return
      */
-    public static Path getCommandReportPath(final ExecuteScenario scenario,
-                                            final ExecuteCommand executeCommand,
-                                            final String extention) {
-        return Paths.get(scenario.getResultPath().toString()
-                + File.separator
-                + "details"
-                + File.separator
+    public static Path getCommandReportPath(final ExecuteScenario scenario, final ExecuteCommand executeCommand,
+            final String extention) {
+        return Paths.get(scenario.getResultPath().toString() + File.separator + "details" + File.separator
                 + String.format("command_%s.%s", executeCommand.getExecuteId().toString(), extention));
     }
 
@@ -134,11 +120,9 @@ public final class ExecutionFileUtils {
      * @param executeCommand
      * @return
      */
-    public static Path getCommandHtmlReportPath(final ExecuteScenario scenario,
-                                                final ExecuteCommand executeCommand) {
+    public static Path getCommandHtmlReportPath(final ExecuteScenario scenario, final ExecuteCommand executeCommand) {
         return getCommandReportPath(scenario, executeCommand, "html");
     }
-
 
     /**
      * FullコマンドIDを引数に属するシナリオが配置しているパスを取得.
@@ -148,9 +132,8 @@ public final class ExecutionFileUtils {
      * @param fqcn
      * @return
      */
-    public static Path getBelongScenarioDirectory(final Context context,
-                                                  final ExecuteContext executeContext,
-                                                  final String fqcn) {
+    public static Path getBelongScenarioDirectory(final Context context, final ExecuteContext executeContext,
+            final String fqcn) {
         String scenarioId = IDUtils.getInstance().extractBelongScenarioIdFromFqcn(fqcn);
         if (!StringUtils.isNotEmpty(scenarioId)) {
             Path scenarioPath = context.getOriginal().getScenarioPlacePaths().get(scenarioId);
@@ -158,6 +141,5 @@ public final class ExecutionFileUtils {
         }
         return null;
     }
-
 
 }

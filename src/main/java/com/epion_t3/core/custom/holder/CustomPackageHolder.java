@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.custom.holder;
 
 import com.epion_t3.core.common.bean.*;
@@ -24,37 +25,27 @@ public final class CustomPackageHolder {
     private static final CustomPackageHolder instance = new CustomPackageHolder();
 
     /**
-     * カスタムパッケージ.
-     * Key：カスタム名
-     * Value：カスタムパッケージ
+     * カスタムパッケージ. Key：カスタム名 Value：カスタムパッケージ
      */
     private final Map<String, String> customPackages = new ConcurrentHashMap<>();
 
     /**
-     * カスタムコマンド.
-     * Key:
-     * Value:
+     * カスタムコマンド. Key: Value:
      */
     private final Map<String, CommandInfo> customCommands = new ConcurrentHashMap<>();
 
     /**
-     * カスタムFlow.
-     * Key:
-     * Value:
+     * カスタムFlow. Key: Value:
      */
     private final Map<String, FlowInfo> customFlows = new ConcurrentHashMap<>();
 
     /**
-     * カスタム設定.
-     * Key: id
-     * Value: カスタム設定
+     * カスタム設定. Key: id Value: カスタム設定
      */
     private static final Map<String, Configuration> customConfigurations = new ConcurrentHashMap<>();
 
     /**
-     * カスタム設定.
-     * Key: configurationId
-     * Value: カスタム設定リスト
+     * カスタム設定. Key: configurationId Value: カスタム設定リスト
      */
     private static final Map<String, List<Configuration>> customConfigurationTypes = new ConcurrentHashMap<>();
 
@@ -64,33 +55,24 @@ public final class CustomPackageHolder {
     private static final Map<String, CustomConfigurationInfo> customConfigurationInfos = new ConcurrentHashMap<>();
 
     /**
-     * カスタム設計情報.
-     * Key: カスタム名
-     * Value: カスタム設計情報
+     * カスタム設計情報. Key: カスタム名 Value: カスタム設計情報
      */
     private final Map<String, CustomSpecInfo> customSpecs = new ConcurrentHashMap<>();
 
     /**
-     * カスタムFlow設計情報.
-     * Key: カスタムコマンドモデルクラス
-     * Value: カスタムコマンド設計情報
+     * カスタムFlow設計情報. Key: カスタムコマンドモデルクラス Value: カスタムコマンド設計情報
      */
     private final Map<Class<? extends Flow>, FlowSpecInfo> customFlowSpecs = new ConcurrentHashMap<>();
 
     /**
-     * カスタムコマンド設計情報.
-     * Key: カスタムコマンドモデルクラス
-     * Value: カスタムコマンド設計情報
+     * カスタムコマンド設計情報. Key: カスタムコマンドモデルクラス Value: カスタムコマンド設計情報
      */
     private final Map<Class<? extends Command>, CommandSpecInfo> customCommandSpecs = new ConcurrentHashMap<>();
 
     /**
-     * カスタム設定情報設計情報.
-     * Key: カスタム設定情報モデルクラス
-     * Value: カスタム設定情報設計情報
+     * カスタム設定情報設計情報. Key: カスタム設定情報モデルクラス Value: カスタム設定情報設計情報
      */
     private final Map<Class<? extends Configuration>, CustomConfigurationSpecInfo> customConfigurationSpecs = new ConcurrentHashMap<>();
-
 
     /**
      * プライベートコンストラクタ.
@@ -113,7 +95,7 @@ public final class CustomPackageHolder {
     /**
      * カスタムパッケージを追加する.
      *
-     * @param customName   カスタム機能名
+     * @param customName カスタム機能名
      * @param packageaName カスタムパッケージ
      */
     public void addCustomPackage(String customName, String packageaName) {
@@ -154,7 +136,7 @@ public final class CustomPackageHolder {
     /**
      * カスタムFlowを追加する.
      *
-     * @param flowId   FlowID
+     * @param flowId FlowID
      * @param flowInfo カスタムFlow情報
      */
     public void addCustomFlowInfo(String flowId, FlowInfo flowInfo) {
@@ -174,8 +156,7 @@ public final class CustomPackageHolder {
     // -----------------------------------------------------------------------------------------------------------
 
     /**
-     * カスタム設定追加.
-     * ２つのマップに対して追加処理を行う.
+     * カスタム設定追加. ２つのマップに対して追加処理を行う.
      *
      * @param customConfiguration カスタム設定
      */
@@ -252,7 +233,8 @@ public final class CustomPackageHolder {
 
     // -----------------------------------------------------------------------------------------------------------
 
-    public void addCustomConfigurationSpec(Class<? extends Configuration> commandModelClass, CustomConfigurationSpecInfo customConfigurationSpecInfo) {
+    public void addCustomConfigurationSpec(Class<? extends Configuration> commandModelClass,
+            CustomConfigurationSpecInfo customConfigurationSpecInfo) {
         customConfigurationSpecs.put(commandModelClass, customConfigurationSpecInfo);
     }
 
@@ -265,6 +247,5 @@ public final class CustomPackageHolder {
     }
 
     // -----------------------------------------------------------------------------------------------------------
-
 
 }

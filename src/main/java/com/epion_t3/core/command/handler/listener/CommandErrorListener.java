@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.handler.listener;
 
 import com.epion_t3.core.command.runner.CommandRunner;
@@ -23,10 +24,6 @@ public interface CommandErrorListener {
      * @param executeCommand
      * @param t
      */
-    void afterCommand(CommandRunner commandRunner,
-                      ExecuteContext executeContext,
-                      ExecuteScenario executeScenario,
-                      ExecuteFlow executeFlow,
-                      ExecuteCommand executeCommand,
-                      Throwable t);
+    void afterCommand(CommandRunner commandRunner, ExecuteContext executeContext, ExecuteScenario executeScenario,
+            ExecuteFlow executeFlow, ExecuteCommand executeCommand, Throwable t);
 }

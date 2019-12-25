@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.bean;
 
 import com.epion_t3.core.common.bean.ET3Notification;
@@ -18,7 +19,8 @@ public class CommandValidateError extends ET3Notification {
      * コンストラクタ.
      */
     @Builder(builderMethodName = "commandValidateErrorBuilder")
-    public CommandValidateError(StageType stage, NotificationType level, String message, Throwable error, String flowId, String commandId) {
+    public CommandValidateError(StageType stage, NotificationType level, String message, Throwable error, String flowId,
+            String commandId) {
         super(stage, level, message, error);
         this.flowId = flowId;
         this.commandId = commandId;

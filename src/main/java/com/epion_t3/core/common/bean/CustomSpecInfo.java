@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -68,7 +69,7 @@ public class CustomSpecInfo implements Serializable {
     /**
      * 概要を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void putSummary(String lang, String contents) {
@@ -80,7 +81,7 @@ public class CustomSpecInfo implements Serializable {
     /**
      * 詳細を追加.
      *
-     * @param lang     ロケール名
+     * @param lang ロケール名
      * @param contents コンテンツ
      */
     public void putDescription(String lang, String contents) {

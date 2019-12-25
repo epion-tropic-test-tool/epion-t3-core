@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import com.epion_t3.core.exception.SystemException;
@@ -31,14 +32,12 @@ public final class BindUtils {
     private static final BindUtils instance = new BindUtils();
 
     /**
-     * バインド変数抽出パターン(名前空間あり).
-     * TODO:ここは外側から指定できるべきか
+     * バインド変数抽出パターン(名前空間あり). TODO:ここは外側から指定できるべきか
      */
     public static final Pattern BIND_EXTRACT_PATTERN = Pattern.compile("\\$\\{([^\\}]+)\\}");
 
     /**
-     * バインド変数抽出パターン(名前空間あり).
-     * TODO:ここは外側から指定できるべきか
+     * バインド変数抽出パターン(名前空間あり). TODO:ここは外側から指定できるべきか
      */
     public static final Pattern BIND_EXTRACT_PATTERN_WITHNAMESPACE = Pattern.compile("\\$\\{([^\\.]+)\\.([^\\}]+)\\}");
 
@@ -61,14 +60,12 @@ public final class BindUtils {
     /**
      * オブジェクトの全フィールドに対して各種変数およびプロファイルの値のバインド処理を行う.
      *
-     * @param target            対象オブジェクト
-     * @param globalVariables   グローバル変数
+     * @param target 対象オブジェクト
+     * @param globalVariables グローバル変数
      * @param scenarioVariables シナリオ変数
      */
-    public void bind(Object target, Map<String, String> profiles,
-                     Map<String, Object> globalVariables,
-                     Map<String, Object> scenarioVariables,
-                     Map<String, Object> flowVariables) {
+    public void bind(Object target, Map<String, String> profiles, Map<String, Object> globalVariables,
+            Map<String, Object> scenarioVariables, Map<String, Object> flowVariables) {
 
         // 対象のクラスを取得
         Class clazz = target.getClass();
@@ -105,19 +102,16 @@ public final class BindUtils {
                 Class<?> fieldClass = f.getType();
 
                 try {
-                    //PropertyDescriptor pd = new PropertyDescriptor(f.getName(), target.getClass());
-                    //Object value = pd.getReadMethod().invoke(target);
+                    // PropertyDescriptor pd = new PropertyDescriptor(f.getName(),
+                    // target.getClass());
+                    // Object value = pd.getReadMethod().invoke(target);
                     Object value = PropertyUtils.getProperty(target, f.getName());
                     if (value != null) {
 
                         if (String.class.isAssignableFrom(fieldClass)) {
-                            value = bind(value.toString(),
-                                    profiles,
-                                    globalVariables,
-                                    scenarioVariables,
-                                    flowVariables);
+                            value = bind(value.toString(), profiles, globalVariables, scenarioVariables, flowVariables);
                             BeanUtils.setProperty(target, f.getName(), value);
-                            //pd.getWriteMethod().invoke(target, value.toString());
+                            // pd.getWriteMethod().invoke(target, value.toString());
 
                         } else if (fieldClass.isArray()) {
                             Object[] array = (Object[]) value;
@@ -134,12 +128,13 @@ public final class BindUtils {
                                     Object entryValue = entry.getValue();
                                     if (String.class.isAssignableFrom(entryValue.getClass())) {
                                         String entryValueString = String.class.cast(entryValue);
-                                        String bindedEntryValueStrig =
-                                                bind(entryValueString, profiles, globalVariables, scenarioVariables, flowVariables);
+                                        String bindedEntryValueStrig = bind(entryValueString, profiles, globalVariables,
+                                                scenarioVariables, flowVariables);
                                         Map<String, String> map2 = (Map<String, String>) map;
                                         map2.put(entry.getKey().toString(), bindedEntryValueStrig);
                                     } else {
-                                        bind(entry.getValue(), profiles, globalVariables, scenarioVariables, flowVariables);
+                                        bind(entry.getValue(), profiles, globalVariables, scenarioVariables,
+                                                flowVariables);
                                     }
                                 }
                             } else {
@@ -152,7 +147,8 @@ public final class BindUtils {
                             for (Object element : list) {
                                 if (String.class.isAssignableFrom(element.getClass())) {
                                     String elementString = String.class.cast(element);
-                                    elementString = bind(elementString, profiles, globalVariables, scenarioVariables, flowVariables);
+                                    elementString = bind(elementString, profiles, globalVariables, scenarioVariables,
+                                            flowVariables);
                                     bindedStringList.add(elementString);
                                 } else {
                                     bind(element, profiles, globalVariables, scenarioVariables, flowVariables);
@@ -207,16 +203,13 @@ public final class BindUtils {
     /**
      * 文字列に対して各種変数およびプロファイルの値のバインド処理を行う.
      *
-     * @param target            対象文字列
-     * @param globalVariables   グローバル変数
+     * @param target 対象文字列
+     * @param globalVariables グローバル変数
      * @param scenarioVariables シナリオ変数
      * @return バインド後の文字列
      */
-    public String bind(String target,
-                       Map<String, String> profiles,
-                       Map<String, Object> globalVariables,
-                       Map<String, Object> scenarioVariables,
-                       Map<String, Object> flowVariables) {
+    public String bind(String target, Map<String, String> profiles, Map<String, Object> globalVariables,
+            Map<String, Object> scenarioVariables, Map<String, Object> flowVariables) {
 
         if (StringUtils.isEmpty(target)) {
             return null;
@@ -236,11 +229,8 @@ public final class BindUtils {
             String referProfileKey = m.group(1);
 
             if (profiles.containsKey(referProfileKey)) {
-                log.trace("replace profile target:{}, bind:{}",
-                        m.group(0), profiles.get(referProfileKey));
-                target = target.replace(
-                        m.group(0),
-                        profiles.get(referProfileKey));
+                log.trace("replace profile target:{}, bind:{}", m.group(0), profiles.get(referProfileKey));
+                target = target.replace(m.group(0), profiles.get(referProfileKey));
             }
 
             // バインドが成功していない継続数をインクリメントする
@@ -272,60 +262,51 @@ public final class BindUtils {
             ReferenceVariableType referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
             if (referenceVariableType != null) {
                 switch (referenceVariableType) {
-                    case FIX:
-                        log.trace("replace fix target:{}, bind:{}",
-                                m.group(0), m.group(2));
-                        target = target.replace(
-                                m.group(0),
-                                m.group(2));
+                case FIX:
+                    log.trace("replace fix target:{}, bind:{}", m.group(0), m.group(2));
+                    target = target.replace(m.group(0), m.group(2));
+                    replaceFlg = true;
+                    break;
+                case GLOBAL:
+                    // グローバルスコープ変数からのバインド
+                    if (globalVariables.containsKey(m.group(2))) {
+                        log.trace("replace global target:{}, bind:{}", m.group(0),
+                                globalVariables.get(m.group(2)).toString());
+                        target = target.replace(m.group(0), globalVariables.get(m.group(2)).toString());
                         replaceFlg = true;
-                        break;
-                    case GLOBAL:
-                        // グローバルスコープ変数からのバインド
-                        if (globalVariables.containsKey(m.group(2))) {
-                            log.trace("replace global target:{}, bind:{}",
-                                    m.group(0), globalVariables.get(m.group(2)).toString());
-                            target = target.replace(
-                                    m.group(0),
-                                    globalVariables.get(m.group(2)).toString());
+                    } else {
+                        replaceFlg = false;
+                    }
+                    break;
+                case SCENARIO:
+                    // シナリオスコープ変数からのバインド
+                    if (scenarioVariables.containsKey(m.group(2))) {
+                        log.trace("replace scenario target:{}, bind:{}", m.group(0),
+                                scenarioVariables.get(m.group(2)).toString());
+                        target = target.replace(m.group(0), scenarioVariables.get(m.group(2)).toString());
+                        replaceFlg = true;
+                    } else {
+                        replaceFlg = false;
+                    }
+                    break;
+                case FLOW:
+                    if (flowVariables == null) {
+                        // Flowスコープ変数からのバインドが利用不可だった場合、その時点で警告扱い
+                        loopCount += 10;
+                    } else {
+                        // Flowスコープ変数からのバインド
+                        if (flowVariables.containsKey(m.group(2))) {
+                            log.trace("replace scenario target:{}, bind:{}", m.group(0),
+                                    flowVariables.get(m.group(2)).toString());
+                            target = target.replace(m.group(0), flowVariables.get(m.group(2)).toString());
                             replaceFlg = true;
                         } else {
                             replaceFlg = false;
                         }
-                        break;
-                    case SCENARIO:
-                        // シナリオスコープ変数からのバインド
-                        if (scenarioVariables.containsKey(m.group(2))) {
-                            log.trace("replace scenario target:{}, bind:{}",
-                                    m.group(0), scenarioVariables.get(m.group(2)).toString());
-                            target = target.replace(
-                                    m.group(0),
-                                    scenarioVariables.get(m.group(2)).toString());
-                            replaceFlg = true;
-                        } else {
-                            replaceFlg = false;
-                        }
-                        break;
-                    case FLOW:
-                        if (flowVariables == null) {
-                            // Flowスコープ変数からのバインドが利用不可だった場合、その時点で警告扱い
-                            loopCount += 10;
-                        } else {
-                            // Flowスコープ変数からのバインド
-                            if (flowVariables.containsKey(m.group(2))) {
-                                log.trace("replace scenario target:{}, bind:{}",
-                                        m.group(0), flowVariables.get(m.group(2)).toString());
-                                target = target.replace(
-                                        m.group(0),
-                                        flowVariables.get(m.group(2)).toString());
-                                replaceFlg = true;
-                            } else {
-                                replaceFlg = false;
-                            }
-                        }
-                        break;
-                    default:
-                        throw new SystemException(CoreMessages.CORE_ERR_0004, m.group(0));
+                    }
+                    break;
+                default:
+                    throw new SystemException(CoreMessages.CORE_ERR_0004, m.group(0));
                 }
             }
 
@@ -350,6 +331,5 @@ public final class BindUtils {
         return target;
 
     }
-
 
 }

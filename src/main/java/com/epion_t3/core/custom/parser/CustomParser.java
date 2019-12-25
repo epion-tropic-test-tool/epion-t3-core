@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.custom.parser;
 
 import com.epion_t3.core.common.context.Context;
@@ -14,6 +15,5 @@ public interface CustomParser<C extends Context, E extends ExecuteContext> {
      * @param context
      */
     void parse(final C context, final E executeContext);
-
 
 }

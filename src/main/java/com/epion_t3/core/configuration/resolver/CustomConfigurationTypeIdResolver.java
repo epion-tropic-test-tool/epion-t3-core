@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.configuration.resolver;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -48,8 +49,8 @@ public class CustomConfigurationTypeIdResolver implements TypeIdResolver {
     @Override
     public JavaType typeFromId(DatabindContext context, String id) throws IOException {
         TypeFactory typeFactory = (context != null) ? context.getTypeFactory() : TypeFactory.defaultInstance();
-        CustomConfigurationInfo customConfigurationInfo =
-                CustomPackageHolder.getInstance().getCustomConfigurationInfo(id);
+        CustomConfigurationInfo customConfigurationInfo = CustomPackageHolder.getInstance()
+                .getCustomConfigurationInfo(id);
         if (customConfigurationInfo != null) {
             return typeFactory.constructType(customConfigurationInfo.getModel());
         }

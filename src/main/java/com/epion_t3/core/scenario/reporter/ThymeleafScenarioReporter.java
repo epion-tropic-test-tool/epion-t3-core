@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.reporter;
 
 import com.epion_t3.core.common.context.ExecuteContext;
@@ -12,9 +13,7 @@ import java.util.Map;
  * @param <EXECUTE_SCENARIO>
  * @author takashno
  */
-public interface ThymeleafScenarioReporter<
-        EXECUTE_CONTEXT extends ExecuteContext,
-        EXECUTE_SCENARIO extends ExecuteScenario>
+public interface ThymeleafScenarioReporter<EXECUTE_CONTEXT extends ExecuteContext, EXECUTE_SCENARIO extends ExecuteScenario>
         extends ScenarioReporter<EXECUTE_CONTEXT, EXECUTE_SCENARIO> {
 
     /**

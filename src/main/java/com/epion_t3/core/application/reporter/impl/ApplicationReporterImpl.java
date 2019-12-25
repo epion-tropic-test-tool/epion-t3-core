@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.application.reporter.impl;
 
 import com.epion_t3.core.application.reporter.ThymeleafApplicationReporter;
@@ -50,7 +51,7 @@ public class ApplicationReporterImpl implements ThymeleafApplicationReporter<Exe
     /**
      * レポート出力.
      *
-     * @param context        コンテキスト
+     * @param context コンテキスト
      * @param executeContext 実行情報
      */
     @Override
@@ -80,9 +81,8 @@ public class ApplicationReporterImpl implements ThymeleafApplicationReporter<Exe
             Path applicationReportPath = ExecutionFileUtils.getAllReportPath(executeContext);
 
             // HTML変換＆出力
-            Files.write(applicationReportPath,
-                    templateEngine.process(
-                            templatePath(), thymeleafContext).getBytes(ThymeleafReportUtils.TEMPLATE_ENCODING));
+            Files.write(applicationReportPath, templateEngine.process(templatePath(), thymeleafContext)
+                    .getBytes(ThymeleafReportUtils.TEMPLATE_ENCODING));
 
         } catch (IOException e) {
 

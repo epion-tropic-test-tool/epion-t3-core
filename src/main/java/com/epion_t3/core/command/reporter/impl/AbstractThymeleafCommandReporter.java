@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.reporter.impl;
 
 import com.epion_t3.core.command.bean.CommandResult;
@@ -29,33 +30,24 @@ import java.util.Map;
  * @author takashno
  */
 @Slf4j
-public abstract class AbstractThymeleafCommandReporter<
-        COMMAND extends Command,
-        COMMAND_RESULT extends CommandResult>
-        implements ThymeleafCommandReporter<
-        COMMAND, COMMAND_RESULT, ExecuteContext, ExecuteScenario, ExecuteFlow, ExecuteCommand> {
+public abstract class AbstractThymeleafCommandReporter<COMMAND extends Command, COMMAND_RESULT extends CommandResult>
+        implements
+        ThymeleafCommandReporter<COMMAND, COMMAND_RESULT, ExecuteContext, ExecuteScenario, ExecuteFlow, ExecuteCommand> {
 
     /**
      * コマンドレポートを出力.
      *
-     * @param command         コマンド
-     * @param context         コンテキスト
-     * @param executeContext  実行コンテキスト
+     * @param command コマンド
+     * @param context コンテキスト
+     * @param executeContext 実行コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param executeCommand  コマンド実行情報
-     * @param t               エラー
+     * @param executeFlow Flow実行情報
+     * @param executeCommand コマンド実行情報
+     * @param t エラー
      */
     @Override
-    public void report(
-            COMMAND command,
-            COMMAND_RESULT commandResult,
-            Context context,
-            ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            ExecuteCommand executeCommand,
-            Throwable t) {
+    public void report(COMMAND command, COMMAND_RESULT commandResult, Context context, ExecuteContext executeContext,
+            ExecuteScenario executeScenario, ExecuteFlow executeFlow, ExecuteCommand executeCommand, Throwable t) {
 
         TemplateEngine templateEngine = ThymeleafReportUtils.getInstance().createEngine();
 
@@ -80,12 +72,7 @@ public abstract class AbstractThymeleafCommandReporter<
             }
 
             // カスタム実装での変数設定
-            setVariables(variable,
-                    command,
-                    commandResult,
-                    executeContext,
-                    executeScenario,
-                    executeFlow,
+            setVariables(variable, command, commandResult, executeContext, executeScenario, executeFlow,
                     executeCommand);
 
             // DateTimeUtilsを利用できるように設定
@@ -101,15 +88,13 @@ public abstract class AbstractThymeleafCommandReporter<
             Files.createDirectories(commandHtmlReportPath.getParent());
 
             // HTML変換＆出力
-            Files.write(commandHtmlReportPath,
-                    templateEngine.process(templatePath(),
-                            thymeleafContext).getBytes(ThymeleafReportUtils.TEMPLATE_ENCODING));
+            Files.write(commandHtmlReportPath, templateEngine.process(templatePath(), thymeleafContext)
+                    .getBytes(ThymeleafReportUtils.TEMPLATE_ENCODING));
 
             // カスタムレポート出力相対パス
-            executeCommand.setCustomReportRelativePath("." +
-                    commandHtmlReportPath.toString()
-                            .replace(executeScenario.getResultPath().toString(), "")
-                            .replaceAll("\\\\", "/"));
+            executeCommand.setCustomReportRelativePath("." + commandHtmlReportPath.toString()
+                    .replace(executeScenario.getResultPath().toString(), "")
+                    .replaceAll("\\\\", "/"));
 
         } catch (IOException e) {
 

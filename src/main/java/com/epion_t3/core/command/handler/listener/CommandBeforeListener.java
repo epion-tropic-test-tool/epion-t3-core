@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.handler.listener;
 
 import com.epion_t3.core.command.runner.CommandRunner;
@@ -22,10 +23,7 @@ public interface CommandBeforeListener {
      * @param executeFlow
      * @param executeCommand
      */
-    void beforeCommand(CommandRunner commandRunner,
-                       ExecuteContext executeContext,
-                       ExecuteScenario executeScenario,
-                       ExecuteFlow executeFlow,
-                       ExecuteCommand executeCommand);
+    void beforeCommand(CommandRunner commandRunner, ExecuteContext executeContext, ExecuteScenario executeScenario,
+            ExecuteFlow executeFlow, ExecuteCommand executeCommand);
 
 }

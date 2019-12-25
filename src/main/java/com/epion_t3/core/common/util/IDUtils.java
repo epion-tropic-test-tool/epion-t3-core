@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public final class IDUtils {
     /**
      * FullコマンドIDを作成する.
      *
-     * @param fqsn      Fullシナリオ名
+     * @param fqsn Fullシナリオ名
      * @param commandId コマンドID
      * @return FullコマンドID
      */
@@ -69,7 +70,7 @@ public final class IDUtils {
     /**
      * Full設定IDを作成する.
      *
-     * @param fqsn            Fullシナリオ名
+     * @param fqsn Fullシナリオ名
      * @param configurationId コマンドID
      * @return Full設定ID
      */

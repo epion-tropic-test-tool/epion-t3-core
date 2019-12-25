@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.flow.runner.FlowRunner;
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @Setter
 @Builder
 public class FlowInfo implements Serializable {
-  /**
+    /**
      * デフォルトシリアルバージョンUID.
      */
     private static final long serialVersionUID = 1L;

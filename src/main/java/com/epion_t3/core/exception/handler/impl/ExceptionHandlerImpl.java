@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.exception.handler.impl;
 
 import com.epion_t3.core.common.bean.ET3Notification;
@@ -54,26 +55,26 @@ public final class ExceptionHandlerImpl implements ExceptionHandler<Context, Exe
         for (ET3Notification notification : executeContext.getNotifications()) {
 
             switch (notification.getLevel()) {
-                case INFO:
-                    log.info(notification.getMessage());
-                    break;
-                case WARN:
-                    if (context.getOption().getDebug() && notification.getError() != null) {
-                        log.warn(notification.getMessage(), notification.getError());
-                    } else {
-                        log.warn(notification.getMessage());
-                    }
-                    break;
-                case ERROR:
-                    if (context.getOption().getDebug()) {
-                        log.error(notification.getMessage(), notification.getError());
-                    } else {
-                        log.error(notification.getMessage());
-                    }
-                    break;
-                default:
-                    // Do Nothing...
-                    break;
+            case INFO:
+                log.info(notification.getMessage());
+                break;
+            case WARN:
+                if (context.getOption().getDebug() && notification.getError() != null) {
+                    log.warn(notification.getMessage(), notification.getError());
+                } else {
+                    log.warn(notification.getMessage());
+                }
+                break;
+            case ERROR:
+                if (context.getOption().getDebug()) {
+                    log.error(notification.getMessage(), notification.getError());
+                } else {
+                    log.error(notification.getMessage());
+                }
+                break;
+            default:
+                // Do Nothing...
+                break;
             }
 
         }

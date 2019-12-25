@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.application.runner.impl;
 
 import com.epion_t3.core.application.reporter.impl.ApplicationReporterImpl;
@@ -38,15 +39,13 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
         // 引数定義をCLIオプション化する
         // Base(v1.0)については、coreをそのまま引き継ぐ
-        Arrays.stream(Args.values()).forEach(
-                x -> {
-                    if (x.isRequired()) {
-                        OPTIONS.addRequiredOption(x.getShortName(), x.getLongName(), x.isHasArg(), x.getDescription());
-                    } else {
-                        OPTIONS.addOption(x.getShortName(), x.getLongName(), x.isHasArg(), x.getDescription());
-                    }
-                }
-        );
+        Arrays.stream(Args.values()).forEach(x -> {
+            if (x.isRequired()) {
+                OPTIONS.addRequiredOption(x.getShortName(), x.getLongName(), x.isHasArg(), x.getDescription());
+            } else {
+                OPTIONS.addOption(x.getShortName(), x.getLongName(), x.isHasArg(), x.getDescription());
+            }
+        });
     }
 
     /**
@@ -118,10 +117,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             executeContext.setEnd(LocalDateTime.now());
 
             // 所用時間を設定
-            executeContext.setDuration(
-                    Duration.between(
-                            executeContext.getStart(),
-                            executeContext.getEnd()));
+            executeContext.setDuration(Duration.between(executeContext.getStart(), executeContext.getEnd()));
 
             // レポート出力
             if (!cmd.hasOption(Args.NO_REPORT.getShortName())) {
@@ -140,7 +136,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
     /**
      * 実行引数オプションをコンテキストへ設定する.
      *
-     * @param context     コンテキスト
+     * @param context コンテキスト
      * @param commandLine コマンドライン
      */
     private void setOptions(final Context context, final CommandLine commandLine) {
@@ -198,8 +194,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
      *
      * @param context コンテキスト
      */
-    private void report(final Context context,
-                        final ExecuteContext executeContext) {
+    private void report(final Context context, final ExecuteContext executeContext) {
         // レポーターに処理を移譲
         ApplicationReporterImpl.getInstance().report(context, executeContext);
 

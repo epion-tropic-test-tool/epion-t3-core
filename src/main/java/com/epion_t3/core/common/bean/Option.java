@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.common.type.ScenarioManageFileSystem;
@@ -64,8 +65,7 @@ public class Option implements Serializable {
     private Boolean noreport = false;
 
     /**
-     * レポートのWEBアセット参照パス.
-     * cssやjsを配置するベースパス.
+     * レポートのWEBアセット参照パス. cssやjsを配置するベースパス.
      */
     private String webAssetPath;
 

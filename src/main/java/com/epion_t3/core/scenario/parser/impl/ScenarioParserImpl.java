@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.scenario.parser.impl;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -32,8 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * シナリオ解析処理.
- * カスタム機能および全シナリオの解析を行う処理クラス.
+ * シナリオ解析処理. カスタム機能および全シナリオの解析を行う処理クラス.
  */
 @Slf4j
 public final class ScenarioParserImpl implements ScenarioParser<Context, ExecuteContext> {
@@ -56,8 +56,9 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
     /**
      * 単項目チェックValidatorFactory.
      */
-    private ValidatorFactory validationFactory =
-            Validation.byProvider(ApacheValidationProvider.class).configure().buildValidatorFactory();
+    private ValidatorFactory validationFactory = Validation.byProvider(ApacheValidationProvider.class)
+            .configure()
+            .buildValidatorFactory();
 
     /**
      * プライベートコンストラクタ.
@@ -118,24 +119,27 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
 
                     for (ConstraintViolation violation : validationErrors) {
                         executeContext.addNotification(ScenarioValidateError.scenarioValidateErrorBuilder()
-                                .stage(executeContext.getStage()).level(NotificationType.ERROR)
+                                .stage(executeContext.getStage())
+                                .level(NotificationType.ERROR)
                                 .filePath(file.toString())
                                 .target(violation.getPropertyPath().toString())
                                 .value(violation.getInvalidValue())
-                                .message(MessageManager.getInstance().getMessage(
-                                        CoreMessages.CORE_ERR_0011, file.toString(),
-                                        violation.getPropertyPath().toString(), violation.getInvalidValue()))
+                                .message(MessageManager.getInstance()
+                                        .getMessage(CoreMessages.CORE_ERR_0011, file.toString(),
+                                                violation.getPropertyPath().toString(), violation.getInvalidValue()))
                                 .build());
                     }
 
-
                 } catch (JsonParseException e) {
                     log.debug("Error Occurred...", e);
-                    executeContext.addNotification(
-                            ScenarioParseError.scenarioParseErrorBuilder().stage(executeContext.getStage()).level(NotificationType.ERROR)
-                                    .error(e).filePath(file.toString())
-                                    .message(MessageManager.getInstance().getMessage(
-                                            CoreMessages.CORE_ERR_0011, file.toString(), e.getMessage())).build());
+                    executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                            .stage(executeContext.getStage())
+                            .level(NotificationType.ERROR)
+                            .error(e)
+                            .filePath(file.toString())
+                            .message(MessageManager.getInstance()
+                                    .getMessage(CoreMessages.CORE_ERR_0011, file.toString(), e.getMessage()))
+                            .build());
                     return FileVisitResult.CONTINUE;
 
                 } catch (JsonMappingException e) {
@@ -146,40 +150,58 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                         if (CommandNotFoundException.class.isAssignableFrom(causeClass)) {
                             // コマンドが見つからない場合
                             CommandNotFoundException cnfe = CommandNotFoundException.class.cast(cause);
-                            executeContext.addNotification(
-                                    ScenarioParseError.scenarioParseErrorBuilder().stage(executeContext.getStage()).level(NotificationType.ERROR)
-                                            .error(e).filePath(file.toString())
-                                            .message(MessageManager.getInstance().getMessage(
-                                                    CoreMessages.CORE_ERR_0033, file.toString(), cnfe.getCommandId())).build());
+                            executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                                    .stage(executeContext.getStage())
+                                    .level(NotificationType.ERROR)
+                                    .error(e)
+                                    .filePath(file.toString())
+                                    .message(MessageManager.getInstance()
+                                            .getMessage(CoreMessages.CORE_ERR_0033, file.toString(),
+                                                    cnfe.getCommandId()))
+                                    .build());
                         } else if (FlowNotFoundException.class.isAssignableFrom(causeClass)) {
                             // Flowが見つからない場合
                             FlowNotFoundException fnfe = FlowNotFoundException.class.cast(cause);
-                            executeContext.addNotification(
-                                    ScenarioParseError.scenarioParseErrorBuilder().stage(executeContext.getStage()).level(NotificationType.ERROR)
-                                            .error(e).filePath(file.toString())
-                                            .message(MessageManager.getInstance().getMessage(
-                                                    CoreMessages.CORE_ERR_0034, file.toString(), fnfe.getFlowId())).build());
+                            executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                                    .stage(executeContext.getStage())
+                                    .level(NotificationType.ERROR)
+                                    .error(e)
+                                    .filePath(file.toString())
+                                    .message(MessageManager.getInstance()
+                                            .getMessage(CoreMessages.CORE_ERR_0034, file.toString(), fnfe.getFlowId()))
+                                    .build());
                         } else if (ConfigurationNotFoundException.class.isAssignableFrom(causeClass)) {
                             // 設定が見つからない場合
                             ConfigurationNotFoundException cnfe = ConfigurationNotFoundException.class.cast(cause);
-                            executeContext.addNotification(
-                                    ScenarioParseError.scenarioParseErrorBuilder().stage(executeContext.getStage()).level(NotificationType.ERROR)
-                                            .error(e).filePath(file.toString())
-                                            .message(MessageManager.getInstance().getMessage(
-                                                    CoreMessages.CORE_ERR_0035, file.toString(), cnfe.getConfigurationId())).build());
+                            executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                                    .stage(executeContext.getStage())
+                                    .level(NotificationType.ERROR)
+                                    .error(e)
+                                    .filePath(file.toString())
+                                    .message(MessageManager.getInstance()
+                                            .getMessage(CoreMessages.CORE_ERR_0035, file.toString(),
+                                                    cnfe.getConfigurationId()))
+                                    .build());
                         } else {
-                            executeContext.addNotification(
-                                    ScenarioParseError.scenarioParseErrorBuilder().stage(executeContext.getStage()).level(NotificationType.ERROR)
-                                            .error(e).filePath(file.toString())
-                                            .message(MessageManager.getInstance().getMessage(
-                                                    CoreMessages.CORE_ERR_0011, file.toString(), cause.getMessage())).build());
+                            executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                                    .stage(executeContext.getStage())
+                                    .level(NotificationType.ERROR)
+                                    .error(e)
+                                    .filePath(file.toString())
+                                    .message(MessageManager.getInstance()
+                                            .getMessage(CoreMessages.CORE_ERR_0011, file.toString(),
+                                                    cause.getMessage()))
+                                    .build());
                         }
                     } else {
-                        executeContext.addNotification(
-                                ScenarioParseError.scenarioParseErrorBuilder().stage(executeContext.getStage()).level(NotificationType.ERROR)
-                                        .error(e).filePath(file.toString())
-                                        .message(MessageManager.getInstance().getMessage(
-                                                CoreMessages.CORE_ERR_0011, file.toString(), e.getMessage())).build());
+                        executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                                .stage(executeContext.getStage())
+                                .level(NotificationType.ERROR)
+                                .error(e)
+                                .filePath(file.toString())
+                                .message(MessageManager.getInstance()
+                                        .getMessage(CoreMessages.CORE_ERR_0011, file.toString(), e.getMessage()))
+                                .build());
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -211,14 +233,16 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                         Set<ConstraintViolation<Command>> result = validator.validate(command);
 
                         // コマンド識別子を作成
-                        String fullCommandId = IDUtils.getInstance().createFullCommandId(t3Base.getInfo().getId(), command.getId());
+                        String fullCommandId = IDUtils.getInstance()
+                                .createFullCommandId(t3Base.getInfo().getId(), command.getId());
 
                         // コマンド定義を追加
-                        context.getOriginal().getCommands().put(
-                                fullCommandId, command);
+                        context.getOriginal().getCommands().put(fullCommandId, command);
 
                         // コマンド識別子とシナリオIDを紐付ける
-                        context.getOriginal().getCommandScenarioRelations().put(fullCommandId, t3Base.getInfo().getId());
+                        context.getOriginal()
+                                .getCommandScenarioRelations()
+                                .put(fullCommandId, t3Base.getInfo().getId());
 
                         // コマンド識別子とPathを紐付ける
                         context.getOriginal().getCommandPlacePaths().put(fullCommandId, file);
@@ -229,22 +253,21 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                     for (Configuration configuration : t3Base.getConfigurations()) {
 
                         // 設定識別子を作成
-                        String fullConfigurationId =
-                                IDUtils.getInstance().createFullConfigurationId(
-                                        t3Base.getInfo().getId(), configuration.getId());
+                        String fullConfigurationId = IDUtils.getInstance()
+                                .createFullConfigurationId(t3Base.getInfo().getId(), configuration.getId());
 
                         // 設定定義を追加
                         context.getOriginal().getConfigurations().put(fullConfigurationId, configuration);
 
                         // 設定識別子とシナリオIDを紐付ける
-                        context.getOriginal().getConfigurationScenarioRelations().put(
-                                fullConfigurationId, t3Base.getInfo().getId());
+                        context.getOriginal()
+                                .getConfigurationScenarioRelations()
+                                .put(fullConfigurationId, t3Base.getInfo().getId());
 
                         // 設定識別子とPathを紐付ける
                         context.getOriginal().getConfigurationPlacePaths().put(fullConfigurationId, file);
 
                     }
-
 
                 }
 
@@ -270,6 +293,5 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
 
         }
     }
-
 
 }

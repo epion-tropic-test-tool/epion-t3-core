@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -22,14 +23,12 @@ import java.util.Map;
 public class ET3Base implements Serializable {
 
     /**
-     * バージョン.
-     * 今使えていない・・・
+     * バージョン. 今使えていない・・・
      */
     private String t3 = "1.0";
 
     /**
-     * 情報.
-     * 必須にしたいけど微妙
+     * 情報. 必須にしたいけど微妙
      */
     private Information info;
 
@@ -40,8 +39,7 @@ public class ET3Base implements Serializable {
     private List<Scenario> scenarios = new ArrayList<>();
 
     /**
-     * フロー.
-     * コマンドおよび制御フローをどの順序で利用するかを定義するもの.
+     * フロー. コマンドおよび制御フローをどの順序で利用するかを定義するもの.
      */
     // MEMO:visible属性を「true」にしないとパースした際に値が設定されないらしい
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
@@ -50,8 +48,7 @@ public class ET3Base implements Serializable {
     private List<Flow> flows = new ArrayList<>();
 
     /**
-     * コマンド.
-     * 実行指示の最小単位.コマンドに何を行うかを細かく定義することになる.
+     * コマンド. 実行指示の最小単位.コマンドに何を行うかを細かく定義することになる.
      */
     // MEMO:visible属性を「true」にしないとパースした際に値が設定されないらしい
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "command", visible = true)
@@ -69,14 +66,12 @@ public class ET3Base implements Serializable {
     private List<Configuration> configurations = new ArrayList<>();
 
     /**
-     * 変数.
-     * 影響を及ぼせる範囲でスコープを切る.
+     * 変数. 影響を及ぼせる範囲でスコープを切る.
      */
     private Variable variables;
 
     /**
-     * プロファイル.
-     * 実行する状況毎に分割する単位.
+     * プロファイル. 実行する状況毎に分割する単位.
      */
     private Map<String, Map<String, String>> profiles;
 

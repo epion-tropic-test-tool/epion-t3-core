@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.initialize;
 
 import com.google.common.collect.ImmutableSet;
@@ -94,10 +95,8 @@ public class InitializeEpion {
             String resourcePath = outputBasePath + resourceName;
             File file = new File(resourcePath);
             try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.getChannel().transferFrom(
-                        Channels.newChannel(resourceInfo.asByteSource().openStream()),
-                        0,
-                        Long.MAX_VALUE);
+                fos.getChannel()
+                        .transferFrom(Channels.newChannel(resourceInfo.asByteSource().openStream()), 0, Long.MAX_VALUE);
             } catch (IOException e) {
                 throw new SystemException(e, CoreMessages.CORE_ERR_0023);
             }

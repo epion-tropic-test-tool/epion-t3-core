@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import com.epion_t3.core.exception.SystemException;
@@ -43,8 +44,7 @@ public final class ErrorUtils {
      * @return
      */
     public String getStacktrace(Throwable t) {
-        try (StringWriter sw = new StringWriter();
-             PrintWriter pw = new PrintWriter(sw);) {
+        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw);) {
             t.printStackTrace(pw);
             pw.flush();
             return sw.toString();

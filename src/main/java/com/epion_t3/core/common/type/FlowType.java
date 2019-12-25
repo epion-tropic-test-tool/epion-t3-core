@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
 import lombok.AllArgsConstructor;
@@ -28,4 +29,3 @@ public enum FlowType {
         return Arrays.stream(values()).filter(x -> x.value.equals(value)).findFirst().orElse(null);
     }
 }
-

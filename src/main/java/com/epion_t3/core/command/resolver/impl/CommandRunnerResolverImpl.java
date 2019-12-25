@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.resolver.impl;
 
 import com.epion_t3.core.command.handler.CommandRunnerInvocationHandler;
@@ -50,13 +51,8 @@ public final class CommandRunnerResolverImpl implements CommandRunnerResolver {
      * @return
      */
     @Override
-    public CommandRunner getCommandRunner(
-            String commandId,
-            Context context,
-            ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            ExecuteCommand executeCommand) {
+    public CommandRunner getCommandRunner(String commandId, Context context, ExecuteContext executeContext,
+            ExecuteScenario executeScenario, ExecuteFlow executeFlow, ExecuteCommand executeCommand) {
 
         if (StringUtils.isEmpty(commandId)) {
             // 不正
@@ -84,19 +80,12 @@ public final class CommandRunnerResolverImpl implements CommandRunnerResolver {
         try {
             // インスタンス生成＋返却
             CommandRunner commandRunner = CommandRunner.class.cast(runnerClass.newInstance());
-            CommandRunnerInvocationHandler commandRunnerInvocationHandler =
-                    new CommandRunnerInvocationHandler(
-                            commandRunner,
-                            context,
-                            executeContext,
-                            executeScenario,
-                            executeFlow,
-                            executeCommand);
+            CommandRunnerInvocationHandler commandRunnerInvocationHandler = new CommandRunnerInvocationHandler(
+                    commandRunner, context, executeContext, executeScenario, executeFlow, executeCommand);
 
             // Proxyを作成
             CommandRunner commandRunnerProxy = (CommandRunner) Proxy.newProxyInstance(
-                    CommandRunnerResolverImpl.class.getClassLoader(),
-                    new Class<?>[]{CommandRunner.class},
+                    CommandRunnerResolverImpl.class.getClassLoader(), new Class<?>[] { CommandRunner.class },
                     commandRunnerInvocationHandler);
 
             // 返却

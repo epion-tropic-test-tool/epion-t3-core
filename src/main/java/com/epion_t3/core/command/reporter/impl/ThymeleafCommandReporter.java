@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.reporter.impl;
 
 import com.epion_t3.core.command.bean.CommandResult;
@@ -19,14 +20,9 @@ import java.util.Map;
  * @param <EXECUTE_COMMAND>
  * @author takashno
  */
-public interface ThymeleafCommandReporter<
-        COMMAND extends Command,
-        COMMAND_RESULT extends CommandResult,
-        EXECUTE_CONTEXT extends ExecuteContext,
-        EXECUTE_SCENARIO extends ExecuteScenario,
-        EXECUTE_FLOW extends ExecuteFlow,
-        EXECUTE_COMMAND extends ExecuteCommand>
-        extends CommandReporter<COMMAND, COMMAND_RESULT, EXECUTE_CONTEXT, EXECUTE_SCENARIO, EXECUTE_FLOW, EXECUTE_COMMAND> {
+public interface ThymeleafCommandReporter<COMMAND extends Command, COMMAND_RESULT extends CommandResult, EXECUTE_CONTEXT extends ExecuteContext, EXECUTE_SCENARIO extends ExecuteScenario, EXECUTE_FLOW extends ExecuteFlow, EXECUTE_COMMAND extends ExecuteCommand>
+        extends
+        CommandReporter<COMMAND, COMMAND_RESULT, EXECUTE_CONTEXT, EXECUTE_SCENARIO, EXECUTE_FLOW, EXECUTE_COMMAND> {
 
     /**
      * @return
@@ -36,13 +32,8 @@ public interface ThymeleafCommandReporter<
     /**
      * @param variable
      */
-    void setVariables(Map<String, Object> variable,
-                      COMMAND command,
-                      COMMAND_RESULT commandResult,
-                      EXECUTE_CONTEXT executeContext,
-                      EXECUTE_SCENARIO executeScenario,
-                      EXECUTE_FLOW executeFlow,
-                      EXECUTE_COMMAND executeCommand);
+    void setVariables(Map<String, Object> variable, COMMAND command, COMMAND_RESULT commandResult,
+            EXECUTE_CONTEXT executeContext, EXECUTE_SCENARIO executeScenario, EXECUTE_FLOW executeFlow,
+            EXECUTE_COMMAND executeCommand);
 
 }
-

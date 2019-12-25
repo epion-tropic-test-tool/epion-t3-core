@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
 import lombok.AllArgsConstructor;
@@ -10,13 +11,7 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum StructureType {
 
-    STRING("string"),
-    NUMBER("number"),
-    BOOLEAN("boolean"),
-    ARRAY("array"),
-    MAP("map"),
-    OBJECT("object");
-
+    STRING("string"), NUMBER("number"), BOOLEAN("boolean"), ARRAY("array"), MAP("map"), OBJECT("object");
 
     private String value;
 

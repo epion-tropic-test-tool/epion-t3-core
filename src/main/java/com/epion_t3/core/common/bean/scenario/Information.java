@@ -1,9 +1,9 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
 import lombok.*;
 
 import java.io.Serializable;
-
 
 @Getter
 @Setter

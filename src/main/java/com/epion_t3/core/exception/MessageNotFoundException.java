@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.exception;
 
 /**
@@ -12,6 +13,5 @@ public class MessageNotFoundException extends SystemException {
     public MessageNotFoundException(String messageCode) {
         super("'" + messageCode + "' is not found in message resource...");
     }
-
 
 }

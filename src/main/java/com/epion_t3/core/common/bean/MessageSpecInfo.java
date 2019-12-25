@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import lombok.Getter;
@@ -17,6 +18,5 @@ public class MessageSpecInfo implements Serializable {
     private String id;
 
     private String content;
-
 
 }

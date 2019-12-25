@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
 import com.epion_t3.core.common.bean.EvidenceInfo;
@@ -48,13 +49,11 @@ public final class EvidenceUtils {
      * @return
      */
     public <O extends Serializable> O referObjectEvidence(ExecuteContext executeContext,
-                                                          ExecuteScenario executeScenario,
-                                                          String flowId) {
+            ExecuteScenario executeScenario, String flowId) {
         if (executeScenario.getFlowId2EvidenceId().containsKey(flowId)) {
             String evidenceId = executeScenario.getFlowId2EvidenceId().get(flowId).getLast();
             EvidenceInfo evidenceInfo = executeScenario.getEvidences().get(evidenceId);
-            if (evidenceInfo != null
-                    && ObjectEvidenceInfo.class.isAssignableFrom(evidenceInfo.getClass())) {
+            if (evidenceInfo != null && ObjectEvidenceInfo.class.isAssignableFrom(evidenceInfo.getClass())) {
                 ObjectEvidenceInfo objectEvidenceInfo = ObjectEvidenceInfo.class.cast(evidenceInfo);
                 O object = (O) objectEvidenceInfo.getObject();
                 return SerializationUtils.clone(object);
@@ -74,18 +73,15 @@ public final class EvidenceUtils {
      * @param executeFlow
      * @param evidence
      */
-    public void registrationObjectEvidence(
-            ExecuteContext executeContext,
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            Object evidence) {
+    public void registrationObjectEvidence(ExecuteContext executeContext, ExecuteScenario executeScenario,
+            ExecuteFlow executeFlow, Object evidence) {
         ObjectEvidenceInfo evidenceInfo = new ObjectEvidenceInfo();
         // Full Query Scenario Name として現在実行シナリオ名を設定
-        evidenceInfo.setFqsn(executeScenario.getScenarioVariables().get(
-                ScenarioScopeVariables.CURRENT_SCENARIO.getName()).toString());
+        evidenceInfo.setFqsn(executeScenario.getScenarioVariables()
+                .get(ScenarioScopeVariables.CURRENT_SCENARIO.getName())
+                .toString());
         // Full Query Flow Name として現在実行Flow名を設定
-        evidenceInfo.setFqfn(executeFlow.getFlowVariables().get(
-                FlowScopeVariables.CURRENT_FLOW.getName()).toString());
+        evidenceInfo.setFqfn(executeFlow.getFlowVariables().get(FlowScopeVariables.CURRENT_FLOW.getName()).toString());
         evidenceInfo.setName(getEvidenceBaseName(executeFlow, FlowScopeVariables.CURRENT_COMMAND.getName()).toString());
         evidenceInfo.setExecuteFlowId(executeFlow.getExecuteId().toString());
         evidenceInfo.setObject(evidence);
@@ -104,7 +100,8 @@ public final class EvidenceUtils {
      * @return
      */
     public String getEvidenceBaseName(ExecuteFlow executeFlow, String baseName) {
-        return executeFlow.getFlowVariables().get(FlowScopeVariables.CURRENT_COMMAND_EXECUTE_ID.getName()) + "_" + baseName;
+        return executeFlow.getFlowVariables().get(FlowScopeVariables.CURRENT_COMMAND_EXECUTE_ID.getName()) + "_"
+                + baseName;
     }
 
     /**
@@ -114,14 +111,11 @@ public final class EvidenceUtils {
      * @param flowId
      * @return
      */
-    public Path referFileEvidence(
-            ExecuteScenario executeScenario,
-            String flowId) {
+    public Path referFileEvidence(ExecuteScenario executeScenario, String flowId) {
         if (executeScenario.getFlowId2EvidenceId().containsKey(flowId)) {
             String evidenceId = executeScenario.getFlowId2EvidenceId().get(flowId).getLast();
             EvidenceInfo evidenceInfo = executeScenario.getEvidences().get(evidenceId);
-            if (evidenceInfo != null
-                    && FileEvidenceInfo.class.isAssignableFrom(evidenceInfo.getClass())) {
+            if (evidenceInfo != null && FileEvidenceInfo.class.isAssignableFrom(evidenceInfo.getClass())) {
                 FileEvidenceInfo objectEvidenceInfo = FileEvidenceInfo.class.cast(evidenceInfo);
                 return objectEvidenceInfo.getPath();
             } else {
@@ -137,22 +131,20 @@ public final class EvidenceUtils {
      * @param executeFlow
      * @param evidence
      */
-    public void registrationFileEvidence(
-            ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow,
-            Path evidence) {
+    public void registrationFileEvidence(ExecuteScenario executeScenario, ExecuteFlow executeFlow, Path evidence) {
         FileEvidenceInfo evidenceInfo = new FileEvidenceInfo();
-        evidenceInfo.setFqsn(executeScenario.getScenarioVariables().get(ScenarioScopeVariables.CURRENT_SCENARIO.getName()).toString());
+        evidenceInfo.setFqsn(executeScenario.getScenarioVariables()
+                .get(ScenarioScopeVariables.CURRENT_SCENARIO.getName())
+                .toString());
         evidenceInfo.setFqfn(executeFlow.getFlowVariables().get(FlowScopeVariables.CURRENT_FLOW.getName()).toString());
         evidenceInfo.setName(evidence.getFileName().toString());
         evidenceInfo.setExecuteFlowId(executeFlow.getExecuteId().toString());
         evidenceInfo.setPath(evidence);
-        evidenceInfo.setRelativePath("." +
-                evidence.toString()
-                        .replace(executeScenario.getResultPath().toString(), "")
-                        .replaceAll("\\\\", "/"));
+        evidenceInfo.setRelativePath("."
+                + evidence.toString().replace(executeScenario.getResultPath().toString(), "").replaceAll("\\\\", "/"));
         String evidenceId = getEvidenceBaseName(executeFlow, evidence.getFileName().toString());
-        executeScenario.getEvidences().put(getEvidenceBaseName(executeFlow, evidence.getFileName().toString()), evidenceInfo);
+        executeScenario.getEvidences()
+                .put(getEvidenceBaseName(executeFlow, evidence.getFileName().toString()), evidenceInfo);
         if (executeScenario.getFlowId2EvidenceId().containsKey(executeFlow.getFlow().getId())) {
             executeScenario.getFlowId2EvidenceId().get(executeFlow.getFlow().getId()).add(evidenceId);
         } else {

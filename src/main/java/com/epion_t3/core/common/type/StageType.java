@@ -1,8 +1,7 @@
+/* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
-
 public enum StageType {
-
 
     INITIALIZE,
 
@@ -23,6 +22,5 @@ public enum StageType {
     NORMAL_END,
 
     ERROR_END;
-
 
 }
