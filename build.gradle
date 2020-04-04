@@ -79,6 +79,11 @@ dependencies {
     // Activity
     api group: 'net.sourceforge.plantuml', name: 'plantuml', version: '8059'
 
+    // XML
+    api group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.0'
+    api group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.3.0'
+    api group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+
     // For Develop
     compileOnly 'org.projectlombok:lombok:1.18.6'
     annotationProcessor 'org.projectlombok:lombok:1.18.6'
@@ -96,8 +101,8 @@ tasks.withType(Javadoc) {
 
 // Java
 tasks.withType(JavaCompile) {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility = 11
+    targetCompatibility = 11
     it.options.encoding = 'UTF-8'
 }
 
