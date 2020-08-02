@@ -1,0 +1,16 @@
+name: build_and_publish_lib
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  first_job:
+    name: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start
+        uses: actions/checkout@master
+      - run: chmod +x gradlew
+      - name: Build
+        run: ./gradlew clean build
