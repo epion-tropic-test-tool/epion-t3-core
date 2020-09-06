@@ -30,9 +30,14 @@ public final class MessageResolver {
     private static List<ResourceBundle> resourceBundles;
 
     /**
-     * メッセージのリソースファイルを
+     * メッセージのリソースファイル判断用の接尾辞.
      */
     public static final String MESSAGE_SUFFIX_PATTERN = "_messages.properties";
+
+    /**
+     * メッセージのリソースファイル判断用の正規表現.
+     */
+    public static final String MESSAGE_REGEXP_PATTERN = "([^_]+)_messages_([^\\.]+)\\.properties";
 
     /**
      * プライベートコンストラクタ.
@@ -82,7 +87,7 @@ public final class MessageResolver {
             messageResources = ClassPath.from(loader)
                     .getResources()
                     .stream()
-                    .filter(info -> info.getResourceName().endsWith(MESSAGE_SUFFIX_PATTERN))
+                    .filter(info -> info.getResourceName().endsWith(MESSAGE_SUFFIX_PATTERN) || info.getResourceName().matches(MESSAGE_REGEXP_PATTERN))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new SystemException(e);
