@@ -87,7 +87,8 @@ public final class MessageResolver {
             messageResources = ClassPath.from(loader)
                     .getResources()
                     .stream()
-                    .filter(info -> info.getResourceName().endsWith(MESSAGE_SUFFIX_PATTERN) || info.getResourceName().matches(MESSAGE_REGEXP_PATTERN))
+                    .filter(info -> info.getResourceName().endsWith(MESSAGE_SUFFIX_PATTERN)
+                            || info.getResourceName().matches(MESSAGE_REGEXP_PATTERN))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new SystemException(e);
