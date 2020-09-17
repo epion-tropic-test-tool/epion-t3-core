@@ -53,13 +53,13 @@ public final class CommandValidator {
     /**
      * 検証処理.
      *
-     * @param context        コンテキスト
+     * @param context コンテキスト
      * @param executeContext 実行コンテキスト
-     * @param command        コマンド
+     * @param command コマンド
      * @return 検証結果
      */
     public List<CommandValidateError> validate(final Context context, final ExecuteContext executeContext,
-                                               final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final Command command) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final Command command) {
 
         List<CommandValidateError> result = new ArrayList<>();
 
@@ -90,75 +90,75 @@ public final class CommandValidator {
 
                 switch (type) {
 
-                    case STRING:
-                        String stringValue = String.class.cast(propertyValue);
+                case STRING:
+                    String stringValue = String.class.cast(propertyValue);
 
-                        // 必須チェック（Stringの場合はEmptyもチェック）
-                        if (css.getRequired() && stringValue.isEmpty()) {
-                            result.add(CommandValidateError.commandValidateErrorBuilder()
-                                    .stage(executeContext.getStage())
-                                    .level(NotificationType.ERROR)
-                                    .message(MessageManager.getInstance()
-                                            .getMessage(CoreMessages.CORE_ERR_0042, executeFlow.getFlow().getId(),
-                                                    command.getCommand(), css.getName()))
-                                    .commandId(command.getId())
-                                    .flowId(executeFlow.getFlow().getId())
-                                    .build());
-                            continue;
-                        }
+                    // 必須チェック（Stringの場合はEmptyもチェック）
+                    if (css.getRequired() && stringValue.isEmpty()) {
+                        result.add(CommandValidateError.commandValidateErrorBuilder()
+                                .stage(executeContext.getStage())
+                                .level(NotificationType.ERROR)
+                                .message(MessageManager.getInstance()
+                                        .getMessage(CoreMessages.CORE_ERR_0042, executeFlow.getFlow().getId(),
+                                                command.getCommand(), css.getName()))
+                                .commandId(command.getId())
+                                .flowId(executeFlow.getFlow().getId())
+                                .build());
+                        continue;
+                    }
 
-                        // パターンチェック
-                        // 必須でない場合にnullであるならスキップ
-                        if (propertyValue != null) {
-                            if (css.getPattern() != null && !css.getPattern().isEmpty()) {
-                                Pattern checkPattern = Pattern.compile(css.getPattern());
-                                Matcher checkMatcher = checkPattern.matcher(stringValue);
-                                if (!checkMatcher.matches()) {
-                                    result.add(CommandValidateError.commandValidateErrorBuilder()
-                                            .stage(executeContext.getStage())
-                                            .level(NotificationType.ERROR)
-                                            .message(MessageManager.getInstance()
-                                                    .getMessage(CoreMessages.CORE_ERR_0043, executeFlow.getFlow().getId(),
-                                                            command.getCommand(), css.getName(), css.getPattern()))
-                                            .commandId(command.getId())
-                                            .flowId(executeFlow.getFlow().getId())
-                                            .build());
-                                    continue;
-                                }
+                    // パターンチェック
+                    // 必須でない場合にnullであるならスキップ
+                    if (propertyValue != null) {
+                        if (css.getPattern() != null && !css.getPattern().isEmpty()) {
+                            Pattern checkPattern = Pattern.compile(css.getPattern());
+                            Matcher checkMatcher = checkPattern.matcher(stringValue);
+                            if (!checkMatcher.matches()) {
+                                result.add(CommandValidateError.commandValidateErrorBuilder()
+                                        .stage(executeContext.getStage())
+                                        .level(NotificationType.ERROR)
+                                        .message(MessageManager.getInstance()
+                                                .getMessage(CoreMessages.CORE_ERR_0043, executeFlow.getFlow().getId(),
+                                                        command.getCommand(), css.getName(), css.getPattern()))
+                                        .commandId(command.getId())
+                                        .flowId(executeFlow.getFlow().getId())
+                                        .build());
+                                continue;
                             }
                         }
-                        break;
-                    case ARRAY:
-                        // 必須でない場合にnullであるならスキップ
-                        if (propertyValue != null) {
-                            if (propertyValue.getClass().isArray()) {
-                                // 配列型である場合
-                                Object[] array = (Object[]) propertyValue;
-                                for (Object element : array) {
-                                    validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
-                                            element, css.getProperty(), css.getName());
-                                }
-                            } else if (List.class.isAssignableFrom(propertyValue.getClass())) {
-                                // List型である場合
-                                List list = (List) propertyValue;
-                                for (Object element : list) {
-                                    validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
-                                            element, css.getProperty(), css.getName());
-                                }
+                    }
+                    break;
+                case ARRAY:
+                    // 必須でない場合にnullであるならスキップ
+                    if (propertyValue != null) {
+                        if (propertyValue.getClass().isArray()) {
+                            // 配列型である場合
+                            Object[] array = (Object[]) propertyValue;
+                            for (Object element : array) {
+                                validateRecursive(context, executeContext, executeScenario, executeFlow, command,
+                                        result, element, css.getProperty(), css.getName());
+                            }
+                        } else if (List.class.isAssignableFrom(propertyValue.getClass())) {
+                            // List型である場合
+                            List list = (List) propertyValue;
+                            for (Object element : list) {
+                                validateRecursive(context, executeContext, executeScenario, executeFlow, command,
+                                        result, element, css.getProperty(), css.getName());
                             }
                         }
-                        break;
-                    case OBJECT:
+                    }
+                    break;
+                case OBJECT:
 
-                        // 必須でない場合にnullであるならスキップ
-                        if (propertyValue != null) {
-                            validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
-                                    propertyValue, css.getProperty(), css.getName());
-                        }
-                        break;
-                    default:
-                        // Do Nothing...
-                        break;
+                    // 必須でない場合にnullであるならスキップ
+                    if (propertyValue != null) {
+                        validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
+                                propertyValue, css.getProperty(), css.getName());
+                    }
+                    break;
+                default:
+                    // Do Nothing...
+                    break;
                 }
 
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -180,18 +180,18 @@ public final class CommandValidator {
     /**
      * 再帰的にコマンド値の検証を行う.
      *
-     * @param context        コンテキスト
+     * @param context コンテキスト
      * @param executeContext 実行コンテキスト
-     * @param command        コマンド
-     * @param result         検証結果
-     * @param obj            対象オブジェクト
-     * @param properties     検証プロパティリスト
-     * @param parentPath     ネストパス
+     * @param command コマンド
+     * @param result 検証結果
+     * @param obj 対象オブジェクト
+     * @param properties 検証プロパティリスト
+     * @param parentPath ネストパス
      */
     private void validateRecursive(final Context context, final ExecuteContext executeContext,
-                                   final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final Command command,
-                                   final List<CommandValidateError> result, final Object obj, final List<CommandSpecStructure> properties,
-                                   String parentPath) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final Command command,
+            final List<CommandValidateError> result, final Object obj, final List<CommandSpecStructure> properties,
+            String parentPath) {
 
         for (CommandSpecStructure css : properties) {
 
@@ -224,72 +224,72 @@ public final class CommandValidator {
 
                 switch (type) {
 
-                    case STRING:
-                        String stringValue = String.class.cast(propertyValue);
+                case STRING:
+                    String stringValue = String.class.cast(propertyValue);
 
-                        // 必須チェック（Stringの場合はEmptyもチェック）
-                        if (css.getRequired() && stringValue.isEmpty()) {
+                    // 必須チェック（Stringの場合はEmptyもチェック）
+                    if (css.getRequired() && stringValue.isEmpty()) {
+                        result.add(CommandValidateError.commandValidateErrorBuilder()
+                                .stage(executeContext.getStage())
+                                .level(NotificationType.ERROR)
+                                .message(MessageManager.getInstance()
+                                        .getMessage(CoreMessages.CORE_ERR_0042, executeFlow.getFlow().getId(),
+                                                command.getCommand(), nowPath))
+                                .commandId(command.getId())
+                                .flowId(executeFlow.getFlow().getId())
+                                .build());
+                        continue;
+                    }
+
+                    // パターンチェック
+                    if (css.getPattern() != null && !css.getPattern().isEmpty()) {
+                        Pattern checkPattern = Pattern.compile(css.getPattern());
+                        Matcher checkMatcher = checkPattern.matcher(stringValue);
+                        if (!checkMatcher.matches()) {
                             result.add(CommandValidateError.commandValidateErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
                                     .message(MessageManager.getInstance()
-                                            .getMessage(CoreMessages.CORE_ERR_0042, executeFlow.getFlow().getId(),
-                                                    command.getCommand(), nowPath))
+                                            .getMessage(CoreMessages.CORE_ERR_0043, executeFlow.getFlow().getId(),
+                                                    command.getCommand(), nowPath, css.getPattern()))
                                     .commandId(command.getId())
                                     .flowId(executeFlow.getFlow().getId())
                                     .build());
                             continue;
                         }
-
-                        // パターンチェック
-                        if (css.getPattern() != null && !css.getPattern().isEmpty()) {
-                            Pattern checkPattern = Pattern.compile(css.getPattern());
-                            Matcher checkMatcher = checkPattern.matcher(stringValue);
-                            if (!checkMatcher.matches()) {
-                                result.add(CommandValidateError.commandValidateErrorBuilder()
-                                        .stage(executeContext.getStage())
-                                        .level(NotificationType.ERROR)
-                                        .message(MessageManager.getInstance()
-                                                .getMessage(CoreMessages.CORE_ERR_0043, executeFlow.getFlow().getId(),
-                                                        command.getCommand(), nowPath, css.getPattern()))
-                                        .commandId(command.getId())
-                                        .flowId(executeFlow.getFlow().getId())
-                                        .build());
-                                continue;
+                    }
+                    break;
+                case ARRAY:
+                    // 必須でない場合にnullであるならスキップ
+                    if (propertyValue != null) {
+                        if (propertyValue.getClass().isArray()) {
+                            // 配列型である場合
+                            Object[] array = (Object[]) propertyValue;
+                            for (Object element : array) {
+                                validateRecursive(context, executeContext, executeScenario, executeFlow, command,
+                                        result, element, css.getProperty(), nowPath);
+                            }
+                        } else if (List.class.isAssignableFrom(propertyValue.getClass())) {
+                            // List型である場合
+                            List list = (List) propertyValue;
+                            for (Object element : list) {
+                                validateRecursive(context, executeContext, executeScenario, executeFlow, command,
+                                        result, element, css.getProperty(), nowPath);
                             }
                         }
-                        break;
-                    case ARRAY:
-                        // 必須でない場合にnullであるならスキップ
-                        if (propertyValue != null) {
-                            if (propertyValue.getClass().isArray()) {
-                                // 配列型である場合
-                                Object[] array = (Object[]) propertyValue;
-                                for (Object element : array) {
-                                    validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
-                                            element, css.getProperty(), nowPath);
-                                }
-                            } else if (List.class.isAssignableFrom(propertyValue.getClass())) {
-                                // List型である場合
-                                List list = (List) propertyValue;
-                                for (Object element : list) {
-                                    validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
-                                            element, css.getProperty(), nowPath);
-                                }
-                            }
-                        }
-                        break;
-                    case OBJECT:
-                        // Object型である場合
-                        // 必須でない場合にnullであるならスキップ
-                        if (propertyValue != null) {
-                            validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
-                                    propertyValue, css.getProperty(), nowPath);
-                        }
-                        break;
-                    default:
-                        // Do Nothing...
-                        break;
+                    }
+                    break;
+                case OBJECT:
+                    // Object型である場合
+                    // 必須でない場合にnullであるならスキップ
+                    if (propertyValue != null) {
+                        validateRecursive(context, executeContext, executeScenario, executeFlow, command, result,
+                                propertyValue, css.getProperty(), nowPath);
+                    }
+                    break;
+                default:
+                    // Do Nothing...
+                    break;
                 }
 
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
