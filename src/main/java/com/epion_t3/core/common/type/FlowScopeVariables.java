@@ -17,10 +17,7 @@ public enum FlowScopeVariables {
     CURRENT_COMMAND_EXECUTE_ID("currentProcessExecuteId"),
 
     /** 実行コマンドが格納されているパス文字列. */
-    CURRENT_COMMAND_DIR("currentCommandDir"),
-
-    /** 実行コマンドが格納されているパスオブジェクト（java.nio.file.Path）. */
-    CURRENT_COMMAND_DIR_PATH("currentCommandDirPath");
+    CURRENT_COMMAND_DIR("currentCommandDir");
 
     private String name;
 
