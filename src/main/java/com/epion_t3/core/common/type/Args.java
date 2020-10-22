@@ -29,6 +29,8 @@ public enum Args {
 
     NO_REPORT("n", "noreport", false, "no report output", false),
 
+    CONSOLE_REPORT("c", "console", false, "output console report.", false),
+
     WEB_ASSET_PATH("a", "webassets", true, "web assets base path.", false),
 
     HELP("h", "help", true, "show the tool help.", false);
