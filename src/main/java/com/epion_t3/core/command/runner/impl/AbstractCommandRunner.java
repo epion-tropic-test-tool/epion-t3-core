@@ -1,6 +1,7 @@
 /* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.command.runner.impl;
 
+import com.epion_t3.core.command.bean.AssertCommandResult;
 import com.epion_t3.core.command.bean.CommandResult;
 import com.epion_t3.core.command.reporter.CommandReporter;
 import com.epion_t3.core.command.reporter.impl.NoneCommandReporter;
@@ -119,12 +120,17 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
             result = execute(command, logger);
 
         } catch (Throwable t) {
-
             logger.debug("Error Occurred...", t);
             error = t;
-            result = new CommandResult();
-            result.setMessage(t.getMessage());
-            result.setStatus(CommandStatus.ERROR);
+            if (executeCommand.getCommandInfo().getAssertCommand()) {
+                result = new AssertCommandResult();
+                result.setMessage(t.getMessage());
+                result.setStatus(CommandStatus.ERROR);
+            } else {
+                result = new CommandResult();
+                result.setMessage(t.getMessage());
+                result.setStatus(CommandStatus.ERROR);
+            }
             throw t;
 
         } finally {

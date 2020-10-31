@@ -41,6 +41,7 @@ public final class ExceptionHandlerImpl implements ExceptionHandler<Context, Exe
         if (ScenarioParseException.class.isAssignableFrom(t.getClass())) {
             // シナリオ解析エラー
             log.error(messageManager.getMessage(CoreMessages.CORE_ERR_0040));
+            log.debug("Error Occurred...", t);
         } else if (SystemException.class.isAssignableFrom(t.getClass())) {
             // システムエラー
             log.error(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0046));
