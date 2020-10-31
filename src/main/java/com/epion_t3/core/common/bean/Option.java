@@ -65,6 +65,11 @@ public class Option implements Serializable {
     private Boolean noreport = false;
 
     /**
+     * コンソールレポート出力フラグ. true : 出力
+     */
+    private Boolean consoleReport = false;
+
+    /**
      * レポートのWEBアセット参照パス. cssやjsを配置するベースパス.
      */
     private String webAssetPath;

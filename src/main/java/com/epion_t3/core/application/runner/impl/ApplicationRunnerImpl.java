@@ -1,6 +1,8 @@
 /* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.application.runner.impl;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import com.epion_t3.core.application.reporter.impl.ApplicationReporterImpl;
 import com.epion_t3.core.application.runner.ApplicationRunner;
 import com.epion_t3.core.common.annotation.ApplicationVersion;
@@ -16,6 +18,7 @@ import com.epion_t3.core.scenario.runner.ScenarioRunner;
 import com.epion_t3.core.scenario.runner.impl.ScenarioRunnerImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -74,6 +77,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
             // 引数設定
             setOptions(context, cmd);
+
+            loggingSetting(context);
 
             // 結果ディレクトリの作成
             createResultDirectory(context, executeContext);
@@ -165,9 +170,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         }
 
         // レポート出力無の設定
-        if (commandLine.hasOption(Args.NO_REPORT.getShortName())) {
-            context.getOption().setNoreport(true);
-        }
+        context.getOption().setNoreport(commandLine.hasOption(Args.NO_REPORT.getShortName()));
+
+        // コンソールレポート出力の設定
+        context.getOption().setConsoleReport(commandLine.hasOption(Args.CONSOLE_REPORT.getShortName()));
 
         // WEBアセット基底パス
         if (commandLine.hasOption(Args.WEB_ASSET_PATH.getShortName())) {
@@ -175,8 +181,21 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         }
 
         // デバッグの設定
-        if (commandLine.hasOption(Args.DEBUG.getShortName())) {
-            context.getOption().setDebug(true);
+        context.getOption().setDebug(commandLine.hasOption(Args.DEBUG.getShortName()));
+    }
+
+    /**
+     * ロギングの設定を行う.
+     *
+     * @param context コンテキスト
+     */
+    private void loggingSetting(final Context context) {
+        if (context.getOption().getDebug()) {
+            System.setProperty("loggerLevel", "DEBUG");
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            loggerContext.getLoggerList().stream().forEach(x -> {
+                x.setLevel(Level.DEBUG);
+            });
         }
     }
 
