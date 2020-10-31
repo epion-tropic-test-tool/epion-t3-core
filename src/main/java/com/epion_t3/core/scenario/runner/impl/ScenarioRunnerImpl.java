@@ -83,9 +83,9 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * シナリオ実行.
      *
-     * @param context        コンテキスト
+     * @param context コンテキスト
      * @param executeContext 実行コンテキスト
-     * @param scenarioRef    シナリオ参照
+     * @param scenarioRef シナリオ参照
      */
     private void executeScenario(Context context, ExecuteContext executeContext, Scenario scenarioRef) {
 
@@ -154,33 +154,33 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 if (flowResult != null) {
                     // 前Flowの結果によって処理を振り分ける
                     switch (flowResult.getStatus()) {
-                        case NEXT:
-                            // 単純に次のFlowへ遷移
-                            log.debug("Execute Next Flow.");
-                            break;
-                        case CHOICE:
-                            log.debug("Choice Execute Next Flow.");
-                            // 指定された後続Flowへ遷移
-                            if (StringUtils.equals(flowResult.getChoiceId(), flow.getId())) {
-                                // 合致したため実行する
-                                log.debug("Find To Be Executed Flow.");
-                            } else {
-                                // SKIP扱いとする
-                                log.debug("Can't Find Execute Flow. -> SKIP");
-                                // TODO:ちょっと微妙だな・・・
-                                ExecuteFlow executeFlow = new ExecuteFlow();
-                                executeFlow.setStatus(FlowStatus.SKIP);
-                                executeFlow.setFlow(flow);
-                                executeScenario.getFlows().add(executeFlow);
-                                // 次のループまで
-                                continue;
-                            }
-                            break;
-                        case EXIT:
-                            // 即時終了
-                            log.debug("Force Exit Scenario.");
-                            exitFlg = true;
-                            break;
+                    case NEXT:
+                        // 単純に次のFlowへ遷移
+                        log.debug("Execute Next Flow.");
+                        break;
+                    case CHOICE:
+                        log.debug("Choice Execute Next Flow.");
+                        // 指定された後続Flowへ遷移
+                        if (StringUtils.equals(flowResult.getChoiceId(), flow.getId())) {
+                            // 合致したため実行する
+                            log.debug("Find To Be Executed Flow.");
+                        } else {
+                            // SKIP扱いとする
+                            log.debug("Can't Find Execute Flow. -> SKIP");
+                            // TODO:ちょっと微妙だな・・・
+                            ExecuteFlow executeFlow = new ExecuteFlow();
+                            executeFlow.setStatus(FlowStatus.SKIP);
+                            executeFlow.setFlow(flow);
+                            executeScenario.getFlows().add(executeFlow);
+                            // 次のループまで
+                            continue;
+                        }
+                        break;
+                    case EXIT:
+                        // 即時終了
+                        log.debug("Force Exit Scenario.");
+                        exitFlg = true;
+                        break;
                     }
                 }
 
@@ -258,7 +258,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * 実行時に指定されたプロファイルを元に、実行コンテキストに設定する.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario 実行コンテキスト
      */
     private void setProfiles(final Context context, final ExecuteScenario executeScenario) {
@@ -282,13 +282,13 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * Flowに対して、変数をバインドする.
      *
-     * @param context         コンテキスト
-     * @param executeContext  実行コンテキスト
+     * @param context コンテキスト
+     * @param executeContext 実行コンテキスト
      * @param executeScenario シナリオ実行時情報
-     * @param flow            Flow
+     * @param flow Flow
      */
     private void bind(final Context context, final ExecuteContext executeContext, final ExecuteScenario executeScenario,
-                      final Flow flow) {
+            final Flow flow) {
 
         BindUtils.getInstance()
                 .bind(flow, executeScenario.getProfileConstants(), executeContext.getGlobalVariables(),
@@ -298,7 +298,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * シナリオスコープの変数を設定する.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario 実行シナリオ
      */
     private void settingScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
@@ -314,7 +314,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * シナリオスコープの変数を掃除する.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario 実行シナリオ
      */
     private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
@@ -335,20 +335,20 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param context
      */
     private void createResultDirectory(final Context context, final ExecuteContext executeContext,
-                                       final ExecuteScenario scenario) {
+            final ExecuteScenario scenario) {
         ExecutionFileUtils.createResultDirectory(context, executeContext);
     }
 
     /**
      * レポート出力.
      *
-     * @param context         コンテキスト
-     * @param executeContext  実行情報
+     * @param context コンテキスト
+     * @param executeContext 実行情報
      * @param executeScenario シナリオ実行情報
-     * @param t               エラー
+     * @param t エラー
      */
     private void report(final Context context, final ExecuteContext executeContext,
-                        final ExecuteScenario executeScenario, final Throwable t) {
+            final ExecuteScenario executeScenario, final Throwable t) {
         ScenarioReporterImpl.getInstance().report(context, executeContext, executeScenario, t);
     }
 

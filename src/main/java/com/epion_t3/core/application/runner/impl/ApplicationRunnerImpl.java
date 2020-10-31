@@ -141,7 +141,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
     /**
      * 実行引数オプションをコンテキストへ設定する.
      *
-     * @param context     コンテキスト
+     * @param context コンテキスト
      * @param commandLine コマンドライン
      */
     private void setOptions(final Context context, final CommandLine commandLine) {
