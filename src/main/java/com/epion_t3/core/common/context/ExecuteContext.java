@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 実行時の情報保持クラス.
+ * シナリオ実行時の情報保持クラス.
  *
  * @author takashno
  */
