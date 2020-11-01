@@ -1,6 +1,7 @@
 /* Copyright (c) 2017-2019 Nozomu Takashima. */
 package com.epion_t3.core.custom.parser.impl;
 
+import com.epion_t3.core.custom.validator.CustomConfigurationSpecValidator;
 import com.epion_t3.core.custom.validator.CustomFlowSpecValidator;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.reflect.ClassPath;
@@ -474,6 +475,11 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                             .model(clazz)
                             .build();
                     CustomPackageHolder.getInstance().addCustomConfigurationInfo(customConfigurationInfo);
+
+                    // 設定情報の設計と実装の整合性検証
+                    executeContext.getNotifications()
+                            .addAll(CustomConfigurationSpecValidator.getInstance()
+                                    .validateCommandSpec(context, executeContext, entry.getKey(), customConfigurationInfo));
 
                 } else if (CommandListener.class.isAssignableFrom(clazz)) {
                     // カスタムコマンドリスナーを解析
