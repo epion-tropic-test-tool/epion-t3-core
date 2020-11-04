@@ -3,6 +3,7 @@ package com.epion_t3.core.custom.parser.impl;
 
 import com.epion_t3.core.custom.validator.CustomConfigurationSpecValidator;
 import com.epion_t3.core.custom.validator.CustomFlowSpecValidator;
+import com.epion_t3.core.exception.SpecParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.reflect.ClassPath;
 import com.epion_t3.core.command.handler.listener.CommandAfterListener;
@@ -113,7 +114,7 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
         // エラー判定
         // この時点でエラーが存在する場合は、継続しない
         if (!executeContext.getNotifications().isEmpty()) {
-            throw new ScenarioParseException();
+            throw new SpecParseException();
         }
 
         // ---------------------
@@ -140,28 +141,28 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
             // 再帰的にカスタム定義ファイルを見つける
             Files.find(Paths.get(context.getOption().getRootPath()), Integer.MAX_VALUE,
                     (p, attr) -> p.toFile().getName().matches(CUSTOM_FILENAME_REGEXP_PATTERN)).forEach(x -> {
-                        try {
-                            ET3Base custom = context.getObjectMapper().readValue(x.toFile(), ET3Base.class);
-                            if (custom.getCustoms() != null) {
-                                custom.getCustoms().getPackages().forEach((k, v) -> {
-                                    CustomPackageHolder.getInstance().addCustomPackage(k, v);
-                                });
-                            } else {
-                                // カスタム機能定義が未指定の場合は、WARNで警告をしておく.
-                                executeContext.addNotification(ET3Notification.builder()
-                                        .stage(executeContext.getStage())
-                                        .level(NotificationType.WARN)
-                                        .message(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0003))
-                                        .build());
-                            }
-                        } catch (IOException e) {
-                            executeContext.addNotification(ET3Notification.builder()
-                                    .stage(executeContext.getStage())
-                                    .level(NotificationType.ERROR)
-                                    .message(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0032))
-                                    .build());
-                        }
-                    });
+                try {
+                    ET3Base custom = context.getObjectMapper().readValue(x.toFile(), ET3Base.class);
+                    if (custom.getCustoms() != null) {
+                        custom.getCustoms().getPackages().forEach((k, v) -> {
+                            CustomPackageHolder.getInstance().addCustomPackage(k, v);
+                        });
+                    } else {
+                        // カスタム機能定義が未指定の場合は、WARNで警告をしておく.
+                        executeContext.addNotification(ET3Notification.builder()
+                                .stage(executeContext.getStage())
+                                .level(NotificationType.WARN)
+                                .message(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0003))
+                                .build());
+                    }
+                } catch (IOException e) {
+                    executeContext.addNotification(ET3Notification.builder()
+                            .stage(executeContext.getStage())
+                            .level(NotificationType.ERROR)
+                            .message(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0032))
+                            .build());
+                }
+            });
         } catch (IOException e) {
             executeContext.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
@@ -479,7 +480,7 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                     // 設定情報の設計と実装の整合性検証
                     executeContext.getNotifications()
                             .addAll(CustomConfigurationSpecValidator.getInstance()
-                                    .validateCommandSpec(context, executeContext, entry.getKey(), customConfigurationInfo));
+                                    .validateConfigurationSpec(context, executeContext, entry.getKey(), customConfigurationInfo));
 
                 } else if (CommandListener.class.isAssignableFrom(clazz)) {
                     // カスタムコマンドリスナーを解析
@@ -508,7 +509,7 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
     /**
      * カスタムFlow構成を再帰的に解析.
      *
-     * @param parent 親構成
+     * @param parent     親構成
      * @param structures 対象構成リスト
      */
     private void parseCustomFlowStructureRecursive(FlowSpecStructure parent, List<Structure> structures) {
@@ -536,7 +537,7 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
     /**
      * カスタムコマンド構成を再帰的に解析.
      *
-     * @param parent 親構成
+     * @param parent     親構成
      * @param structures 対象構成リスト
      */
     private void parseCustomCommandStructureRecursive(CommandSpecStructure parent, List<Structure> structures) {
@@ -564,11 +565,11 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
     /**
      * カスタム設定情報定義構成を再帰的に解析.
      *
-     * @param parent 親構成
+     * @param parent     親構成
      * @param structures 対象構成リスト
      */
     private void parseCustomConfigurationStructureRecursive(CustomConfigurationSpecStructure parent,
-            List<Structure> structures) {
+                                                            List<Structure> structures) {
 
         // コマンド構成を設定
         structures.stream().sorted(Comparator.comparing(s -> s.getOrder())).forEach(s -> {

@@ -65,7 +65,7 @@ public final class CustomConfigurationSpecValidator {
      * @param customConfigurationInfo コマンド情報
      * @return 検証結果（エラーのみ）
      */
-    public List<ConfigurationSpecValidateError> validateCommandSpec(final Context context,
+    public List<ConfigurationSpecValidateError> validateConfigurationSpec(final Context context,
             final ExecuteContext executeContext, String customName,
             final CustomConfigurationInfo customConfigurationInfo) {
 
