@@ -78,6 +78,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             // 引数設定
             setOptions(context, cmd);
 
+            // ロギング設定
             loggingSetting(context);
 
             // 結果ディレクトリの作成
@@ -141,7 +142,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
     /**
      * 実行引数オプションをコンテキストへ設定する.
      *
-     * @param context コンテキスト
+     * @param context     コンテキスト
      * @param commandLine コマンドライン
      */
     private void setOptions(final Context context, final CommandLine commandLine) {
@@ -194,7 +195,9 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             System.setProperty("loggerLevel", "DEBUG");
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             loggerContext.getLoggerList().stream().forEach(x -> {
-                x.setLevel(Level.DEBUG);
+                if (!x.getName().startsWith("org.thymeleaf") && x.getLevel() != null) {
+                    x.setLevel(Level.DEBUG);
+                }
             });
         }
     }
