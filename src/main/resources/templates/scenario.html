@@ -353,11 +353,18 @@
                                     <th:block th:if="${executeCommand.commandInfo.assertCommand}">
                                         <tr>
                                             <th style="background:#725b71;color:white">Assert&nbsp;Status</th>
-                                            <td class="table-success"
-                                                th:text="${executeCommand.commandResult.assertStatus}" colspan="3"
-                                                th:class="${executeCommand.commandResult.assertStatus.getCssClass()}">
-                                                SUCCESS
-                                            </td>
+                                            <th:block th:if="${executeCommand.commandResult.assertStatus}">
+                                                <td class="table-success"
+                                                    th:text="${executeCommand.commandResult.assertStatus}" colspan="3"
+                                                    th:class="${executeCommand.commandResult.assertStatus.getCssClass()}">
+                                                    SUCCESS
+                                                </td>
+                                            </th:block>
+                                            <th:block th:if="${!executeCommand.commandResult.assertStatus}">
+                                                <td colspan="3">
+                                                    WAIT
+                                                </td>
+                                            </th:block>
                                         </tr>
                                         <th:block th:if="${executeCommand.commandResult.expected}">
                                             <tr>
