@@ -27,6 +27,6 @@ public enum FlowStatus {
 
     WARN("table-danger");
 
-    private String cssClass;
+    private final String cssClass;
 
 }

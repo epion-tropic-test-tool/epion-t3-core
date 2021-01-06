@@ -28,6 +28,8 @@ import com.epion_t3.core.common.util.IDUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -45,6 +47,12 @@ import java.util.regex.Matcher;
  */
 public abstract class AbstractCommandRunner<COMMAND extends Command>
         implements CommandRunner<COMMAND, Context, ExecuteContext, ExecuteScenario, ExecuteFlow, ExecuteCommand> {
+
+    /**
+     * ロギングマーカー.
+     * @since 0.0.3
+     */
+    private Marker collectLoggingMarker;
 
     /**
      * コマンド.
@@ -100,6 +108,9 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
         this.executeScenario = executeScenario;
         this.executeFlow = executeFlow;
         this.executeCommand = executeCommand;
+
+        // ロギングマーカー設定
+        this.collectLoggingMarker = MarkerFactory.getMarker(executeFlow.getExecuteId().toString());
 
         // エラー
         Throwable error = null;
@@ -159,6 +170,15 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
         }
 
+    }
+
+    /**
+     * 収集対象のロギングマーカーを取得します.
+     * @since 0.0.3
+     * @return ロギングマーカー
+     */
+    protected Marker collectLoggingMarker() {
+        return this.collectLoggingMarker;
     }
 
     /**

@@ -2,8 +2,13 @@
 package com.epion_t3.core.flow.logging.holder;
 
 import com.epion_t3.core.flow.logging.bean.FlowLog;
+import lombok.NonNull;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Flowログを保持するクラス.
@@ -15,10 +20,10 @@ public final class FlowLoggingHolder {
     /**
      * プロセスログを保持するスレッドローカル.
      */
-    private static final ThreadLocal<ArrayList<FlowLog>> messages = new ThreadLocal<ArrayList<FlowLog>>() {
+    private static final ThreadLocal<Map<String, ArrayList<FlowLog>>> messages = new ThreadLocal<Map<String, ArrayList<FlowLog>>>() {
         @Override
-        protected ArrayList<FlowLog> initialValue() {
-            return new ArrayList<>();
+        protected Map<String, ArrayList<FlowLog>> initialValue() {
+            return new HashMap<>();
         }
     };
 
@@ -28,23 +33,30 @@ public final class FlowLoggingHolder {
      * @param log
      */
     public static void append(FlowLog log) {
-        messages.get().add(log);
+        if (!messages.get().containsKey(log.getExecuteId())) {
+            messages.get().put(log.getExecuteId(), new ArrayList<>());
+        }
+        messages.get().get(log.getExecuteId()).add(log);
     }
 
     /**
      * ログクリア.
      */
-    public static void clear() {
-        messages.remove();
+    public static void clear(@NonNull String executeId) {
+        messages.get().remove(executeId);
     }
 
     /**
      * 取得.
      *
-     * @return
+     * @return Flowログリスト
      */
-    public static ArrayList<FlowLog> get() {
-        return messages.get();
+    public static ArrayList<FlowLog> get(@NonNull String executeId) {
+        if (!messages.get().containsKey(executeId)) {
+            return new ArrayList<>(0);
+        } else {
+            return SerializationUtils.clone(messages.get().get(executeId));
+        }
     }
 
 }

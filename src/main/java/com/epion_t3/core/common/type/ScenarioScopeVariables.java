@@ -12,8 +12,13 @@ public enum ScenarioScopeVariables {
 
     SCENARIO_DIR("scenarioDir"),
 
-    EVIDENCE_DIR("evidenceDir");
+    EVIDENCE_DIR("evidenceDir"),
 
-    private String name;
+    /** 現在の繰り返し対象オブジェクト.
+     * @since 0.0.3
+     */
+    CURRENT_ITERATE_TARGET("currentIterateTarget");
+
+    private final String name;
 
 }

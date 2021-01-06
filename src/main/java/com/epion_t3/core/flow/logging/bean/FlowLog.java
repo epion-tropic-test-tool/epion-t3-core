@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 public class FlowLog implements Serializable {
 
     @NonNull
+    private String executeId;
+
+    @NonNull
     private Level level;
 
     @NonNull

@@ -164,7 +164,7 @@
                             <a href="#executionFlowId" th:href="${#strings.concat('#',executeFlow.executeId)}"
                                th:text="${executeFlow.flow.id}">flow-0001</a>
                         </th>
-                        <td th:text="${executeFlow.flow.type}">Flow</td>
+                        <td>Flow</td>
                         <td class="table-success" th:text="${executeFlow.status}"
                             th:class="${executeFlow.status.getCssClass()}">SUCCESS
                         </td>
@@ -327,45 +327,17 @@
                                     th:text="${#strings.concat(executeFlow.flow.id, ' / ', executeFlow.flow.type)}">Flow
                                 </td>
                             </tr>
-                            <tr>
-                                <th class="bg-dark" style="width:200px;color:white">Flow&nbsp;Status</th>
-                                <td colspan="3"
-                                    th:text="${executeFlow.status}"
-                                    th:class="${executeFlow.status.getCssClass()}">SUCCESS
-                                </td>
-                            </tr>
-                            <th:block
-                                    th:if="${executeFlow.flowLogs != null && !executeFlow.flowLogs.isEmpty()}">
-                                <tr>
-                                    <th class="bg-dark" style="color:white">Flow&nbsp;Log</th>
-                                    <td colspan="3" style="background:#eee;">
-                                        <th:block th:each="flowLog : ${executeFlow.flowLogs}">
-                                            <span th:text="${#strings.concat(dateTimeUtils.formatNormal(flowLog.dateTime),' [',flowLog.level,'] ',flowLog.message)}"/><br/>
-                                        </th:block>
-                                    </td>
-                                </tr>
-                            </th:block>
-                            <th:block th:if="${executeFlow.error != null}">
-                                <tr>
-                                    <th class="bg-dark" style="color:white">Flow&nbsp;Error</th>
-                                    <td colspan="3" style="background:#eee;">
-                                        <pre th:text="${executeFlow.stackTrace}">
-                                            stacktrace
-                                        </pre>
-                                    </td>
-                                </tr>
-                            </th:block>
                             <th:block th:if="${!executeFlow.commands.isEmpty}">
                                 <th:block th:each="executeCommand,stat : ${executeFlow.commands}">
                                     <tr>
-                                        <th class="bg-dark" style="color:white">Command&nbsp;Status</th>
+                                        <th class="bg-dark" style="color:white">Status</th>
                                         <td class="table-success" th:text="${executeCommand.commandResult.status}"
                                             colspan="3"
                                             th:class="${executeCommand.commandResult.status.getCssClass()}">SUCCESS
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th class="bg-dark" style="color:white">Command&nbsp;Time</th>
+                                        <th class="bg-dark" style="color:white">Time</th>
                                         <td th:text="${#strings.concat(dateTimeUtils.formatTimeNormal(executeCommand.start), ' ~ ', dateTimeUtils.formatTimeNormal(executeCommand.end), ' (', dateTimeUtils.getMillis(executeCommand.start, executeCommand.end), ' ms)')}"
                                             colspan="3">
                                             21:27:42.611 ~ 21:27:48.800 (6189 ms)
@@ -373,14 +345,14 @@
                                     </tr>
                                     <th:block th:if="${executeCommand.commandResult.message}">
                                         <tr>
-                                            <th class="bg-dark" style="color:white">Command&nbsp;Message</th>
+                                            <th class="bg-dark" style="color:white">Message</th>
                                             <td th:text="${executeCommand.commandResult.message}" colspan="3">message
                                             </td>
                                         </tr>
                                     </th:block>
                                     <th:block th:if="${executeCommand.commandInfo.assertCommand}">
                                         <tr>
-                                            <th style="background:#725b71;color:white">Assert&nbsp&nbsp;Status</th>
+                                            <th style="background:#725b71;color:white">Assert&nbsp;Status</th>
                                             <td class="table-success"
                                                 th:text="${executeCommand.commandResult.assertStatus}" colspan="3"
                                                 th:class="${executeCommand.commandResult.assertStatus.getCssClass()}">
@@ -410,9 +382,30 @@
                                         </td>
                                     </tr>
                                     <th:block
+                                            th:if="${executeFlow.flowLogs != null && !executeFlow.flowLogs.isEmpty()}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Flow&nbsp;Log</th>
+                                            <td colspan="3" style="background:#eee;">
+                                                <th:block th:each="flowLog : ${executeFlow.flowLogs}">
+                                                    <span th:text="${#strings.concat(dateTimeUtils.formatNormal(flowLog.dateTime),' [',flowLog.level,'] ',flowLog.message)}"/><br/>
+                                                </th:block>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block th:if="${executeFlow.error != null}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Flow&nbsp;Error</th>
+                                            <td colspan="3" style="background:#eee;">
+                                        <pre th:text="${executeFlow.stackTrace}">
+                                            stacktrace
+                                        </pre>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block
                                             th:if="${executeCommand.commandLogs != null && !executeCommand.commandLogs.isEmpty()}">
                                         <tr>
-                                            <th class="bg-dark" style="color:white">Command&nbsp&nbsp;Log</th>
+                                            <th class="bg-dark" style="color:white">Command&nbsp;Log</th>
                                             <td colspan="3" style="background:#eee;">
                                                 <th:block th:each="commandLog : ${executeCommand.commandLogs}">
                                                     <span th:text="${#strings.concat(dateTimeUtils.formatNormal(commandLog.dateTime),' [',commandLog.level,'] ',commandLog.message)}"/><br/>
@@ -422,7 +415,7 @@
                                     </th:block>
                                     <th:block th:if="${executeCommand.error != null}">
                                         <tr>
-                                            <th class="bg-dark" style="color:white">Command&nbsp$nbsp;Error</th>
+                                            <th class="bg-dark" style="color:white">Command&nbsp;Error</th>
                                             <td colspan="3" style="background:#eee;">
                                         <pre th:text="${executeCommand.stackTrace}">
                                             stacktrace
@@ -434,7 +427,7 @@
                                         <tr>
                                             <td colspan="4">
                                                 <a href="#" th:href="${executeCommand.customReportRelativePath}"
-                                                   style="font-weight:bold">&gt;&gt;&gt;&nbsp;Custom&nbsp&nbsp;Report&nbsp;&lt;&lt;&lt;</a>
+                                                   style="font-weight:bold">&gt;&gt;&gt;&nbsp;Custom&nbsp;Report&nbsp;&lt;&lt;&lt;</a>
                                             </td>
                                         </tr>
                                     </th:block>

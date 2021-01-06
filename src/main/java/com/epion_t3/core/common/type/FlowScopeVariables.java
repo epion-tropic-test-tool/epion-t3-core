@@ -19,6 +19,6 @@ public enum FlowScopeVariables {
     /** 実行コマンドが格納されているパス文字列. */
     CURRENT_COMMAND_DIR("currentCommandDir");
 
-    private String name;
+    private final String name;
 
 }

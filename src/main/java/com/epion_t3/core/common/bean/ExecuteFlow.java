@@ -38,7 +38,7 @@ public class ExecuteFlow extends ExecuteElement {
     private FlowStatus status = FlowStatus.WAIT;
 
     /**
-     * 実行Flowリスト.
+     * 実行コマンドリスト.
      */
     private final List<ExecuteCommand> commands = new ArrayList<>();
 

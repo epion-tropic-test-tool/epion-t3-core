@@ -7,6 +7,7 @@ import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.flow.bean.FlowResult;
+import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
 import com.epion_t3.core.flow.runner.FlowRunner;
 import com.epion_t3.core.flow.logging.bean.FlowLog;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
@@ -18,6 +19,9 @@ import com.epion_t3.core.common.util.ErrorUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -39,16 +43,28 @@ public abstract class AbstractFlowRunner<EXECUTE_CONTEXT extends ExecuteContext,
         implements FlowRunner<Context, EXECUTE_CONTEXT, EXECUTE_SCENARIO, FLOW> {
 
     /**
+     * ロギングマーカー.
+     * @since 0.0.3
+     */
+    private Marker collectLoggingMarker;
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public FlowResult execute(Context context, EXECUTE_CONTEXT executeContext, EXECUTE_SCENARIO executeScenario,
-            FLOW flow, Logger logger) {
+            FLOW flow) {
 
         // process実行情報を作成
         EXECUTE_FLOW executeFlow = getExecuteFlowInstance();
         executeScenario.getFlows().add(executeFlow);
         executeFlow.setFlow(flow);
+
+        // マーカーを生成
+        collectLoggingMarker = MarkerFactory.getMarker(executeFlow.getExecuteId().toString());
+
+        // Logger生成
+        var logger = FlowLoggerFactory.getInstance().getFlowLogger(this.getClass());
 
         // Flow実行開始時間を設定
         LocalDateTime start = LocalDateTime.now();
@@ -125,14 +141,14 @@ public abstract class AbstractFlowRunner<EXECUTE_CONTEXT extends ExecuteContext,
             // 所用時間を設定
             executeFlow.setDuration(Duration.between(executeFlow.getStart(), executeFlow.getEnd()));
 
-            // プロセスのログを収集
-            List<FlowLog> flowLogs = SerializationUtils.clone(FlowLoggingHolder.get());
+            // Flowのログを収集
+            List<FlowLog> flowLogs = FlowLoggingHolder.get(executeFlow.getExecuteId().toString());
             executeFlow.setFlowLogs(flowLogs);
 
-            // プロセスのログは収集し終えたらクリアする（ThreadLocalにて保持）
-            FlowLoggingHolder.clear();
+            // Flowのログは収集し終えたらクリアする（ThreadLocalにて保持）
+            FlowLoggingHolder.clear(executeFlow.getExecuteId().toString());
 
-            // プロセス終了ログ出力
+            // Flow終了ログ出力
             outputEndFlowLog(context, executeScenario, executeFlow);
 
             // エラー処理
@@ -141,6 +157,15 @@ public abstract class AbstractFlowRunner<EXECUTE_CONTEXT extends ExecuteContext,
         }
 
         return flowResult;
+    }
+
+    /**
+     * 収集対象のロギングマーカーを取得します.
+     * @since 0.0.3
+     * @return ロギングマーカー
+     */
+    protected Marker collectLoggingMarker() {
+        return this.collectLoggingMarker;
     }
 
     /**

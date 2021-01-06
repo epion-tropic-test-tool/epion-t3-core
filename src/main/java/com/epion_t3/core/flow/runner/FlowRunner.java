@@ -21,6 +21,6 @@ public interface FlowRunner<Context, EXECUTE_CONTEXT extends ExecuteContext, EXE
      * @param flow
      */
     FlowResult execute(final Context executeContext, final EXECUTE_CONTEXT execute_context,
-            final EXECUTE_SCENARIO executeScenario, final FLOW flow, final Logger logger);
+            final EXECUTE_SCENARIO executeScenario, final FLOW flow);
 
 }
