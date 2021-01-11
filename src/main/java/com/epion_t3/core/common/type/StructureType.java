@@ -13,7 +13,7 @@ public enum StructureType {
 
     STRING("string"), NUMBER("number"), BOOLEAN("boolean"), ARRAY("array"), MAP("map"), OBJECT("object");
 
-    private String value;
+    private final String value;
 
     @Nullable
     public static StructureType valueOfByValue(final String value) {
