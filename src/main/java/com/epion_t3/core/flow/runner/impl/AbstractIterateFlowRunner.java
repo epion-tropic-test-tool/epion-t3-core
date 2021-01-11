@@ -53,7 +53,7 @@ public abstract class AbstractIterateFlowRunner<EXECUTE_CONTEXT extends ExecuteC
 
     /**
      * ロギングマーカー.
-     * @since 0.0.3
+     * @since 0.0.4
      */
     private Marker collectLoggingMarker;
 
@@ -159,7 +159,7 @@ public abstract class AbstractIterateFlowRunner<EXECUTE_CONTEXT extends ExecuteC
 
     /**
      * 収集対象のロギングマーカーを取得します.
-     * @since 0.0.3
+     * @since 0.0.4
      * @return ロギングマーカー
      */
     protected Marker collectLoggingMarker() {

@@ -17,14 +17,14 @@ public enum FlowResultStatus {
     /**
      * Iterate、While、DoWhileのループの次要素遷移. このステータスは、ループ系Flowの子Flowでのみ有効となる.
      * 
-     * @since 0.0.3
+     * @since 0.0.4
      */
     CONTINUE,
 
     /**
      * Iterate、While、DoWhileのループの中断. このステータスは、ループ系Flowの子Flowでのみ有効となる.
      * 
-     * @since 0.0.3
+     * @since 0.0.4
      */
     BREAK;
 
