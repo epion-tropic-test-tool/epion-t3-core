@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2021 Nozomu Takashima. */
+/* Copyright (c) 2017-2020 Nozomu Takashima. */
 package com.epion_t3.core.flow.logging.factory;
 
 import com.epion_t3.core.flow.logging.appender.FlowLoggingAppender;
