@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteFlow;
@@ -36,7 +36,7 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
      */
     @Override
     public FlowResult execute(Context context, ExecuteContext executeContext, ExecuteScenario executeScenario,
-                              FLOW flow) {
+            FLOW flow) {
 
         // process実行情報を作成
         var executeFlow = createExecuteFlow();
@@ -49,7 +49,7 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
         // Flow実行開始時間を設定
         LocalDateTime start = LocalDateTime.now();
         executeFlow.setStart(start);
-        String startTimeKey = flow.getId() + executeScenario.FLOW_START_VARIABLE_SUFFIX;
+        String startTimeKey = flow.getId() + ExecuteScenario.FLOW_START_VARIABLE_SUFFIX;
         if (!executeScenario.getScenarioVariables().containsKey(startTimeKey)) {
             executeScenario.getScenarioVariables().put(startTimeKey, new ArrayList<>());
         }
@@ -140,7 +140,7 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
      * @return
      */
     protected abstract Iterable resolveIterateTarget(Context context, ExecuteContext ExecuteContext,
-                                                     ExecuteScenario executeScenario, ExecuteFlow executeFlow, FLOW flow, Logger logger);
+            ExecuteScenario executeScenario, ExecuteFlow executeFlow, FLOW flow, Logger logger);
 
     /**
      * ループ処理を行います.
@@ -154,8 +154,8 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
      * @param iterateTarget
      */
     private void loopProcess(@NonNull Context context, @NonNull ExecuteContext executeContext,
-                             @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow parentExecuteFlow,
-                             @NonNull FLOW parentFlow, @NonNull Logger logger, @NonNull Iterable iterateTarget) {
+            @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow parentExecuteFlow, @NonNull FLOW parentFlow,
+            @NonNull Logger logger, @NonNull Iterable iterateTarget) {
 
         // 解決したコレクションの数だけ回す
         for (var target : iterateTarget) {
@@ -172,61 +172,60 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
 
     }
 
-
     /**
      * エラー処理を行う. この処理は、Flowの処理結果が失敗の場合に実行される.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
-     * @param t               例外
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
+     * @param t 例外
      */
     protected void onError(Context context, ExecuteContext ExecuteContext, ExecuteScenario executeScenario,
-                           ExecuteFlow executeFlow, FLOW flow, Throwable t, Logger logger) {
+            ExecuteFlow executeFlow, FLOW flow, Throwable t, Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 
     /**
      * エラー処理を行う. この処理は、子Flowの処理結果が失敗の場合に実行される.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
-     * @param t               例外
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
+     * @param t 例外
      */
     protected void onChildError(final Context context, final ExecuteContext executeContext,
-                                final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
-                                final ExecuteFlow childExecuteFlow, final Flow childFlow, final Throwable t, final Logger logger) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
+            final ExecuteFlow childExecuteFlow, final Flow childFlow, final Throwable t, final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 
     /**
      * 終了処理を行う. この処理は、Flowの処理結果が成功・失敗に関わらず実行される.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
      */
     protected void onFinally(final Context context, final ExecuteContext executeContext,
-                             final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
-                             final Logger logger) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
+            final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 
     /**
      * 終了処理を行う. この処理は、子Flowの処理結果が成功・失敗に関わらず実行される.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
      */
     protected void onChildFinally(final Context context, final ExecuteContext ExecuteContext,
-                                  final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
-                                  final ExecuteFlow childExecuteFlow, final Flow childFlow, final Logger logger) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
+            final ExecuteFlow childExecuteFlow, final Flow childFlow, final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 

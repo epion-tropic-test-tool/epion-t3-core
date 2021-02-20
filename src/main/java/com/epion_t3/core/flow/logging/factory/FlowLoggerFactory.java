@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.logging.factory;
 
 import com.epion_t3.core.flow.logging.appender.FlowLoggingAppender;
@@ -19,7 +20,7 @@ public final class FlowLoggerFactory {
         if (!flowLoggingAppender.isStarted()) {
             flowLoggingAppender.start();
         }
-        var logger =  loggerContext.getLogger("FlowLog");
+        var logger = loggerContext.getLogger("FlowLog");
         logger.addAppender(flowLoggingAppender);
         return logger;
     }

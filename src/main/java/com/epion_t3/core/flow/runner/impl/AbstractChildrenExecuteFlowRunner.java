@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteFlow;
@@ -16,6 +17,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * 子Flowを実行するメソッドを保有する抽象クラス.
+ *
+ * @param <FLOW> Flow
+ */
 @Slf4j
 public abstract class AbstractChildrenExecuteFlowRunner<FLOW extends Flow> extends AbstractBaseFlowRunner<FLOW> {
 
@@ -29,8 +35,8 @@ public abstract class AbstractChildrenExecuteFlowRunner<FLOW extends Flow> exten
      * @param flow Flow
      */
     protected void executeChildren(@NonNull Context context, @NonNull ExecuteContext executeContext,
-                                   @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow parentExecuteFlow,
-                                   @NonNull HasChildrenFlow flow) {
+            @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow parentExecuteFlow,
+            @NonNull HasChildrenFlow flow) {
 
         var childFlowResult = (FlowResult) null;
 
@@ -46,45 +52,44 @@ public abstract class AbstractChildrenExecuteFlowRunner<FLOW extends Flow> exten
             if (childFlowResult != null) {
                 // 前Flowの結果によって処理を振り分ける
                 switch (childFlowResult.getStatus()) {
-                    case NEXT:
-                        // 単純に次のFlowへ遷移
-                        log.debug("Execute Next Flow.");
-                        break;
-                    case CHOICE:
-                        log.debug("choice execute next flow.");
-                        // 指定された後続Flowへ遷移
-                        if (StringUtils.equals(childFlowResult.getChoiceId(), childFlow.getId())) {
-                            // 合致したため実行する
-                            log.debug("match flow id : {} -> NEXT.", childFlowResult.getChoiceId());
-                        } else {
-                            // SKIP扱いとする
-                            log.debug("does not match execute flow id : {}. -> SKIP",
-                                    childFlowResult.getChoiceId());
-                            var childExecuteFlow = new ExecuteFlow();
-                            childExecuteFlow.setStatus(FlowStatus.SKIP);
-                            childExecuteFlow.setFlow(childFlow);
-                            executeScenario.getFlows().add(childExecuteFlow);
-                            // 次のループまで
-                            continue;
-                        }
-                        break;
-                    case EXIT:
-                        // 即時終了
-                        log.debug("force exit scenario.");
-                        exitFlg = true;
-                        break;
-                    case BREAK:
-                        // ループ用終了ステータス
-                        log.debug("force exit scenario.");
-                        breakLoopFlg = true;
-                        break;
-                    case CONTINUE:
-                        // ループ用継続ステータス
-                        log.debug("force exit scenario.");
+                case NEXT:
+                    // 単純に次のFlowへ遷移
+                    log.debug("Execute Next Flow.");
+                    break;
+                case CHOICE:
+                    log.debug("choice execute next flow.");
+                    // 指定された後続Flowへ遷移
+                    if (StringUtils.equals(childFlowResult.getChoiceId(), childFlow.getId())) {
+                        // 合致したため実行する
+                        log.debug("match flow id : {} -> NEXT.", childFlowResult.getChoiceId());
+                    } else {
+                        // SKIP扱いとする
+                        log.debug("does not match execute flow id : {}. -> SKIP", childFlowResult.getChoiceId());
+                        var childExecuteFlow = new ExecuteFlow();
+                        childExecuteFlow.setStatus(FlowStatus.SKIP);
+                        childExecuteFlow.setFlow(childFlow);
+                        executeScenario.getFlows().add(childExecuteFlow);
+                        // 次のループまで
                         continue;
-                    default:
-                        // TODO:Error
-                        throw new SystemException(CoreMessages.CORE_ERR_0001);
+                    }
+                    break;
+                case EXIT:
+                    // 即時終了
+                    log.debug("force exit scenario.");
+                    exitFlg = true;
+                    break;
+                case BREAK:
+                    // ループ用終了ステータス
+                    log.debug("force exit scenario.");
+                    breakLoopFlg = true;
+                    break;
+                case CONTINUE:
+                    // ループ用継続ステータス
+                    log.debug("force exit scenario.");
+                    continue;
+                default:
+                    // TODO:Error
+                    throw new SystemException(CoreMessages.CORE_ERR_0001);
                 }
             }
 

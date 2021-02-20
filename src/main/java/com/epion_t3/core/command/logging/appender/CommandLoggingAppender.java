@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.logging.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -39,7 +39,8 @@ public class CommandLoggingAppender extends AppenderBase<ILoggingEvent> {
         var level = eventObject.getLevel();
         var message = eventObject.getFormattedMessage();
         var now = LocalDateTime.now();
-        CommandLoggingHolder.append(CommandLog.builder().executeId(commandExecuteId).level(level).message(message).dateTime(now).build());
+        CommandLoggingHolder.append(
+                CommandLog.builder().executeId(commandExecuteId).level(level).message(message).dateTime(now).build());
     }
 
 }

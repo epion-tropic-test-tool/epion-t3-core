@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteCommand;
@@ -22,16 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 全てのFlowの基底クラス.
+ * 単一Flowの基底クラス.
  *
  * @param <FLOW>
  */
 @Slf4j
-public abstract class AbstractSimpleFlowRunner<FLOW extends Flow>
-        extends AbstractBaseFlowRunner<FLOW> {
+public abstract class AbstractSimpleFlowRunner<FLOW extends Flow> extends AbstractBaseFlowRunner<FLOW> {
 
     /**
      * ロギングマーカー.
+     * 
      * @since 0.0.4
      */
     private Marker collectLoggingMarker;
@@ -60,7 +60,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow>
         }
         ((List) executeScenario.getScenarioVariables().get(startTimeKey)).add(start);
 
-        var flowResult = (FlowResult)null;
+        var flowResult = (FlowResult) null;
 
         try {
 
@@ -146,6 +146,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow>
 
     /**
      * Flowを実行します.
+     * 
      * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
      * @param executeFlow Flow実行情報
@@ -155,8 +156,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow>
             ExecuteScenario executeScenario, ExecuteFlow executeFlow, FLOW flow, Logger logger);
 
     /**
-     * エラー処理を行う.
-     * この処理は、Flowの処理結果が失敗の場合に実行される.
+     * エラー処理を行う. この処理は、Flowの処理結果が失敗の場合に実行される.
      *
      * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
@@ -170,8 +170,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow>
     }
 
     /**
-     * 終了処理を行う.
-     * この処理は、Flowの処理結果が成功・失敗に関わらず実行される.
+     * 終了処理を行う. この処理は、Flowの処理結果が成功・失敗に関わらず実行される.
      *
      * @param context コンテキスト
      * @param executeScenario シナリオ実行情報

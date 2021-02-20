@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteFlow;
@@ -54,13 +55,13 @@ public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowR
     /**
      * Flowに対して、変数をバインドします.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
      */
     protected void bind(final Context context, final ExecuteContext executeContext,
-                        final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final Flow flow) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final Flow flow) {
 
         BindUtils.getInstance()
                 .bind(flow, executeScenario.getProfileConstants(), executeContext.getGlobalVariables(),
@@ -68,15 +69,14 @@ public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowR
     }
 
     /**
-     * シナリオスコープの変数を設定する.
-     * プロセス実行時に指定を行うべきシナリオスコープ変数の設定処理.
+     * シナリオスコープの変数を設定する. プロセス実行時に指定を行うべきシナリオスコープ変数の設定処理.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     FLOW実行情報
+     * @param executeFlow FLOW実行情報
      */
     protected void settingFlowVariables(final Context context, final ExecuteContext ExecuteContext,
-                                        final ExecuteScenario executeScenario, final ExecuteFlow executeFlow) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow) {
 
         // 現在の処理Flow
         executeFlow.getFlowVariables().put(FlowScopeVariables.CURRENT_FLOW.getName(), executeFlow.getFlow().getId());
@@ -89,12 +89,12 @@ public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowR
     /**
      * シナリオスコープの変数を掃除する. プロセス実行時にのみ指定すべきシナリオスコープの変数を確実に除去するための処理.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     FLOW実行情報
+     * @param executeFlow FLOW実行情報
      */
     protected void cleanFlowVariables(final Context context, final ExecuteContext executeContext,
-                                      final ExecuteScenario executeScenario, final ExecuteFlow executeFlow) {
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow) {
 
         // 現在の処理Flow
         executeFlow.getFlowVariables().remove(FlowScopeVariables.CURRENT_FLOW.getName());
@@ -106,9 +106,9 @@ public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowR
     /**
      * Flow開始ログ出力.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario 実行シナリオ
-     * @param executeFlow     実行Flow
+     * @param executeFlow 実行Flow
      */
     protected void outputStartFlowLog(Context context, ExecuteScenario executeScenario, ExecuteFlow executeFlow) {
         log.info("■ Start Flow    ■ Scenario ID : {}, Flow ID : {}", executeScenario.getInfo().getId(),
@@ -118,9 +118,9 @@ public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowR
     /**
      * Flow終了ログ出力.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario 実行シナリオ
-     * @param executeFlow     実行Flow
+     * @param executeFlow 実行Flow
      */
     protected void outputEndFlowLog(Context context, ExecuteScenario executeScenario, ExecuteFlow executeFlow) {
         if (executeFlow.getStatus() == FlowStatus.SUCCESS) {

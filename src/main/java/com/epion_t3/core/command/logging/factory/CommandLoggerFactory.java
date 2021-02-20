@@ -1,3 +1,4 @@
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.logging.factory;
 
 import com.epion_t3.core.command.logging.appender.CommandLoggingAppender;
@@ -20,7 +21,7 @@ public final class CommandLoggerFactory {
         if (!commandLoggingAppender.isStarted()) {
             commandLoggingAppender.start();
         }
-        var logger =  loggerContext.getLogger("CommandLog");
+        var logger = loggerContext.getLogger("CommandLog");
         logger.addAppender(commandLoggingAppender);
         return logger;
     }

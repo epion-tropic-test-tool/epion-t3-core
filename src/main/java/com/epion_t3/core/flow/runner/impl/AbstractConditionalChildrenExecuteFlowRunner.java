@@ -1,8 +1,8 @@
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.common.bean.scenario.Flow;
 import com.epion_t3.core.common.bean.scenario.HasChildrenFlow;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
@@ -21,17 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 条件に合致した場合に子Flowを実行するFlowの抽象クラス.
+ * 
  * @param <FLOW>
  */
 @Slf4j
-public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends HasChildrenFlow> extends AbstractChildrenExecuteFlowRunner<FLOW> {
+public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends HasChildrenFlow>
+        extends AbstractChildrenExecuteFlowRunner<FLOW> {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public FlowResult execute(Context context, ExecuteContext executeContext, ExecuteScenario executeScenario,
-                              FLOW flow) {
+            FLOW flow) {
 
         // process実行情報を作成
         var executeFlow = createExecuteFlow();
@@ -42,15 +45,15 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
         var logger = FlowLoggerFactory.getInstance().getFlowLogger(this.getClass());
 
         // Flow実行開始時間を設定
-        LocalDateTime start = LocalDateTime.now();
+        var start = LocalDateTime.now();
         executeFlow.setStart(start);
-        String startTimeKey = flow.getId() + executeScenario.FLOW_START_VARIABLE_SUFFIX;
+        var startTimeKey = flow.getId() + executeScenario.FLOW_START_VARIABLE_SUFFIX;
         if (!executeScenario.getScenarioVariables().containsKey(startTimeKey)) {
             executeScenario.getScenarioVariables().put(startTimeKey, new ArrayList<>());
         }
         ((List) executeScenario.getScenarioVariables().get(startTimeKey)).add(start);
 
-        FlowResult flowResult = null;
+        var flowResult = (FlowResult) null;
 
         try {
 
@@ -64,8 +67,7 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
             bind(context, executeContext, executeScenario, executeFlow, flow);
 
             // ループ対象の解決
-            var evaluationValue = evaluation(context, executeContext, executeScenario, executeFlow, flow,
-                    logger);
+            var evaluationValue = evaluation(context, executeContext, executeScenario, executeFlow, flow, logger);
 
             log.info("condition evaluation result -> {}.", evaluationValue);
 
@@ -97,7 +99,7 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
             cleanFlowVariables(context, executeContext, executeScenario, executeFlow);
 
             // シナリオ実行終了時間を設定
-            LocalDateTime end = LocalDateTime.now();
+            var end = LocalDateTime.now();
             executeFlow.setEnd(end);
             String endTimeKey = flow.getId() + executeScenario.FLOW_END_VARIABLE_SUFFIX;
             if (!executeScenario.getScenarioVariables().containsKey(endTimeKey)) {
@@ -127,7 +129,7 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
     }
 
     /**
-     * 評価します.
+     * 実行するかを判定する評価式を実行しします.
      *
      * @param context
      * @param executeContext
@@ -138,33 +140,35 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
      * @return
      */
     protected abstract boolean evaluation(@NonNull Context context, @NonNull ExecuteContext executeContext,
-                                          @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow executeFlow, @NonNull FLOW flow, @NonNull Logger logger);
+            @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow executeFlow, @NonNull FLOW flow,
+            @NonNull Logger logger);
 
     /**
      * エラー処理を行う. この処理は、Flowの処理結果が失敗の場合に実行される.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
-     * @param t               例外
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
+     * @param t 例外
      */
-    protected void onError(@NonNull final Context context, @NonNull  final ExecuteContext ExecuteContext, @NonNull  final ExecuteScenario executeScenario,
-                           @NonNull  final ExecuteFlow executeFlow, @NonNull  final FLOW flow, @NonNull Throwable t, @NonNull  final Logger logger) {
+    protected void onError(@NonNull final Context context, @NonNull final ExecuteContext ExecuteContext,
+            @NonNull final ExecuteScenario executeScenario, @NonNull final ExecuteFlow executeFlow,
+            @NonNull final FLOW flow, @NonNull Throwable t, @NonNull final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 
     /**
      * 終了処理を行う. この処理は、Flowの処理結果が成功・失敗に関わらず実行される.
      *
-     * @param context         コンテキスト
+     * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
-     * @param executeFlow     Flow実行情報
-     * @param flow            Flow
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
      */
     protected void onFinally(@NonNull final Context context, @NonNull final ExecuteContext executeContext,
-                             @NonNull final ExecuteScenario executeScenario, @NonNull final ExecuteFlow executeFlow, @NonNull final FLOW flow,
-                             @NonNull final Logger logger) {
+            @NonNull final ExecuteScenario executeScenario, @NonNull final ExecuteFlow executeFlow,
+            @NonNull final FLOW flow, @NonNull final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 

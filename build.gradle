@@ -6,8 +6,8 @@ plugins {
     id 'maven'
     id 'maven-publish'
     id 'jacoco'
-//    id "com.diffplug.gradle.spotless" version "3.26.1"
-//    id "com.jfrog.bintray" version "1.8.4"
+    id "com.diffplug.gradle.spotless" version "3.26.1"
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
 ext {
@@ -143,37 +143,37 @@ codeCoverageReport.dependsOn {
     subprojects*.test
 }
 
-//spotless {
-//    java {
-//        enforceCheck = true
-//        licenseHeaderFile rootProject.file('./formatter/LICENSE')
-//        eclipse().configFile rootProject.file('./formatter/formatter.xml')
-//        lineEndings 'UNIX'
-//    }
-//}
-//
-//// Library Publish
-//bintray {
-//    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-//    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-//    configurations = ['archives']
-//    publish = true
-//    override = true
-//    pkg {
-//        repo = 'maven'
-//        name = project.name
-//        userOrg = 'epion-tropic-test-tool'
-//        licenses = ['Apache2']
-//        websiteUrl = siteUrl
-//        issueTrackerUrl = githubUrl + '/blob/master/LICENSE'
-//        vcsUrl = githubUrl + '.git'
-//        issueTrackerUrl = githubUrl + '/issues'
-//        publicDownloadNumbers = true
-//        version {
-//            name = project.version
-//        }
-//    }
-//}
+spotless {
+    java {
+        enforceCheck = true
+        licenseHeaderFile rootProject.file('./formatter/LICENSE')
+        eclipse().configFile rootProject.file('./formatter/formatter.xml')
+        lineEndings 'UNIX'
+    }
+}
+
+// Library Publish
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+    publish = true
+    override = true
+    pkg {
+        repo = 'maven'
+        name = project.name
+        userOrg = 'epion-tropic-test-tool'
+        licenses = ['Apache2']
+        websiteUrl = siteUrl
+        issueTrackerUrl = githubUrl + '/blob/master/LICENSE'
+        vcsUrl = githubUrl + '.git'
+        issueTrackerUrl = githubUrl + '/issues'
+        publicDownloadNumbers = true
+        version {
+            name = project.version
+        }
+    }
+}
 
 install {
     repositories.mavenInstaller {

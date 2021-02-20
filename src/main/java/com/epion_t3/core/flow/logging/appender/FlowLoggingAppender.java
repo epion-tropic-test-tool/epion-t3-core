@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.logging.appender;
 
 import ch.qos.logback.classic.Level;
@@ -40,7 +40,8 @@ public final class FlowLoggingAppender extends AppenderBase<ILoggingEvent> {
         var level = eventObject.getLevel();
         var message = eventObject.getFormattedMessage();
         var now = LocalDateTime.now();
-        FlowLoggingHolder.append(FlowLog.builder().executeId(flowExecuteId).level(level).message(message).dateTime(now).build());
+        FlowLoggingHolder
+                .append(FlowLog.builder().executeId(flowExecuteId).level(level).message(message).dateTime(now).build());
     }
 
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.resolver.impl;
 
 import com.epion_t3.core.command.handler.CommandRunnerInvocationHandler;

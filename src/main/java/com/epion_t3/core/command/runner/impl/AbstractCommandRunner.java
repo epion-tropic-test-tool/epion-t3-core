@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.runner.impl;
 
 import com.epion_t3.core.command.bean.AssertCommandResult;
@@ -50,6 +50,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * ロギングマーカー.
+     * 
      * @since 0.0.4
      */
     private Marker collectLoggingMarker;
@@ -174,6 +175,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * 収集対象のロギングマーカーを取得します.
+     * 
      * @since 0.0.4
      * @return ロギングマーカー
      */
@@ -283,6 +285,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * 変数を設定します.
+     * 
      * @param target 変数名（スコープ.変数名）
      * @param value 設定する値
      */
@@ -315,6 +318,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * 変数を削除します.
+     * 
      * @param target 変数名（スコープ.変数名）
      */
     protected void removeVariable(final String target) {
