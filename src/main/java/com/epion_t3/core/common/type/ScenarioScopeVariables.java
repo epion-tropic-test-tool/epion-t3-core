@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
 import lombok.AllArgsConstructor;
@@ -12,8 +12,15 @@ public enum ScenarioScopeVariables {
 
     SCENARIO_DIR("scenarioDir"),
 
-    EVIDENCE_DIR("evidenceDir");
+    EVIDENCE_DIR("evidenceDir"),
 
-    private String name;
+    /**
+     * 現在の繰り返し対象オブジェクト.
+     * 
+     * @since 0.0.4
+     */
+    CURRENT_ITERATE_TARGET("currentIterateTarget");
+
+    private final String name;
 
 }

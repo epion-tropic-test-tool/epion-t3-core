@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>ETTT-Report</title>
+
+    <th:block th:if="${webAssetPath}">
+        <link rel="stylesheet" th:href="${#strings.concat(webAssetPath, 'bootstrap.min.css')}">
+    </th:block>
+    <th:block th:unless="${webAssetPath}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
+              integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    </th:block>
+</head>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <span class="navbar-brand col-md-11">ETTT-Reports</span>
+    <span style="color:#eee">Version:1.0.0</span>
+</nav>
+
+
+<main role="main" class="container">
+
+    <nav class="breadcrumb">
+        <a class="breadcrumb-item" href="./report.html" th:href="'../report.html'">All</a>
+        <a class="breadcrumb-item" href="#">Scenario</a>
+    </nav>
+
+    <ul>
+        <li><a href="#executeInformation">Exexute&nbsp;Information</a></li>
+        <li><a href="#scenarioInformation">Scenario&nbsp;Information</a></li>
+        <li><a href="#executeFlow">Execute&nbsp;Flow</a></li>
+        <li><a href="#notifications">Notifications</a></li>
+        <li><a href="#evidences">Evidences</a></li>
+        <li><a href="#profileConstants">Profile&nbsp;Constants</a></li>
+        <li><a href="#scenarioVariables">Scenario&nbsp;Variables</a></li>
+        <li><a href="#executeDetails">Execute&nbsp;Details</a></li>
+    </ul>
+
+    <!-- Execute Information. -->
+    <section class="row">
+        <div class="col-md-12">
+            <h2 id="executeInformation">Execute&nbsp;Information</h2>
+            <table class="table table-sm table-bordered">
+                <tbody>
+                <tr>
+                    <th class="bg-dark" style="width:200px;color:white">Profile</th>
+                    <td th:text="${executeScenario.option.profile}">develop</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Mode</th>
+                    <td th:text="${executeScenario.option.mode}">test</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">NoReport</th>
+                    <td th:text="${executeScenario.option.noreport}">false</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Debug</th>
+                    <td th:text="${executeScenario.option.debug}">false</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <!-- Execute Scenario Information. -->
+    <section class="row">
+        <div class="col-md-12">
+            <h2 id="scenarioInformation">Scenario&nbsp;Information</h2>
+            <table class="table table-sm table-bordered">
+                <tbody>
+                <tr>
+                    <th class="bg-dark" style="width:200px;color:white">ID</th>
+                    <td th:text="${executeScenario.info.id}">sample-scenario-001</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Version</th>
+                    <td th:text="${executeScenario.info.version}">1.0.0</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Summary</th>
+                    <td th:text="${executeScenario.info.summary}">Sample Scenario 001</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Description</th>
+                    <td th:text="${executeScenario.info.description}">This is a typical example scenario of the tool.
+                    </td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Execution&nbsp;ID</th>
+                    <td th:text="${executeScenario.executeScenarioId}">fef4d139-a550-490a-8365-9fd26ce3f871</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Status</th>
+                    <td th:text="${executeScenario.status}" th:class="${executeScenario.status.getCssClass()}">SUCCESS
+                    </td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Start</th>
+                    <td th:text="${dateTimeUtils.formatNormal(executeScenario.start)}">2018/09/01 12:12:12</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">End</th>
+                    <td th:text="${dateTimeUtils.formatNormal(executeScenario.end)}">2018/09/01 12:12:12</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Duration&nbsp;(ms)</th>
+                    <td th:text="${dateTimeUtils.getMillis(executeScenario.start, executeScenario.end)}">1</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <!--
+    <section class="row" style="margin-top:20px" id="executedFlow">
+        <div class="col-md-12">
+            <h2>Execute&nbsp;Flow</h2>
+            <th:block th:utext="${activity}"></th:block>
+        </div>
+    </section>
+    -->
+
+    <section class="row" style="margin-top:20px" id="executeFlow">
+        <div class="col-md-12">
+            <h2>Execute&nbsp;Flow</h2>
+            <table class="table table-bordered">
+                <thead class="bg-dark" style="color:white">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Summary</th>
+                    <th scope="col">Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="executeFlow,stat : ${executeScenario.flows}">
+                    <tr>
+                        <th scope="row">
+                            <th:block th:if="${!executeFlow.commands.isEmpty}">
+                                <a style="text-decoration:none;" data-toggle="collapse" href="#collapseExample"
+                                   th:href="${#strings.concat('#collapse',executeFlow.executeId)}" aria-expanded="false"
+                                   aria-controls="collapseExample"
+                                   th:aria-controls="${#strings.concat('collapse',executeFlow.executeId)}">
+                                    <svg width="0.8em" aria-hidden="true" data-prefix="fas" data-icon="plus"
+                                         class="svg-inline--fa fa-plus fa-w-14" role="img"
+                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                        <path fill="currentColor"
+                                              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"></path>
+                                    </svg>
+                                </a>
+                            </th:block>
+                            <a href="#executionFlowId" th:href="${#strings.concat('#',executeFlow.executeId)}"
+                               th:text="${executeFlow.flow.id}">flow-0001</a>
+                        </th>
+                        <td>Flow</td>
+                        <td class="table-success" th:text="${executeFlow.status}"
+                            th:class="${executeFlow.status.getCssClass()}">SUCCESS
+                        </td>
+                        <td th:text="${executeFlow.flow.summary}">Summary</td>
+                        <td th:text="${#strings.concat(dateTimeUtils.formatTimeNormal(executeFlow.start), ' ~ ', dateTimeUtils.formatTimeNormal(executeFlow.end), ' (', dateTimeUtils.getMillis(executeFlow.start, executeFlow.end), ' ms)')}">
+                            21:27:42.611 ~ 21:27:48.800 (6189 ms)
+                        </td>
+                    </tr>
+                    <th:block th:if="${!executeFlow.commands.isEmpty}">
+                        <th:block th:each="executeCommand,stat : ${executeFlow.commands}">
+                            <tr class="collapse" id="collapseExample"
+                                th:id="${#strings.concat('collapse',executeFlow.executeId)}">
+                                <th scope="row" style="padding-left:30px;">
+                                    <a href="#executionCommandId"
+                                       th:href="${#strings.concat('#',executeCommand.executeId)}"
+                                       th:text="${executeCommand.command.id}">command-0001</a>
+                                </th>
+                                <td>Command</td>
+                                <td class="table-secondary" th:text="${executeCommand.commandResult.status}"
+                                    th:class="${executeCommand.commandResult.status.getCssClass()}">WAIT
+                                </td>
+                                <td th:text="${executeCommand.commandInfo.summary}">Summary</td>
+                                <td th:text="${#strings.concat(dateTimeUtils.formatTimeNormal(executeCommand.start), ' ~ ', dateTimeUtils.formatTimeNormal(executeCommand.end), ' (', dateTimeUtils.getMillis(executeCommand.start, executeCommand.end), ' ms)')}">
+                                    21:27:42.611 ~ 21:27:48.800 (6189 ms)
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                </th:block>
+                <tr th:remove="all">
+                    <th scope="row">flow-0002</th>
+                    <td>Flow</td>
+                    <td class="table-danger">ERROR</td>
+                    <td>Summary</td>
+                    <td>21:27:42.611 ~ 21:27:48.800 (6189 ms)</td>
+                </tr>
+                <tr th:remove="all">
+                    <th scope="row">flow-0003</th>
+                    <td>Flow</td>
+                    <td class="table-warning">WARN</td>
+                    <td>Summary</td>
+                    <td>21:27:42.611 ~ 21:27:48.800 (6189 ms)</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+    <!-- Notifications -->
+    <section class="row" style="margin-top:20px" id="notifications" th:unless="${executeScenario.notifications.isEmpty()}">
+        <div class="col-md-12">
+            <h2>Notifications</h2>
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="bg-dark" style="color:white">
+                <tr>
+                    <th scope="col">Level</th>
+                    <th scope="col">Message</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="notification,stat : ${executeScenario.notifications}">
+                    <td th:text="${notification.level}" th:class="${notification.level.getCssClass()}">INFO</td>
+                    <td th:text="${notification.message}">メッセージ</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Evidences -->
+    <section class="row" style="margin-top:20px" id="evidences" th:unless="${executeScenario.evidences.isEmpty()}">
+        <div class="col-md-12">
+            <h2>Evidences</h2>
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="bg-dark" style="color:white">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="entry,stat : ${executeScenario.evidences}">
+                    <tr th:if="${entry.value.getClass().getName() == 'com.epion_t3.core.common.bean.FileEvidenceInfo'}">
+                        <td scope="col">
+                            <a th:href="${#strings.concat('#',entry.value.executeFlowId)}"
+                               th:text="${entry.value.fqfn}">flow-0001</a>
+                        </td>
+                        <td><a th:href="${entry.value.relativePath}" th:text="${entry.value.name}">value1</a></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Profile Constants -->
+    <section class="row" style="margin-top:20px" id="profileConstants" th:unless="${executeScenario.profileConstants.isEmpty()}">
+        <div class="col-md-12">
+            <h2>Profile&nbsp;Constants</h2>
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="bg-dark" style="color:white">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="profileConstant,stat : ${executeScenario.profileConstants}">
+                    <td scope="row" th:text="${profileConstant.key}">key1</td>
+                    <td th:text="${profileConstant.value}">value1</td>
+                </tr>
+                <tr th:remove="all">
+                    <td>key2</td>
+                    <td>value2</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Scenario Variables -->
+    <section class="row" style="margin-top:20px" id="scenarioVariables" th:unless="${executeScenario.scenarioVariables.isEmpty()}">
+        <div class="col-md-12">
+            <h2>Scenario Variables</h2>
+            <table class="table table-bordered table-hover table-striped">
+                <thead class="bg-dark" style="color:white">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="scenarioVariable,stat : ${executeScenario.scenarioVariables}">
+                    <td scope="row" th:text="${scenarioVariable.key}">key1</td>
+                    <td th:text="${scenarioVariable.value}">value1</td>
+                </tr>
+                <tr th:remove="all">
+                    <td>key2</td>
+                    <td>value2</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="row" style="margin-top:20px" id="executeDetails">
+        <div class="col-md-12">
+            <h2>Execute&nbsp;Details</h2>
+            <p>* : Extension Parameter</p>
+            <th:block th:each="executeFlow,stat : ${executeScenario.flows}">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-sm table-bordered" id="executionFlowId"
+                               th:id="${executeFlow.executeId}">
+                            <tbody>
+                            <tr>
+                                <th class="bg-dark" style="width:200px;color:white">Flow Type</th>
+                                <td colspan="3"
+                                    th:text="${#strings.concat(executeFlow.flow.id, ' / ', executeFlow.flow.type)}">Flow
+                                </td>
+                            </tr>
+                            <th:block th:if="${!executeFlow.commands.isEmpty}">
+                                <th:block th:each="executeCommand,stat : ${executeFlow.commands}">
+                                    <tr>
+                                        <th class="bg-dark" style="color:white">Status</th>
+                                        <td class="table-success" th:text="${executeCommand.commandResult.status}"
+                                            colspan="3"
+                                            th:class="${executeCommand.commandResult.status.getCssClass()}">SUCCESS
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-dark" style="color:white">Time</th>
+                                        <td th:text="${#strings.concat(dateTimeUtils.formatTimeNormal(executeCommand.start), ' ~ ', dateTimeUtils.formatTimeNormal(executeCommand.end), ' (', dateTimeUtils.getMillis(executeCommand.start, executeCommand.end), ' ms)')}"
+                                            colspan="3">
+                                            21:27:42.611 ~ 21:27:48.800 (6189 ms)
+                                        </td>
+                                    </tr>
+                                    <th:block th:if="${executeCommand.commandResult.message}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Message</th>
+                                            <td th:text="${executeCommand.commandResult.message}" colspan="3">message
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block th:if="${executeCommand.commandInfo.assertCommand}">
+                                        <tr>
+                                            <th style="background:#725b71;color:white">Assert&nbsp;Status</th>
+                                            <td class="table-success"
+                                                th:text="${executeCommand.commandResult.assertStatus}" colspan="3"
+                                                th:class="${executeCommand.commandResult.assertStatus.getCssClass()}">
+                                                SUCCESS
+                                            </td>
+                                        </tr>
+                                        <th:block th:if="${executeCommand.commandResult.expected}">
+                                            <tr>
+                                                <th style="background:#725b71;color:white">Expected</th>
+                                                <td th:text="${executeCommand.commandResult.expected}" colspan="3">hoge
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                        <th:block th:if="${executeCommand.commandResult.actual}">
+                                            <tr>
+                                                <th style="background:#725b71;color:white">Actual</th>
+                                                <td th:text="${executeCommand.commandResult.actual}" colspan="3">hoge
+                                                </td>
+                                            </tr>
+                                        </th:block>
+                                    </th:block>
+                                    <tr>
+                                        <th class="bg-dark" style="color:white">Command</th>
+                                        <td th:utext="${stringUtils.prettyHtml(yamlUtils.marshal(executeCommand.command))}"
+                                            colspan="3">Sample Scenario
+                                            001
+                                        </td>
+                                    </tr>
+                                    <th:block
+                                            th:if="${executeFlow.flowLogs != null && !executeFlow.flowLogs.isEmpty()}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Flow&nbsp;Log</th>
+                                            <td colspan="3" style="background:#eee;">
+                                                <th:block th:each="flowLog : ${executeFlow.flowLogs}">
+                                                    <span th:text="${#strings.concat(dateTimeUtils.formatNormal(flowLog.dateTime),' [',flowLog.level,'] ',flowLog.message)}"/><br/>
+                                                </th:block>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block th:if="${executeFlow.error != null}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Flow&nbsp;Error</th>
+                                            <td colspan="3" style="background:#eee;">
+                                        <pre th:text="${executeFlow.stackTrace}">
+                                            stacktrace
+                                        </pre>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block
+                                            th:if="${executeCommand.commandLogs != null && !executeCommand.commandLogs.isEmpty()}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Command&nbsp;Log</th>
+                                            <td colspan="3" style="background:#eee;">
+                                                <th:block th:each="commandLog : ${executeCommand.commandLogs}">
+                                                    <span th:text="${#strings.concat(dateTimeUtils.formatNormal(commandLog.dateTime),' [',commandLog.level,'] ',commandLog.message)}"/><br/>
+                                                </th:block>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block th:if="${executeCommand.error != null}">
+                                        <tr>
+                                            <th class="bg-dark" style="color:white">Command&nbsp;Error</th>
+                                            <td colspan="3" style="background:#eee;">
+                                        <pre th:text="${executeCommand.stackTrace}">
+                                            stacktrace
+                                        </pre>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                    <th:block th:if="${executeCommand.customReportRelativePath}">
+                                        <tr>
+                                            <td colspan="4">
+                                                <a href="#" th:href="${executeCommand.customReportRelativePath}"
+                                                   style="font-weight:bold">&gt;&gt;&gt;&nbsp;Custom&nbsp;Report&nbsp;&lt;&lt;&lt;</a>
+                                            </td>
+                                        </tr>
+                                    </th:block>
+                                </th:block>
+                            </th:block>
+                            </tbody>
+                        </table>
+                        <br/>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </section>
+</main>
+
+<th:block th:if="${webAssetPath}">
+    <script th:src="${#strings.concat(webAssetPath, 'jquery-3.3.1.slim.min.js')}"></script>
+    <script th:src="${#strings.concat(webAssetPath, 'popper.min.js')}"></script>
+    <script th:src="${#strings.concat(webAssetPath, 'bootstrap.min.js')}"></script>
+</th:block>
+<th:block th:unless="${webAssetPath}">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js"
+            integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+            crossorigin="anonymous"></script>
+</th:block>
+</body>
+</html>

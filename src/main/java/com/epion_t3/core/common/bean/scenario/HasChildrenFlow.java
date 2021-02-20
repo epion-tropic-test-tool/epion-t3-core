@@ -1,5 +1,5 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
-package com.epion_t3.core.flow.model;
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
+package com.epion_t3.core.common.bean.scenario;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 繰り返し処理を行うためのFlow定義.
+ * 子Flowを持つFlow定義.
  */
 @Getter
 @Setter
-public class IterateFlow extends Flow {
+public class HasChildrenFlow extends Flow {
 
     /**
      * デフォルトシリアルバージョンUID.

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.scenario.runner.impl;
 
 import com.epion_t3.core.common.context.Context;
@@ -9,7 +9,9 @@ import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.type.*;
 import com.epion_t3.core.exception.ScenarioNotFoundException;
 import com.epion_t3.core.common.bean.ET3Notification;
+import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.flow.bean.FlowResult;
+import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
 import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
 import com.epion_t3.core.flow.runner.FlowRunner;
 import com.epion_t3.core.message.MessageManager;
@@ -21,6 +23,7 @@ import com.epion_t3.core.scenario.reporter.impl.ScenarioReporterImpl;
 import com.epion_t3.core.scenario.runner.ScenarioRunner;
 import com.epion_t3.core.common.util.BindUtils;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -146,6 +149,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
 
             FlowResult flowResult = null;
 
+            // 現状マルチスレッドで動かす想定がない（AtomicBooleanは使用しない）
             boolean exitFlg = false;
 
             // 全てのフローを実行
@@ -159,16 +163,16 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                         log.debug("Execute Next Flow.");
                         break;
                     case CHOICE:
-                        log.debug("Choice Execute Next Flow.");
+                        log.debug("choice execute next flow.");
                         // 指定された後続Flowへ遷移
                         if (StringUtils.equals(flowResult.getChoiceId(), flow.getId())) {
                             // 合致したため実行する
-                            log.debug("Find To Be Executed Flow.");
+                            log.debug("match flow id : {} -> NEXT.", flowResult.getChoiceId());
                         } else {
                             // SKIP扱いとする
-                            log.debug("Can't Find Execute Flow. -> SKIP");
-                            // TODO:ちょっと微妙だな・・・
-                            ExecuteFlow executeFlow = new ExecuteFlow();
+                            log.debug("does not match execute flow id : {}. -> SKIP", flowResult.getChoiceId());
+                            // TODO:ちょっと微妙だが、SKIP扱いとする。こうしておかないと、レポートには表示されなくなってしまう。
+                            var executeFlow = new ExecuteFlow();
                             executeFlow.setStatus(FlowStatus.SKIP);
                             executeFlow.setFlow(flow);
                             executeScenario.getFlows().add(executeFlow);
@@ -178,9 +182,18 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                         break;
                     case EXIT:
                         // 即時終了
-                        log.debug("Force Exit Scenario.");
+                        log.debug("force exit scenario.");
                         exitFlg = true;
                         break;
+                    case BREAK:
+                    case CONTINUE:
+                        // ループ用ステータスのため無効.
+                        log.debug("Invalid Flow Status in ScenarioRunnerImpls. status : {}",
+                                flowResult.getStatus().name());
+                        break;
+                    default:
+                        // TODO:Error
+                        throw new SystemException(CoreMessages.CORE_ERR_0001);
                     }
                 }
 
@@ -190,22 +203,17 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 }
 
                 // Flowの実行処理を解決
-                FlowRunner runner = FlowRunnerResolverImpl.getInstance().getFlowRunner(flow.getType());
+                var runner = FlowRunnerResolverImpl.getInstance().getFlowRunner(flow.getType());
 
                 // バインド
                 bind(context, executeContext, executeScenario, flow);
 
                 // 実行
-                flowResult = runner.execute(context, executeContext, executeScenario, flow,
-                        LoggerFactory.getLogger("FlowLog"));
+                flowResult = runner.execute(context, executeContext, executeScenario, flow);
 
-                ExecuteFlow executeFlow = executeScenario.getFlows().get(executeScenario.getFlows().size() - 1);
+                var executeFlow = executeScenario.getFlows().get(executeScenario.getFlows().size() - 1);
 
                 // 終了判定
-                if (executeScenario.getStatus() == ScenarioExecuteStatus.WAIT
-                        || executeScenario.getStatus() == ScenarioExecuteStatus.RUNNING) {
-                    executeScenario.setStatus(ScenarioExecuteStatus.SUCCESS);
-                }
                 if (executeFlow.getStatus() == FlowStatus.ERROR) {
                     log.debug("Error Occurred...");
                     // シナリオエラー
@@ -220,8 +228,15 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
 
             }
 
+            // シナリオ終了判定
+            if (executeScenario.getStatus() == ScenarioExecuteStatus.WAIT
+                    || executeScenario.getStatus() == ScenarioExecuteStatus.RUNNING) {
+                // 正常終了
+                executeScenario.setStatus(ScenarioExecuteStatus.SUCCESS);
+            }
+
         } catch (Throwable t) {
-            log.debug("Error Occurred...", t);
+            log.info("Error Occurred...", t);
 
             // 発生したエラーを設定
             executeScenario.addNotification(ET3Notification.builder()

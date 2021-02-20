@@ -1,6 +1,7 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.scenario.parser.impl;
 
+import com.epion_t3.core.common.bean.scenario.Flow;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.epion_t3.core.common.bean.scenario.Command;
@@ -246,6 +247,11 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
 
                         // コマンド識別子とPathを紐付ける
                         context.getOriginal().getCommandPlacePaths().put(fullCommandId, file);
+
+                    }
+
+                    // Flow読み込み
+                    for (Flow flow : t3Base.getFlows()) {
 
                     }
 

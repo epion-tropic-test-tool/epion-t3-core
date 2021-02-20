@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.flow.logging.bean.FlowLog;
@@ -38,7 +38,7 @@ public class ExecuteFlow extends ExecuteElement {
     private FlowStatus status = FlowStatus.WAIT;
 
     /**
-     * 実行Flowリスト.
+     * 実行コマンドリスト.
      */
     private final List<ExecuteCommand> commands = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +27,6 @@ public enum FlowStatus {
 
     WARN("table-danger");
 
-    private String cssClass;
+    private final String cssClass;
 
 }

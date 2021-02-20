@@ -1,9 +1,10 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.common.bean.scenario.Configuration;
 import com.epion_t3.core.common.bean.scenario.Command;
 import com.epion_t3.core.common.bean.scenario.ET3Base;
+import com.epion_t3.core.common.bean.scenario.Flow;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -33,6 +34,11 @@ public class Original implements Serializable {
      * 設定の原本. キー：infoのid + '-' + 設定の要素のid値 = 設定識別子
      */
     private final Map<String, Configuration> configurations = new ConcurrentHashMap<>();
+
+    /**
+     * Flowの原本. キー：infoのid + '-' + Flowの要素のid値 = 設定識別子
+     */
+    private final Map<String, Flow> flows = new ConcurrentHashMap<>();
 
     /**
      * コマンドの原本. キー：infoのid + '-' + コマンドの要素のid値 = コマンド識別子

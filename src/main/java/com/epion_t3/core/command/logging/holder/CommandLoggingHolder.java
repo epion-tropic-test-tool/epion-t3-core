@@ -1,9 +1,14 @@
-/* Copyright (c) 2017-2019 Nozomu Takashima. */
+/* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.logging.holder;
 
 import com.epion_t3.core.command.logging.bean.CommandLog;
+import com.epion_t3.core.flow.logging.bean.FlowLog;
+import lombok.NonNull;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * プロセスログを保持するクラス.
@@ -15,10 +20,10 @@ public final class CommandLoggingHolder {
     /**
      * プロセスログを保持するスレッドローカル.
      */
-    private static final ThreadLocal<ArrayList<CommandLog>> messages = new ThreadLocal<ArrayList<CommandLog>>() {
+    private static final ThreadLocal<Map<String, ArrayList<CommandLog>>> messages = new ThreadLocal<Map<String, ArrayList<CommandLog>>>() {
         @Override
-        protected ArrayList<CommandLog> initialValue() {
-            return new ArrayList<>();
+        protected Map<String, ArrayList<CommandLog>> initialValue() {
+            return new HashMap<>();
         }
     };
 
@@ -28,23 +33,30 @@ public final class CommandLoggingHolder {
      * @param log
      */
     public static void append(CommandLog log) {
-        messages.get().add(log);
+        if (!messages.get().containsKey(log.getExecuteId())) {
+            messages.get().put(log.getExecuteId(), new ArrayList<>());
+        }
+        messages.get().get(log.getExecuteId()).add(log);
     }
 
     /**
      * ログクリア.
      */
-    public static void clear() {
-        messages.remove();
+    public static void clear(@NonNull String executeId) {
+        messages.get().remove(executeId);
     }
 
     /**
      * 取得.
      *
-     * @return
+     * @return Commandログリスト
      */
-    public static ArrayList<CommandLog> get() {
-        return messages.get();
+    public static ArrayList<CommandLog> get(@NonNull String executeId) {
+        if (!messages.get().containsKey(executeId)) {
+            return new ArrayList<>(0);
+        } else {
+            return SerializationUtils.clone(messages.get().get(executeId));
+        }
     }
 
 }
