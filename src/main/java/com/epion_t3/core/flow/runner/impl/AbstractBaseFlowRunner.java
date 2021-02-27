@@ -17,8 +17,8 @@ import org.slf4j.MarkerFactory;
 /**
  * FlowRunnerの基本機能を提供する抽象クラス.
  *
- * @since 0.0.4
  * @param <FLOW>
+ * @since 0.0.4
  */
 @Slf4j
 public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowRunner<FLOW> {
@@ -123,15 +123,18 @@ public abstract class AbstractBaseFlowRunner<FLOW extends Flow> implements FlowR
      * @param executeFlow 実行Flow
      */
     protected void outputEndFlowLog(Context context, ExecuteScenario executeScenario, ExecuteFlow executeFlow) {
-        if (executeFlow.getStatus() == FlowStatus.SUCCESS) {
+        if (executeFlow.getFlowResult().getStatus() == FlowStatus.SUCCESS) {
             log.info("■ End Flow      ■ Scenario ID : {}, Flow ID : {}, Flow Status : {}",
-                    executeScenario.getInfo().getId(), executeFlow.getFlow().getId(), executeFlow.getStatus().name());
-        } else if (executeFlow.getStatus() == FlowStatus.ERROR) {
+                    executeScenario.getInfo().getId(), executeFlow.getFlow().getId(),
+                    executeFlow.getFlowResult().getStatus().name());
+        } else if (executeFlow.getFlowResult().getStatus() == FlowStatus.ERROR) {
             log.error("■ End Flow      ■ Scenario ID : {}, Flow ID : {}, Flow Status : {}",
-                    executeScenario.getInfo().getId(), executeFlow.getFlow().getId(), executeFlow.getStatus().name());
+                    executeScenario.getInfo().getId(), executeFlow.getFlow().getId(),
+                    executeFlow.getFlowResult().getStatus().name());
         } else {
             log.warn("■ End Flow      ■ Scenario ID : {}, Flow ID : {}, Flow Status : {}",
-                    executeScenario.getInfo().getId(), executeFlow.getFlow().getId(), executeFlow.getStatus().name());
+                    executeScenario.getInfo().getId(), executeFlow.getFlow().getId(),
+                    executeFlow.getFlowResult().getStatus().name());
         }
     }
 

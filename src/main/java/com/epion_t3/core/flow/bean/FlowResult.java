@@ -1,7 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.bean;
 
-import com.epion_t3.core.common.type.FlowResultStatus;
+import com.epion_t3.core.common.type.FlowStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,12 +24,7 @@ public class FlowResult implements Serializable {
     /**
      * Flowの結果ステータス.
      */
-    private FlowResultStatus status = FlowResultStatus.NEXT;
-
-    /**
-     * Flowとして次に実行するID. 結果ステータスが「CHOICE」の時のみ利用する.
-     */
-    private String choiceId;
+    private FlowStatus status = FlowStatus.WAIT;
 
     /**
      * デフォルト状態のFlow結果オブジェクトを取得する.
@@ -38,6 +33,17 @@ public class FlowResult implements Serializable {
      */
     public static FlowResult getDefault() {
         return new FlowResult();
+    }
+
+    /**
+     * 成功時のFlow結果を取得する.
+     *
+     * @return コマンド結果
+     */
+    public static FlowResult getSuccess() {
+        var flowResult = new FlowResult();
+        flowResult.setStatus(FlowStatus.SUCCESS);
+        return flowResult;
     }
 
 }

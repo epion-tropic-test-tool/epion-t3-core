@@ -1,33 +1,31 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.scenario.runner.impl;
 
-import com.epion_t3.core.common.context.Context;
-import com.epion_t3.core.common.bean.Option;
-import com.epion_t3.core.common.context.ExecuteContext;
-import com.epion_t3.core.common.bean.ExecuteFlow;
-import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.common.type.*;
-import com.epion_t3.core.exception.ScenarioNotFoundException;
 import com.epion_t3.core.common.bean.ET3Notification;
-import com.epion_t3.core.exception.SystemException;
-import com.epion_t3.core.flow.bean.FlowResult;
-import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
-import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
-import com.epion_t3.core.flow.runner.FlowRunner;
-import com.epion_t3.core.message.MessageManager;
-import com.epion_t3.core.message.impl.CoreMessages;
+import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.bean.Option;
+import com.epion_t3.core.common.bean.scenario.ET3Base;
 import com.epion_t3.core.common.bean.scenario.Flow;
 import com.epion_t3.core.common.bean.scenario.Scenario;
-import com.epion_t3.core.common.bean.scenario.ET3Base;
-import com.epion_t3.core.scenario.reporter.impl.ScenarioReporterImpl;
-import com.epion_t3.core.scenario.runner.ScenarioRunner;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
+import com.epion_t3.core.common.type.NotificationType;
+import com.epion_t3.core.common.type.ScenarioExecuteStatus;
+import com.epion_t3.core.common.type.ScenarioScopeVariables;
+import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.common.util.BindUtils;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
-import lombok.NonNull;
+import com.epion_t3.core.exception.ScenarioNotFoundException;
+import com.epion_t3.core.exception.SystemException;
+import com.epion_t3.core.flow.bean.FlowResult;
+import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
+import com.epion_t3.core.message.MessageManager;
+import com.epion_t3.core.message.impl.CoreMessages;
+import com.epion_t3.core.scenario.reporter.impl.ScenarioReporterImpl;
+import com.epion_t3.core.scenario.runner.ScenarioRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -147,10 +145,10 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             // シナリオスコープの変数を設定
             settingScenarioVariables(context, executeScenario);
 
-            FlowResult flowResult = null;
+            var flowResult = (FlowResult) null;
 
             // 現状マルチスレッドで動かす想定がない（AtomicBooleanは使用しない）
-            boolean exitFlg = false;
+            var exitFlg = false;
 
             // 全てのフローを実行
             for (Flow flow : scenario.getFlows()) {
@@ -158,41 +156,37 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 if (flowResult != null) {
                     // 前Flowの結果によって処理を振り分ける
                     switch (flowResult.getStatus()) {
-                    case NEXT:
-                        // 単純に次のFlowへ遷移
-                        log.debug("Execute Next Flow.");
+                    case ERROR:
+                        // Flow自体の実行時にエラーが発生しているため終了する.
+                        log.debug("flow execute error occurred.");
+                        exitFlg = true;
                         break;
-                    case CHOICE:
-                        log.debug("choice execute next flow.");
-                        // 指定された後続Flowへ遷移
-                        if (StringUtils.equals(flowResult.getChoiceId(), flow.getId())) {
-                            // 合致したため実行する
-                            log.debug("match flow id : {} -> NEXT.", flowResult.getChoiceId());
-                        } else {
-                            // SKIP扱いとする
-                            log.debug("does not match execute flow id : {}. -> SKIP", flowResult.getChoiceId());
-                            // TODO:ちょっと微妙だが、SKIP扱いとする。こうしておかないと、レポートには表示されなくなってしまう。
-                            var executeFlow = new ExecuteFlow();
-                            executeFlow.setStatus(FlowStatus.SKIP);
-                            executeFlow.setFlow(flow);
-                            executeScenario.getFlows().add(executeFlow);
-                            // 次のループまで
-                            continue;
-                        }
-                        break;
-                    case EXIT:
+                    case FORCE_EXIT:
                         // 即時終了
                         log.debug("force exit scenario.");
                         exitFlg = true;
                         break;
                     case BREAK:
                     case CONTINUE:
-                        // ループ用ステータスのため無効.
-                        log.debug("Invalid Flow Status in ScenarioRunnerImpls. status : {}",
+                        // ループ系Flow用ステータスのため判断不要.
+                        // Flowはネスト構造（子Flow）を保持できるが、シナリオ実行処理から呼び出されるFlowからは、
+                        // このような制御ステータスを返却しない.
+                        // 故障の可能性、もしくはFlowの組み方が悪い
+                        log.debug("invalid flow status in ScenarioRunnerImpls. status : {}",
                                 flowResult.getStatus().name());
+                        throw new SystemException(CoreMessages.CORE_ERR_0067, flowResult.getStatus().name());
+                    case WAIT:
+                    case RUNNING:
+                        // 中間ステータスであるため、故障の可能性が高い
+                        // 基本的に中間ステータスでシナリオ実行処理まで返却されることはない想定
+                        log.debug("invalid flow status in ScenarioRunnerImpls. status : {}",
+                                flowResult.getStatus().name());
+                        throw new SystemException(CoreMessages.CORE_ERR_0066, flowResult.getStatus().name());
+                    case SUCCESS:
+                    case WARN:
+                        log.debug("flow execute success or warn.");
                         break;
                     default:
-                        // TODO:Error
                         throw new SystemException(CoreMessages.CORE_ERR_0001);
                     }
                 }
@@ -211,37 +205,32 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 // 実行
                 flowResult = runner.execute(context, executeContext, executeScenario, flow);
 
-                var executeFlow = executeScenario.getFlows().get(executeScenario.getFlows().size() - 1);
-
-                // 終了判定
-                if (executeFlow.getStatus() == FlowStatus.ERROR) {
-                    log.debug("Error Occurred...");
-                    // シナリオエラー
-                    executeScenario.setStatus(ScenarioExecuteStatus.ERROR);
-                    break;
-                } else if (executeFlow.getStatus() == FlowStatus.ASSERT_ERROR) {
-                    log.debug("Assert Error Occurred...");
-                    // シナリオアサートエラー
-                    executeScenario.setStatus(ScenarioExecuteStatus.ASSERT_ERROR);
-                    // アサートエラーの場合は、次のコマンドも実施する
-                }
-
             }
 
-            // シナリオ終了判定
-            if (executeScenario.getStatus() == ScenarioExecuteStatus.WAIT
+            // 終了判定
+            if (executeScenario.hasFlowError()) {
+                log.debug("Error Occurred...");
+                // シナリオエラー
+                executeScenario.setStatus(ScenarioExecuteStatus.ERROR);
+            } else if (executeScenario.hasAssertError()) {
+                log.debug("Assert Error Occurred...");
+                // シナリオアサートエラー
+                executeScenario.setStatus(ScenarioExecuteStatus.ASSERT_ERROR);
+                // アサートエラーの場合は、次のコマンドも実施する
+            } else if (executeScenario.getStatus() == ScenarioExecuteStatus.WAIT
                     || executeScenario.getStatus() == ScenarioExecuteStatus.RUNNING) {
                 // 正常終了
                 executeScenario.setStatus(ScenarioExecuteStatus.SUCCESS);
             }
 
         } catch (Throwable t) {
-            log.info("Error Occurred...", t);
+            log.error("Error Occurred...", t);
 
             // 発生したエラーを設定
             executeScenario.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
                     .error(t)
+                    .level(NotificationType.ERROR)
                     .message(t.getMessage())
                     .build());
 

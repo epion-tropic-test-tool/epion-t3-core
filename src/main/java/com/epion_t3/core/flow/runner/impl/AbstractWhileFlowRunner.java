@@ -3,33 +3,36 @@ package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.bean.scenario.AbstractWhileFlow;
 import com.epion_t3.core.common.bean.scenario.Flow;
-import com.epion_t3.core.common.bean.scenario.HasChildrenFlow;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.FlowStatus;
-import com.epion_t3.core.common.type.ScenarioScopeVariables;
 import com.epion_t3.core.common.util.ErrorUtils;
+import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
+import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
 import com.epion_t3.core.flow.runner.IterateTypeFlowRunner;
+import com.epion_t3.core.message.impl.CoreMessages;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/**
- * 繰り返しFlowの基底クラス.
- *
- * @param <FLOW>
- */
 @Slf4j
-public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFlow>
+public abstract class AbstractWhileFlowRunner<FLOW extends AbstractWhileFlow>
         extends AbstractChildrenExecuteFlowRunner<FLOW> implements IterateTypeFlowRunner {
 
     /**
@@ -48,8 +51,12 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
         var logger = FlowLoggerFactory.getInstance().getFlowLogger(this.getClass());
 
         // Flow実行開始時間を設定
-        LocalDateTime start = LocalDateTime.now();
+        var start = LocalDateTime.now();
         executeFlow.setStart(start);
+
+        // タイムアウト時間を設定
+        var timeout = start.plus(flow.getTimeout(), ChronoUnit.MILLIS);
+
         String startTimeKey = flow.getId() + ExecuteScenario.FLOW_START_VARIABLE_SUFFIX;
         if (!executeScenario.getScenarioVariables().containsKey(startTimeKey)) {
             executeScenario.getScenarioVariables().put(startTimeKey, new ArrayList<>());
@@ -72,12 +79,71 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
             // バインド
             bind(context, executeContext, executeScenario, executeFlow, flow);
 
-            // ループ対象の解決
-            var iterateTarget = resolveIterateTarget(context, executeContext, executeScenario, executeFlow, flow,
-                    logger);
+            while (evaluation(context, executeContext, executeScenario, executeFlow, flow, logger)) {
 
-            // ループ処理
-            loopProcess(context, executeContext, executeScenario, executeFlow, flow, logger, iterateTarget);
+                // 繰り返し処理
+                executeChildren(context, executeContext, executeScenario, executeFlow, flow);
+
+                if (Optional.ofNullable(executeScenario.getFlows())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        // Whileコマンド自体のFlowResultはまだ設定されていないため、ここではNull状態となるため除外
+                        .filter(x -> x.getFlowResult() != null && x.getFlow().getType().equals("While"))
+                        .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.FORCE_EXIT)) {
+                    break;
+                }
+
+                // 自Flow以降のFlowを全て抽出
+                final AtomicBoolean findMe = new AtomicBoolean(false);
+                var afterList = Optional.ofNullable(executeScenario.getFlows())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .filter(x -> {
+                            if (!findMe.get()) {
+                                findMe.set(x.getExecuteId().equals(executeFlow.getExecuteId()));
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        })
+                        .collect(Collectors.toList());
+
+                // 自Flow以降でIterateTypeのFlowが出るまでのFlowを全て抽出
+                final AtomicBoolean findIterateTypeAfterMe = new AtomicBoolean(false);
+                var findIterateTypeAfterMeList = Optional.ofNullable(afterList)
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .filter(x -> {
+                            if (!findIterateTypeAfterMe.get()) {
+                                var runner = FlowRunnerResolverImpl.getInstance().getFlowRunner(x.getFlow().getType());
+                                if (runner.getClass().isAssignableFrom(IterateTypeFlowRunner.class)) {
+                                    findIterateTypeAfterMe.set(true);
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toList());
+
+                // 自Flow以降でIterateTypeのFlowが出るまでの間に、FlowStatusがBreakがあれば、
+                // このWhileループはBreakするべきだと判断してループを抜ける。
+                if (Optional.ofNullable(findIterateTypeAfterMeList)
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.BREAK)) {
+                    break;
+                }
+
+                // タイムアウト判定
+                if (LocalDateTime.now().isAfter(timeout)) {
+                    logger.error("flow timeout occurred...");
+                    throw new SystemException(CoreMessages.CORE_ERR_0065, flow.getId(), flow.getTimeout());
+                }
+
+            }
 
             // 正常終了
             flowResult.setStatus(FlowStatus.SUCCESS);
@@ -108,7 +174,7 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
             // シナリオ実行終了時間を設定
             LocalDateTime end = LocalDateTime.now();
             executeFlow.setEnd(end);
-            String endTimeKey = flow.getId() + executeScenario.FLOW_END_VARIABLE_SUFFIX;
+            var endTimeKey = flow.getId() + executeScenario.FLOW_END_VARIABLE_SUFFIX;
             if (!executeScenario.getScenarioVariables().containsKey(endTimeKey)) {
                 executeScenario.getScenarioVariables().put(endTimeKey, new ArrayList<>());
             }
@@ -136,54 +202,19 @@ public abstract class AbstractSimpleIterateFlowRunner<FLOW extends HasChildrenFl
     }
 
     /**
-     * ループ処理対象の反復要素を解決します.
+     * 繰り返し処理を継続するかを判定する評価式を実行します.
      *
      * @param context
-     * @param ExecuteContext
+     * @param executeContext
      * @param executeScenario
      * @param executeFlow
      * @param flow
      * @param logger
      * @return
      */
-    protected abstract Iterable resolveIterateTarget(Context context, ExecuteContext ExecuteContext,
-            ExecuteScenario executeScenario, ExecuteFlow executeFlow, FLOW flow, Logger logger);
-
-    /**
-     * ループ処理を行います.
-     *
-     * @param context
-     * @param executeContext
-     * @param executeScenario
-     * @param parentExecuteFlow
-     * @param parentFlow
-     * @param logger
-     * @param iterateTarget
-     */
-    private void loopProcess(@NonNull Context context, @NonNull ExecuteContext executeContext,
-            @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow parentExecuteFlow, @NonNull FLOW parentFlow,
-            @NonNull Logger logger, @NonNull Iterable iterateTarget) {
-
-        // 解決したコレクションの数だけ回す
-        for (var target : iterateTarget) {
-
-            // 繰り返し対象オブジェクトを設定（シナリオスコープに設定）
-            executeScenario.getScenarioVariables().put(ScenarioScopeVariables.CURRENT_ITERATE_TARGET.getName(), target);
-
-            // 繰り返し処理
-            executeChildren(context, executeContext, executeScenario, parentExecuteFlow, parentFlow);
-
-            // 繰り返し対象オブジェクトを削除（シナリオスコープに設定）残ってもOK.
-            executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.CURRENT_ITERATE_TARGET.getName());
-
-            if (executeScenario.getFlows()
-                    .stream()
-                    .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.FORCE_EXIT)) {
-                break;
-            }
-        }
-
-    }
+    protected abstract boolean evaluation(@NonNull Context context, @NonNull ExecuteContext executeContext,
+            @NonNull ExecuteScenario executeScenario, @NonNull ExecuteFlow executeFlow, @NonNull FLOW flow,
+            @NonNull Logger logger);
 
     /**
      * エラー処理を行う. この処理は、Flowの処理結果が失敗の場合に実行される.

@@ -1,6 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
+import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.logging.bean.FlowLog;
 import com.epion_t3.core.common.bean.scenario.Flow;
 import com.epion_t3.core.common.type.CommandStatus;
@@ -33,9 +34,9 @@ public class ExecuteFlow extends ExecuteElement {
     private Flow flow;
 
     /**
-     * ステータス.
+     * Flow結果.
      */
-    private FlowStatus status = FlowStatus.WAIT;
+    private FlowResult flowResult;
 
     /**
      * 実行コマンドリスト.
@@ -52,8 +53,23 @@ public class ExecuteFlow extends ExecuteElement {
      */
     private List<FlowLog> flowLogs;
 
+    /**
+     * コマンドに実行エラーが存在するか判定.
+     * 
+     * @return true : 存在する、false : 存在しない
+     */
     public boolean hasCommandError() {
         return commands.stream().anyMatch(x -> x.getCommandResult().getStatus() == CommandStatus.ERROR);
+    }
+
+    /**
+     * コマンドに実行正常かつ、アサートエラーが存在するか判定.
+     * 
+     * @return true : 存在する、false : 存在しない
+     */
+    public boolean hasCommandAssertError() {
+        return commands.stream()
+                .anyMatch(x -> x.getCommandResult().getStatus() == CommandStatus.SUCCESS && x.hasAssertError());
     }
 
 }

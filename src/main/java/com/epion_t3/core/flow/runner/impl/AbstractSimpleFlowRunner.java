@@ -1,7 +1,6 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.runner.impl;
 
-import com.epion_t3.core.common.bean.ExecuteCommand;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.bean.scenario.Flow;
@@ -31,7 +30,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow> extends Abstra
 
     /**
      * ロギングマーカー.
-     * 
+     *
      * @since 0.0.4
      */
     private Marker collectLoggingMarker;
@@ -54,7 +53,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow> extends Abstra
         // Flow実行開始時間を設定
         var start = LocalDateTime.now();
         executeFlow.setStart(start);
-        var startTimeKey = flow.getId() + executeScenario.FLOW_START_VARIABLE_SUFFIX;
+        var startTimeKey = flow.getId() + ExecuteScenario.FLOW_START_VARIABLE_SUFFIX;
         if (!executeScenario.getScenarioVariables().containsKey(startTimeKey)) {
             executeScenario.getScenarioVariables().put(startTimeKey, new ArrayList<>());
         }
@@ -76,40 +75,26 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow> extends Abstra
             // 実行
             flowResult = execute(context, executeContext, executeScenario, executeFlow, flow, logger);
 
-            if (executeFlow.hasCommandError()) {
-                // コマンド失敗
-                executeFlow.setStatus(FlowStatus.ERROR);
-            } else {
-
-                // プロセス成功
-                executeFlow.setStatus(FlowStatus.SUCCESS);
-
-                for (ExecuteCommand executeCommand : executeFlow.getCommands()) {
-                    if (executeCommand.hasAssertError()) {
-                        // コマンド失敗
-                        executeFlow.setStatus(FlowStatus.ASSERT_ERROR);
-                        break;
-                    }
-                }
-
-            }
-
         } catch (Throwable t) {
 
             // 解析用
             log.debug("Error Occurred...", t);
 
+            // Flow失敗
+            flowResult = new FlowResult();
+            flowResult.setStatus(FlowStatus.ERROR);
+
             // 発生したエラーを設定
             executeFlow.setError(t);
             executeFlow.setStackTrace(ErrorUtils.getInstance().getStacktrace(t));
-
-            // プロセス失敗
-            executeFlow.setStatus(FlowStatus.ERROR);
 
             // エラー処理
             onError(context, executeContext, executeScenario, executeFlow, flow, t, logger);
 
         } finally {
+
+            // Flow結果を設定
+            executeFlow.setFlowResult(flowResult);
 
             // 掃除
             cleanFlowVariables(context, executeContext, executeScenario, executeFlow);
@@ -117,7 +102,7 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow> extends Abstra
             // シナリオ実行終了時間を設定
             var end = LocalDateTime.now();
             executeFlow.setEnd(end);
-            var endTimeKey = flow.getId() + executeScenario.FLOW_END_VARIABLE_SUFFIX;
+            var endTimeKey = flow.getId() + ExecuteScenario.FLOW_END_VARIABLE_SUFFIX;
             if (!executeScenario.getScenarioVariables().containsKey(endTimeKey)) {
                 executeScenario.getScenarioVariables().put(endTimeKey, new ArrayList<>());
             }
@@ -146,14 +131,14 @@ public abstract class AbstractSimpleFlowRunner<FLOW extends Flow> extends Abstra
 
     /**
      * Flowを実行します.
-     * 
+     *
      * @param context コンテキスト
      * @param executeScenario シナリオ実行情報
      * @param executeFlow Flow実行情報
      * @param flow Flow
      */
     protected abstract FlowResult execute(Context context, ExecuteContext ExecuteContext,
-            ExecuteScenario executeScenario, ExecuteFlow executeFlow, FLOW flow, Logger logger);
+            ExecuteScenario executeScenario, ExecuteFlow executeFlow, FLOW flow, Logger logger) throws Exception;
 
     /**
      * エラー処理を行う. この処理は、Flowの処理結果が失敗の場合に実行される.

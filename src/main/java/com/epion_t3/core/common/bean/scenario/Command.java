@@ -12,6 +12,9 @@ import java.io.Serializable;
 @Setter
 public class Command implements Serializable {
 
+    /**
+     * デフォルトシリアルバージョンUID.
+     */
     private static final long serialVersionUID = 1L;
 
     @NotEmpty

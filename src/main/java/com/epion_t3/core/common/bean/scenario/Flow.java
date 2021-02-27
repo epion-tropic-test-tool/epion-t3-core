@@ -36,6 +36,9 @@ public class Flow implements Serializable {
     @NotEmpty
     private String type;
 
+    /**
+     * 概要.
+     */
     @OriginalFlowField
     private String summary;
 

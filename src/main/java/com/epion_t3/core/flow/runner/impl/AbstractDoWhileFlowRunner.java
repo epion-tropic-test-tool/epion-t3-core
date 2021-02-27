@@ -3,31 +3,31 @@ package com.epion_t3.core.flow.runner.impl;
 
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.common.bean.scenario.HasChildrenFlow;
+import com.epion_t3.core.common.bean.scenario.AbstractWhileFlow;
+import com.epion_t3.core.common.bean.scenario.Flow;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.FlowStatus;
 import com.epion_t3.core.common.util.ErrorUtils;
+import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
+import com.epion_t3.core.flow.runner.IterateTypeFlowRunner;
+import com.epion_t3.core.message.impl.CoreMessages;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 条件に合致した場合に子Flowを実行するFlowの抽象クラス.
- * 
- * @param <FLOW>
- */
 @Slf4j
-public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends HasChildrenFlow>
-        extends AbstractChildrenExecuteFlowRunner<FLOW> {
+public abstract class AbstractDoWhileFlowRunner<FLOW extends AbstractWhileFlow>
+        extends AbstractChildrenExecuteFlowRunner<FLOW> implements IterateTypeFlowRunner {
 
     /**
      * {@inheritDoc}
@@ -47,13 +47,17 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
         // Flow実行開始時間を設定
         var start = LocalDateTime.now();
         executeFlow.setStart(start);
-        var startTimeKey = flow.getId() + executeScenario.FLOW_START_VARIABLE_SUFFIX;
+
+        // タイムアウト時間を設定
+        var timeout = start.plus(flow.getTimeout(), ChronoUnit.MILLIS);
+
+        String startTimeKey = flow.getId() + ExecuteScenario.FLOW_START_VARIABLE_SUFFIX;
         if (!executeScenario.getScenarioVariables().containsKey(startTimeKey)) {
             executeScenario.getScenarioVariables().put(startTimeKey, new ArrayList<>());
         }
         ((List) executeScenario.getScenarioVariables().get(startTimeKey)).add(start);
 
-        // 実装側には、判定処理のみを実装させるため本クラスで結果の制御が必要
+        // 実装側には、ループ継続判定処理のみを実装させるため本クラスで結果の制御が必要
         // 生成も本クラスで行う
         var flowResult = FlowResult.getDefault();
         flowResult.setStatus(FlowStatus.RUNNING);
@@ -69,14 +73,23 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
             // バインド
             bind(context, executeContext, executeScenario, executeFlow, flow);
 
-            // ループ対象の解決
-            var evaluationValue = evaluation(context, executeContext, executeScenario, executeFlow, flow, logger);
+            do {
 
-            log.info("condition evaluation result -> {}.", evaluationValue);
-
-            if (evaluationValue) {
+                // 繰り返し処理
                 executeChildren(context, executeContext, executeScenario, executeFlow, flow);
-            }
+
+                if (executeScenario.getFlows()
+                        .stream()
+                        .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.FORCE_EXIT)) {
+                    break;
+                }
+
+                if (LocalDateTime.now().isAfter(timeout)) {
+                    logger.error("flow timeout occurred...");
+                    throw new SystemException(CoreMessages.CORE_ERR_0065, flow.getId(), flow.getTimeout());
+                }
+
+            } while (evaluation(context, executeContext, executeScenario, executeFlow, flow, logger));
 
             // 正常終了
             flowResult.setStatus(FlowStatus.SUCCESS);
@@ -105,9 +118,9 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
             cleanFlowVariables(context, executeContext, executeScenario, executeFlow);
 
             // シナリオ実行終了時間を設定
-            var end = LocalDateTime.now();
+            LocalDateTime end = LocalDateTime.now();
             executeFlow.setEnd(end);
-            String endTimeKey = flow.getId() + executeScenario.FLOW_END_VARIABLE_SUFFIX;
+            var endTimeKey = flow.getId() + executeScenario.FLOW_END_VARIABLE_SUFFIX;
             if (!executeScenario.getScenarioVariables().containsKey(endTimeKey)) {
                 executeScenario.getScenarioVariables().put(endTimeKey, new ArrayList<>());
             }
@@ -135,7 +148,7 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
     }
 
     /**
-     * 実行するかを判定する評価式を実行しします.
+     * 繰り返し処理を継続するかを判定する評価式を実行します.
      *
      * @param context
      * @param executeContext
@@ -158,9 +171,23 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
      * @param flow Flow
      * @param t 例外
      */
-    protected void onError(@NonNull final Context context, @NonNull final ExecuteContext ExecuteContext,
-            @NonNull final ExecuteScenario executeScenario, @NonNull final ExecuteFlow executeFlow,
-            @NonNull final FLOW flow, @NonNull Throwable t, @NonNull final Logger logger) {
+    protected void onError(Context context, ExecuteContext ExecuteContext, ExecuteScenario executeScenario,
+            ExecuteFlow executeFlow, FLOW flow, Throwable t, Logger logger) {
+        // 必要に応じてオーバーライド実装すること.
+    }
+
+    /**
+     * エラー処理を行う. この処理は、子Flowの処理結果が失敗の場合に実行される.
+     *
+     * @param context コンテキスト
+     * @param executeScenario シナリオ実行情報
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
+     * @param t 例外
+     */
+    protected void onChildError(final Context context, final ExecuteContext executeContext,
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
+            final ExecuteFlow childExecuteFlow, final Flow childFlow, final Throwable t, final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 
@@ -172,9 +199,23 @@ public abstract class AbstractConditionalChildrenExecuteFlowRunner<FLOW extends 
      * @param executeFlow Flow実行情報
      * @param flow Flow
      */
-    protected void onFinally(@NonNull final Context context, @NonNull final ExecuteContext executeContext,
-            @NonNull final ExecuteScenario executeScenario, @NonNull final ExecuteFlow executeFlow,
-            @NonNull final FLOW flow, @NonNull final Logger logger) {
+    protected void onFinally(final Context context, final ExecuteContext executeContext,
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
+            final Logger logger) {
+        // 必要に応じてオーバーライド実装すること.
+    }
+
+    /**
+     * 終了処理を行う. この処理は、子Flowの処理結果が成功・失敗に関わらず実行される.
+     *
+     * @param context コンテキスト
+     * @param executeScenario シナリオ実行情報
+     * @param executeFlow Flow実行情報
+     * @param flow Flow
+     */
+    protected void onChildFinally(final Context context, final ExecuteContext ExecuteContext,
+            final ExecuteScenario executeScenario, final ExecuteFlow executeFlow, final FLOW flow,
+            final ExecuteFlow childExecuteFlow, final Flow childFlow, final Logger logger) {
         // 必要に応じてオーバーライド実装すること.
     }
 

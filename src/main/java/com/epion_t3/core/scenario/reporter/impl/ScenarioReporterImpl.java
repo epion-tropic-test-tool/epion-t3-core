@@ -175,19 +175,19 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
                 activity.append("-->");
                 activity.append(executeFlow.getFlow().getId());
             }
-            switch (executeFlow.getStatus()) {
+            switch (executeFlow.getFlowResult().getStatus()) {
             case WAIT:
                 activity.append("<<WAIT>>");
                 break;
-            case SKIP:
-                activity.append("<<SKIP>>");
-                break;
+//            case SKIP:
+//                activity.append("<<SKIP>>");
+//                break;
             case SUCCESS:
                 activity.append("<<SUCCESS>>");
                 break;
-            case ASSERT_ERROR:
-                activity.append("<<ASSERT_ERROR>>");
-                break;
+//            case ASSERT_ERROR:
+//                activity.append("<<ASSERT_ERROR>>");
+//                break;
             case ERROR:
                 activity.append("<<ERROR>>");
                 break;

@@ -41,6 +41,11 @@ public class CommandResult implements Serializable {
         return new CommandResult();
     }
 
+    /**
+     * 成功時のコマンド結果を取得する.
+     *
+     * @return コマンド結果
+     */
     public static CommandResult getSuccess() {
         CommandResult commandResult = new CommandResult();
         commandResult.setStatus(CommandStatus.SUCCESS);

@@ -15,15 +15,19 @@ public enum FlowStatus {
 
     WAIT("table-secondary"),
 
-    SKIP("table-secondary"),
-
     RUNNING("table-info"),
+
+    CONTINUE("table-success"),
+
+    BREAK("table-success"),
+
+    FORCE_EXIT("table-success"),
 
     SUCCESS("table-success"),
 
     ERROR("table-danger"),
 
-    ASSERT_ERROR("table-danger"),
+    // ASSERT_ERROR("table-danger"),
 
     WARN("table-danger");
 

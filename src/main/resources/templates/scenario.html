@@ -165,8 +165,8 @@
                                th:text="${executeFlow.flow.id}">flow-0001</a>
                         </th>
                         <td th:text="${executeFlow.flow.type}">Flow</td>
-                        <td class="table-success" th:text="${executeFlow.status}"
-                            th:class="${executeFlow.status.getCssClass()}">SUCCESS
+                        <td class="table-success" th:text="${executeFlow.flowResult.status}"
+                            th:class="${executeFlow.flowResult.status.getCssClass()}">SUCCESS
                         </td>
                         <td th:text="${executeFlow.flow.summary}">Summary</td>
                         <td th:text="${#strings.concat(dateTimeUtils.formatTimeNormal(executeFlow.start), ' ~ ', dateTimeUtils.formatTimeNormal(executeFlow.end), ' (', dateTimeUtils.getMillis(executeFlow.start, executeFlow.end), ' ms)')}">
@@ -318,7 +318,7 @@
             <th:block th:each="executeFlow,stat : ${executeScenario.flows}">
                 <div class="row">
                     <div class="col-md-12">
-                        <table class="table table-sm table-bordered" id="executionFlowId"
+                        <table class="table table-sm table-bordered mb-0" id="executionFlowId"
                                th:id="${executeFlow.executeId}">
                             <tbody>
                             <tr>
@@ -330,8 +330,8 @@
                             <tr>
                                 <th class="bg-dark" style="width:200px;color:white">Flow&nbsp;Status</th>
                                 <td colspan="3"
-                                    th:text="${executeFlow.status}"
-                                    th:class="${executeFlow.status.getCssClass()}">SUCCESS
+                                    th:text="${executeFlow.flowResult.status}"
+                                    th:class="${executeFlow.flowResult.status.getCssClass()}">SUCCESS
                                 </td>
                             </tr>
                             <th:block
