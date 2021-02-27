@@ -87,8 +87,9 @@ public abstract class AbstractWhileFlowRunner<FLOW extends AbstractWhileFlow>
                 if (Optional.ofNullable(executeScenario.getFlows())
                         .map(Collection::stream)
                         .orElseGet(Stream::empty)
-                        // Whileコマンド自体のFlowResultはまだ設定されていないため、ここではNull状態となるため除外
-                        .filter(x -> x.getFlowResult() != null && x.getFlow().getType().equals("While"))
+                        // 繰り返し系コマンド自体のFlowResultはまだ設定されていない可能性があるため除外
+                        // 複数ネストしている場合も同様となる
+                        .filter(x -> x.getFlowResult() != null)
                         .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.FORCE_EXIT)) {
                     break;
                 }

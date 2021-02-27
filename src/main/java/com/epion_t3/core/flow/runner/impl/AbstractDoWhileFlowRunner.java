@@ -13,6 +13,7 @@ import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
+import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
 import com.epion_t3.core.flow.runner.IterateTypeFlowRunner;
 import com.epion_t3.core.message.impl.CoreMessages;
 import lombok.NonNull;
@@ -23,7 +24,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public abstract class AbstractDoWhileFlowRunner<FLOW extends AbstractWhileFlow>
@@ -78,12 +84,61 @@ public abstract class AbstractDoWhileFlowRunner<FLOW extends AbstractWhileFlow>
                 // 繰り返し処理
                 executeChildren(context, executeContext, executeScenario, executeFlow, flow);
 
-                if (executeScenario.getFlows()
-                        .stream()
+                if (Optional.ofNullable(executeScenario.getFlows())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        // 繰り返し系コマンド自体のFlowResultはまだ設定されていない可能性があるため除外
+                        // 複数ネストしている場合も同様となる
+                        .filter(x -> x.getFlowResult() != null)
                         .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.FORCE_EXIT)) {
                     break;
                 }
 
+                // 自Flow以降のFlowを全て抽出
+                final AtomicBoolean findMe = new AtomicBoolean(false);
+                var afterList = Optional.ofNullable(executeScenario.getFlows())
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .filter(x -> {
+                            if (!findMe.get()) {
+                                findMe.set(x.getExecuteId().equals(executeFlow.getExecuteId()));
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        })
+                        .collect(Collectors.toList());
+
+                // 自Flow以降でIterateTypeのFlowが出るまでのFlowを全て抽出
+                final AtomicBoolean findIterateTypeAfterMe = new AtomicBoolean(false);
+                var findIterateTypeAfterMeList = Optional.ofNullable(afterList)
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .filter(x -> {
+                            if (!findIterateTypeAfterMe.get()) {
+                                var runner = FlowRunnerResolverImpl.getInstance().getFlowRunner(x.getFlow().getType());
+                                if (runner.getClass().isAssignableFrom(IterateTypeFlowRunner.class)) {
+                                    findIterateTypeAfterMe.set(true);
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toList());
+
+                // 自Flow以降でIterateTypeのFlowが出るまでの間に、FlowStatusがBreakがあれば、
+                // このWhileループはBreakするべきだと判断してループを抜ける。
+                if (Optional.ofNullable(findIterateTypeAfterMeList)
+                        .map(Collection::stream)
+                        .orElseGet(Stream::empty)
+                        .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.BREAK)) {
+                    break;
+                }
+
+                // タイムアウト判定
                 if (LocalDateTime.now().isAfter(timeout)) {
                     logger.error("flow timeout occurred...");
                     throw new SystemException(CoreMessages.CORE_ERR_0065, flow.getId(), flow.getTimeout());
