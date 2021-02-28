@@ -5,6 +5,7 @@ import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.bean.scenario.AbstractWhileFlow;
 import com.epion_t3.core.common.bean.scenario.Flow;
+import com.epion_t3.core.common.bean.scenario.IterateTypeControlFlow;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.FlowStatus;
@@ -13,7 +14,6 @@ import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.flow.logging.factory.FlowLoggerFactory;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
-import com.epion_t3.core.flow.resolver.impl.FlowRunnerResolverImpl;
 import com.epion_t3.core.flow.runner.IterateTypeFlowRunner;
 import com.epion_t3.core.message.impl.CoreMessages;
 import lombok.NonNull;
@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -94,44 +92,28 @@ public abstract class AbstractDoWhileFlowRunner<FLOW extends AbstractWhileFlow>
                     break;
                 }
 
-                // 自Flow以降のFlowを全て抽出
-                final AtomicBoolean findMe = new AtomicBoolean(false);
-                var afterList = Optional.ofNullable(executeScenario.getFlows())
-                        .map(Collection::stream)
-                        .orElseGet(Stream::empty)
-                        .filter(x -> {
-                            if (!findMe.get()) {
-                                findMe.set(x.getExecuteId().equals(executeFlow.getExecuteId()));
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        })
-                        .collect(Collectors.toList());
+                // 自Flow以降で自Flowがtargetに指定されている制御Flowを全て取得
+                var targetControlExecuteFlows = new ArrayList<ExecuteFlow>();
+                var collectStart = false;
+                for (ExecuteFlow x : executeScenario.getFlows()) {
+                    if (!collectStart) {
+                        // 自Flow以降でなければ制御Flowの意味を成さないため収集は行わない
+                        if (x.getExecuteId().equals(executeFlow.getExecuteId())) {
+                            collectStart = true;
+                        } else {
+                            continue;
+                        }
+                    }
+                    // 制御Flowである場合のみ追加を行う
+                    if (IterateTypeControlFlow.class.isAssignableFrom(x.getFlow().getClass())
+                            && flow.getId().equals(IterateTypeControlFlow.class.cast(x.getFlow()).getTarget())) {
+                        targetControlExecuteFlows.add(x);
+                    }
+                }
 
-                // 自Flow以降でIterateTypeのFlowが出るまでのFlowを全て抽出
-                final AtomicBoolean findIterateTypeAfterMe = new AtomicBoolean(false);
-                var findIterateTypeAfterMeList = Optional.ofNullable(afterList)
-                        .map(Collection::stream)
-                        .orElseGet(Stream::empty)
-                        .filter(x -> {
-                            if (!findIterateTypeAfterMe.get()) {
-                                var runner = FlowRunnerResolverImpl.getInstance().getFlowRunner(x.getFlow().getType());
-                                if (runner.getClass().isAssignableFrom(IterateTypeFlowRunner.class)) {
-                                    findIterateTypeAfterMe.set(true);
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            } else {
-                                return false;
-                            }
-                        })
-                        .collect(Collectors.toList());
-
-                // 自Flow以降でIterateTypeのFlowが出るまでの間に、FlowStatusがBreakがあれば、
+                // 自Flowをtargetに指定した制御Flowの中に、Breakとなったものがあれば、
                 // このWhileループはBreakするべきだと判断してループを抜ける。
-                if (Optional.ofNullable(findIterateTypeAfterMeList)
+                if (Optional.ofNullable(targetControlExecuteFlows)
                         .map(Collection::stream)
                         .orElseGet(Stream::empty)
                         .anyMatch(x -> x.getFlowResult().getStatus() == FlowStatus.BREAK)) {
