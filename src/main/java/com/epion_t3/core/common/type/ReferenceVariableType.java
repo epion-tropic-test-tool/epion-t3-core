@@ -1,6 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,7 +14,7 @@ import java.util.Arrays;
  * @author takashno
  */
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ReferenceVariableType {
 
     /**
@@ -39,7 +40,7 @@ public enum ReferenceVariableType {
     /**
      * 名称.
      */
-    private String name;
+    private final String name;
 
     /**
      * 名称からEnumを特定する.

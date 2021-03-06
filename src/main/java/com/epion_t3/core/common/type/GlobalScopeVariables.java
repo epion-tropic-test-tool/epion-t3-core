@@ -1,11 +1,12 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum GlobalScopeVariables {
 
     ROOT_DIR("rootDir"),
@@ -16,6 +17,6 @@ public enum GlobalScopeVariables {
 
     WEB_ASSETS_ROOT("webAssertsRoot"),;
 
-    private String name;
+    private final String name;
 
 }

@@ -1,6 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -8,7 +9,7 @@ import lombok.Getter;
  *
  */
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Args {
 
     VERSION("v", "version", true, "run tool version.", true),
@@ -38,26 +39,26 @@ public enum Args {
     /**
      * 短いオプション名.
      */
-    private String shortName;
+    private final String shortName;
 
     /**
      * 長いオプション名.
      */
-    private String longName;
+    private final String longName;
 
     /**
      * 引数の値をとるかどうかの指定.
      */
-    private boolean hasArg;
+    private final boolean hasArg;
 
     /**
      * 説明.
      */
-    private String description;
+    private final String description;
 
     /**
      * 引数が必須かどうかの指定.
      */
-    private boolean required;
+    private final boolean required;
 
 }

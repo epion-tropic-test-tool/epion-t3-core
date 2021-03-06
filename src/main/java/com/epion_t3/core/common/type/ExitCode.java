@@ -1,11 +1,12 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.type;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum ExitCode {
 
     /**
@@ -33,5 +34,5 @@ public enum ExitCode {
      */
     UNASSIGNED(100);
 
-    private int exitCode;
+    private final int exitCode;
 }
