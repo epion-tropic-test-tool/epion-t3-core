@@ -47,10 +47,11 @@ public enum CoreMessages implements Messages {
     CORE_ERR_0062("com.epion_t3.core.err.0062"), CORE_ERR_0063("com.epion_t3.core.err.0063"),
     CORE_ERR_0064("com.epion_t3.core.err.0064"), CORE_ERR_0065("com.epion_t3.core.err.0065"),
     CORE_ERR_0066("com.epion_t3.core.err.0066"), CORE_ERR_0067("com.epion_t3.core.err.0067"),
-    CORE_ERR_1001("com.epion_t3.core.err.1001"), CORE_ERR_1002("com.epion_t3.core.err.1002"),
-    CORE_ERR_1003("com.epion_t3.core.err.1003"), CORE_ERR_1004("com.epion_t3.core.err.1004"),
-    CORE_ERR_1005("com.epion_t3.core.err.1005"), CORE_WRN_0001("com.epion_t3.core.wrn.0001"),
-    CORE_WRN_0002("com.epion_t3.core.wrn.0002"), CORE_WRN_0003("com.epion_t3.core.wrn.0003"),;
+    CORE_ERR_0068("com.epion_t3.core.err.0068"), CORE_ERR_1001("com.epion_t3.core.err.1001"),
+    CORE_ERR_1002("com.epion_t3.core.err.1002"), CORE_ERR_1003("com.epion_t3.core.err.1003"),
+    CORE_ERR_1004("com.epion_t3.core.err.1004"), CORE_ERR_1005("com.epion_t3.core.err.1005"),
+    CORE_WRN_0001("com.epion_t3.core.wrn.0001"), CORE_WRN_0002("com.epion_t3.core.wrn.0002"),
+    CORE_WRN_0003("com.epion_t3.core.wrn.0003"),;
 
     /**
      * メッセージコード.

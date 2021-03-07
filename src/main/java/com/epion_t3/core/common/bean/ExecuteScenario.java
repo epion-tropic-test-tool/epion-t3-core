@@ -150,6 +150,15 @@ public class ExecuteScenario implements Serializable {
     }
 
     /**
+     * 実行したCommandに実行エラーが存在するか判定.
+     * 
+     * @return true : 存在する、false : 存在しない
+     */
+    public boolean hasCommandError() {
+        return flows.stream().anyMatch(x -> x.hasCommandError());
+    }
+
+    /**
      * Flowに実行正常かつ、アサートエラーが存在するか判定.
      *
      * @return true : 存在する、false : 存在しない

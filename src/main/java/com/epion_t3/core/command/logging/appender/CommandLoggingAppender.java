@@ -13,22 +13,22 @@ import java.time.LocalDateTime;
 /**
  * コマンドのログを収集するためのアペンダー.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+//@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommandLoggingAppender extends AppenderBase<ILoggingEvent> {
 
     /**
      * シングルトンインスタンス.
      */
-    private static final CommandLoggingAppender instance = new CommandLoggingAppender();
+//    private static final CommandLoggingAppender instance = new CommandLoggingAppender();
 
     /**
      * インスタンスを取得します.
      *
      * @return シングルトンインスタンス.
      */
-    public static CommandLoggingAppender getInstance() {
-        return instance;
-    }
+//    public static CommandLoggingAppender getInstance() {
+//        return instance;
+//    }
 
     /**
      * {@inheritDoc}

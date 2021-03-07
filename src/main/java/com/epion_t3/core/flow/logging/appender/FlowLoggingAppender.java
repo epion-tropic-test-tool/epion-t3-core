@@ -14,22 +14,22 @@ import java.time.LocalDateTime;
 /**
  * Flowのログを収集するためのアペンダー.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+//@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FlowLoggingAppender extends AppenderBase<ILoggingEvent> {
 
     /**
      * シングルトンインスタンス.
      */
-    private static final FlowLoggingAppender instance = new FlowLoggingAppender();
+//    private static final FlowLoggingAppender instance = new FlowLoggingAppender();
 
     /**
      * インスタンスを取得します.
      *
      * @return シングルトンインスタンス
      */
-    public static FlowLoggingAppender getInstance() {
-        return instance;
-    }
+//    public static FlowLoggingAppender getInstance() {
+//        return instance;
+//    }
 
     /**
      * {@inheritDoc}

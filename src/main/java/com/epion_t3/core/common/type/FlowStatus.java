@@ -22,7 +22,7 @@ public enum FlowStatus {
 
     BREAK("table-success"),
 
-    FORCE_EXIT("table-success"),
+    FORCE_EXIT("table-warning"),
 
     SUCCESS("table-success"),
 

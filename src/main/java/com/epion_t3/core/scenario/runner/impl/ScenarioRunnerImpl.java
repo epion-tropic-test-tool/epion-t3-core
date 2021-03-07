@@ -209,7 +209,11 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
 
             // 終了判定
             if (executeScenario.hasFlowError()) {
-                log.debug("Error Occurred...");
+                log.debug("Flow Error Occurred...");
+                // シナリオエラー
+                executeScenario.setStatus(ScenarioExecuteStatus.ERROR);
+            } else if (executeScenario.hasCommandError()) {
+                log.debug("Command Error Occurred...");
                 // シナリオエラー
                 executeScenario.setStatus(ScenarioExecuteStatus.ERROR);
             } else if (executeScenario.hasAssertError()) {

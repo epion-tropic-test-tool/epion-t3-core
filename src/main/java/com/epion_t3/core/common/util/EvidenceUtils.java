@@ -58,10 +58,10 @@ public final class EvidenceUtils {
                 O object = (O) objectEvidenceInfo.getObject();
                 return SerializationUtils.clone(object);
             } else {
-                throw new SystemException(CoreMessages.CORE_ERR_0008, flowId);
+                throw new SystemException(CoreMessages.CORE_ERR_0007, flowId);
             }
         } else {
-            throw new SystemException(CoreMessages.CORE_ERR_0008, flowId);
+            throw new SystemException(CoreMessages.CORE_ERR_0007, flowId);
         }
     }
 
@@ -119,10 +119,10 @@ public final class EvidenceUtils {
                 FileEvidenceInfo objectEvidenceInfo = FileEvidenceInfo.class.cast(evidenceInfo);
                 return objectEvidenceInfo.getPath();
             } else {
-                throw new SystemException(CoreMessages.CORE_ERR_0007, flowId);
+                throw new SystemException(CoreMessages.CORE_ERR_0008, flowId);
             }
         } else {
-            throw new SystemException(CoreMessages.CORE_ERR_0007, flowId);
+            throw new SystemException(CoreMessages.CORE_ERR_0008, flowId);
         }
     }
 

@@ -153,18 +153,18 @@
     </appender>
     -->
 
-    <appender name="FLOW_LOG" class="com.epion_t3.core.flow.logging.appender.FlowLoggingAppender"/>
+<!--    <appender name="FLOW_LOG" class="com.epion_t3.core.flow.logging.appender.FlowLoggingAppender"/>-->
 
-    <appender name="COMMAND_LOG" class="com.epion_t3.core.command.logging.appender.CommandLoggingAppender"/>
+<!--    <appender name="COMMAND_LOG" class="com.epion_t3.core.command.logging.appender.CommandLoggingAppender"/>-->
 
     <logger name="CommandLog" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="COMMAND_LOG"/>
+<!--        <appender-ref ref="COMMAND_LOG"/>-->
     </logger>
 
     <logger name="FlowLog" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FLOW_LOG"/>
+<!--        <appender-ref ref="FLOW_LOG"/>-->
     </logger>
 
     <logger name="org.thymeleaf" level="INFO" additivity="false">

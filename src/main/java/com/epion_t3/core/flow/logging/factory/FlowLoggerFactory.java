@@ -13,10 +13,15 @@ public final class FlowLoggerFactory {
         return instance;
     }
 
+    private FlowLoggingAppender flowLoggingAppender;
+
     public Logger getFlowLogger(Class clazz) {
         var templateLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("FlowLog");
         var loggerContext = templateLogger.getLoggerContext();
-        var flowLoggingAppender = FlowLoggingAppender.getInstance();
+        if (flowLoggingAppender == null) {
+            flowLoggingAppender = new FlowLoggingAppender();
+        }
+        templateLogger.addAppender(flowLoggingAppender);
         if (!flowLoggingAppender.isStarted()) {
             flowLoggingAppender.start();
         }

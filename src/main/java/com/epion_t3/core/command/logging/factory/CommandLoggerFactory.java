@@ -14,10 +14,15 @@ public final class CommandLoggerFactory {
         return instance;
     }
 
+    private CommandLoggingAppender commandLoggingAppender;
+
     public Logger getCommandLogger(Class clazz) {
         var templateLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("CommandLog");
         var loggerContext = templateLogger.getLoggerContext();
-        var commandLoggingAppender = CommandLoggingAppender.getInstance();
+        if (commandLoggingAppender == null) {
+            commandLoggingAppender = new CommandLoggingAppender();
+        }
+        templateLogger.addAppender(commandLoggingAppender);
         if (!commandLoggingAppender.isStarted()) {
             commandLoggingAppender.start();
         }
