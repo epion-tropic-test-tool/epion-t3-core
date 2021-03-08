@@ -51,9 +51,9 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
         executeContext.setStage(StageType.BUILD_SCENARIO);
 
         // 実行シナリオの選択
-        ET3Base t3 = context.getOriginal().getOriginals().get(context.getOption().getTarget());
+        var et3 = context.getOriginal().getOriginals().get(context.getOption().getTarget());
 
-        if (t3 == null) {
+        if (et3 == null) {
             executeContext.addNotification(ET3Notification.builder()
                     .stage(executeContext.getStage())
                     .level(NotificationType.ERROR)
@@ -63,9 +63,9 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             throw new ScenarioNotFoundException(context.getOption().getTarget());
         }
 
-        if (t3.getScenarios().isEmpty()) {
+        if (et3.getScenarios().isEmpty()) {
             // 単シナリオ起動
-            Scenario scenarioRef = new Scenario();
+            var scenarioRef = new Scenario();
             scenarioRef.setRef(context.getOption().getTarget());
             scenarioRef.setProfile(context.getOption().getProfile());
             scenarioRef.setMode(context.getOption().getMode());
@@ -74,7 +74,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             executeScenario(context, executeContext, scenarioRef);
         } else {
             // 複数シナリオ起動
-            for (Scenario scenarioRef : t3.getScenarios()) {
+            for (var scenarioRef : et3.getScenarios()) {
                 executeScenario(context, executeContext, scenarioRef);
             }
         }
@@ -93,9 +93,13 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
         // シナリオ実行ステージ
         executeContext.setStage(StageType.RUN_SCENARIO);
 
-        ET3Base scenario = context.getOriginal().getOriginals().get(scenarioRef.getRef());
+        // グローバル変数の設定
+        // シナリオの実行毎にシナリオ変数に設定されたグローバル変数は元に戻す
+        reSettingGlobalVariables(context, executeContext);
 
-        if (scenario == null) {
+        var et3 = context.getOriginal().getOriginals().get(scenarioRef.getRef());
+
+        if (et3 == null) {
             throw new ScenarioNotFoundException(scenarioRef.getRef());
         }
 
@@ -119,10 +123,10 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             option.setDebug(scenarioRef.getDebug());
         }
 
-        ExecuteScenario executeScenario = new ExecuteScenario();
+        var executeScenario = new ExecuteScenario();
         executeScenario.setOption(option);
-        executeScenario.setInfo(scenario.getInfo());
-        executeScenario.setFqsn(scenario.getInfo().getId());
+        executeScenario.setInfo(et3.getInfo());
+        executeScenario.setFqsn(et3.getInfo().getId());
         executeContext.getScenarios().add(executeScenario);
 
         // エラー
@@ -143,7 +147,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             ExecutionFileUtils.createScenarioResultDirectory(context, executeContext, executeScenario);
 
             // シナリオスコープの変数を設定
-            settingScenarioVariables(context, executeScenario);
+            settingScenarioVariables(context, executeScenario, et3);
 
             var flowResult = (FlowResult) null;
 
@@ -151,7 +155,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             var exitFlg = false;
 
             // 全てのフローを実行
-            for (Flow flow : scenario.getFlows()) {
+            for (Flow flow : et3.getFlows()) {
 
                 if (flowResult != null) {
                     // 前Flowの結果によって処理を振り分ける
@@ -244,7 +248,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
         } finally {
 
             // 掃除
-            cleanScenarioVariables(context, executeScenario);
+            cleanScenarioVariables(context, executeScenario, et3);
 
             // シナリオ実行終了時間を設定
             executeScenario.setEnd(LocalDateTime.now());
@@ -261,6 +265,18 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             }
         }
 
+    }
+
+    /**
+     * シナリオ実行毎にグローバル変数の再設定を行う.<br>
+     * グローバル変数は、他シナリオで書き換えられても元に戻す必要がある.<br>
+     * 他シナリオで追加されたグローバル変数をクリアする必要はないため、再設定処理とする.
+     *
+     * @param context コンテキスト
+     * @param executeContext 実行コンテキスト
+     */
+    private void reSettingGlobalVariables(final Context context, final ExecuteContext executeContext) {
+        context.getOriginal().getGlobalVariables().forEach((k, v) -> executeContext.getGlobalVariables().put(k, v));
     }
 
     /**
@@ -308,8 +324,16 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      *
      * @param context コンテキスト
      * @param executeScenario 実行シナリオ
+     * @param et3 シナリオ
      */
-    private void settingScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
+    private void settingScenarioVariables(final Context context, final ExecuteScenario executeScenario,
+            final ET3Base et3) {
+
+        // 自シナリオファイルに設定されているシナリオスコープ変数を設定
+        if (et3.getVariables() != null && et3.getVariables().getScenario() != null) {
+            et3.getVariables().getScenario().forEach((k, v) -> executeScenario.getScenarioVariables().put(k, v));
+        }
+
         executeScenario.getScenarioVariables()
                 .put(ScenarioScopeVariables.SCENARIO_DIR.getName(),
                         context.getOriginal().getScenarioPlacePaths().get(executeScenario.getInfo().getId()));
@@ -324,15 +348,20 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      *
      * @param context コンテキスト
      * @param executeScenario 実行シナリオ
+     * @param et3 シナリオ
      */
-    private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario) {
+    private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario,
+            final ET3Base et3) {
+        if (et3.getVariables() != null && et3.getVariables().getScenario() != null) {
+            et3.getVariables().getScenario().forEach((k, v) -> executeScenario.getScenarioVariables().remove(k));
+        }
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.SCENARIO_DIR.getName());
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.EVIDENCE_DIR.getName());
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.CURRENT_SCENARIO.getName());
-        executeScenario.getScenarioVariables().entrySet().forEach(x -> {
-            if (x.getKey().contains(ExecuteScenario.FLOW_START_VARIABLE_SUFFIX)
-                    || x.getKey().contains(ExecuteScenario.FLOW_END_VARIABLE_SUFFIX)) {
-                executeScenario.getScenarioVariables().remove(x.getKey());
+        executeScenario.getScenarioVariables().forEach((key, value) -> {
+            if (key.contains(ExecuteScenario.FLOW_START_VARIABLE_SUFFIX)
+                    || key.contains(ExecuteScenario.FLOW_END_VARIABLE_SUFFIX)) {
+                executeScenario.getScenarioVariables().remove(key);
             }
         });
     }
@@ -340,7 +369,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     /**
      * 結果ディレクトリが未作成であった場合に、作成する.
      *
-     * @param context
+     * @param context コンテキスト
      */
     private void createResultDirectory(final Context context, final ExecuteContext executeContext,
             final ExecuteScenario scenario) {

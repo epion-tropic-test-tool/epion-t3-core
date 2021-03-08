@@ -71,7 +71,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         Context context = new Context();
 
         // 実行コンテキストの生成
-        ExecuteContext executeContext = new ExecuteContext();
+        var executeContext = new ExecuteContext();
 
         try {
 
@@ -84,15 +84,14 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             // 結果ディレクトリの作成
             createResultDirectory(context, executeContext);
 
-            // カステム機能の解析（パース処理）
+            // カスタム機能の解析（パース処理）
             CustomParserImpl.getInstance().parse(context, executeContext);
 
             // シナリオの解析（パース処理）
             ScenarioParserImpl.getInstance().parse(context, executeContext);
 
             // 実行
-            ScenarioRunner scenarioRunner = new ScenarioRunnerImpl();
-            scenarioRunner.execute(context, executeContext);
+            new ScenarioRunnerImpl().execute(context, executeContext);
 
             // 終了判定
             executeContext.setStatus(ApplicationExecuteStatus.SUCCESS);

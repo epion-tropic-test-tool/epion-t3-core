@@ -2,6 +2,7 @@
 package com.epion_t3.core.scenario.parser.impl;
 
 import com.epion_t3.core.common.bean.scenario.Flow;
+import com.epion_t3.core.common.type.ReferenceVariableType;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.epion_t3.core.common.bean.scenario.Command;
@@ -109,14 +110,14 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
 
                 log.debug("visit file: {}", file);
 
-                ET3Base t3Base = null;
+                var et3Base = (ET3Base) null;
                 try {
 
                     // YAML -> Object
-                    t3Base = context.getObjectMapper().readValue(file.toFile(), ET3Base.class);
+                    et3Base = context.getObjectMapper().readValue(file.toFile(), ET3Base.class);
 
                     // Bean Validation
-                    Set<ConstraintViolation<ET3Base>> validationErrors = validator.validate(t3Base);
+                    Set<ConstraintViolation<ET3Base>> validationErrors = validator.validate(et3Base);
 
                     for (ConstraintViolation violation : validationErrors) {
                         executeContext.addNotification(ScenarioValidateError.scenarioValidateErrorBuilder()
@@ -208,8 +209,8 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                 }
 
                 // Profileの保持
-                if (t3Base.getProfiles() != null) {
-                    for (Map.Entry<String, Map<String, String>> entry : t3Base.getProfiles().entrySet()) {
+                if (et3Base.getProfiles() != null) {
+                    for (Map.Entry<String, Map<String, String>> entry : et3Base.getProfiles().entrySet()) {
                         if (context.getOriginal().getProfiles().containsKey(entry.getKey())) {
                             context.getOriginal().getProfiles().get(entry.getKey()).putAll(entry.getValue());
                         } else {
@@ -218,24 +219,24 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                     }
                 }
 
-                if (t3Base.getInfo() != null) {
+                if (et3Base.getInfo() != null) {
 
                     // process識別子とPathを紐付ける
-                    context.getOriginal().getScenarioPlacePaths().put(t3Base.getInfo().getId(), file.getParent());
+                    context.getOriginal().getScenarioPlacePaths().put(et3Base.getInfo().getId(), file.getParent());
 
                     // ファイル原本の完全保存
-                    context.getOriginal().getOriginals().put(t3Base.getInfo().getId(), t3Base);
+                    context.getOriginal().getOriginals().put(et3Base.getInfo().getId(), et3Base);
 
                     // t3BaseがfinalでないのでLambdaが利用できない・・・
                     // なんかやり方あるのかね・・・
                     // コマンド読み込み
-                    for (Command command : t3Base.getCommands()) {
+                    for (Command command : et3Base.getCommands()) {
 
                         Set<ConstraintViolation<Command>> result = validator.validate(command);
 
                         // コマンド識別子を作成
                         String fullCommandId = IDUtils.getInstance()
-                                .createFullCommandId(t3Base.getInfo().getId(), command.getId());
+                                .createFullCommandId(et3Base.getInfo().getId(), command.getId());
 
                         // コマンド定義を追加
                         context.getOriginal().getCommands().put(fullCommandId, command);
@@ -243,24 +244,25 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                         // コマンド識別子とシナリオIDを紐付ける
                         context.getOriginal()
                                 .getCommandScenarioRelations()
-                                .put(fullCommandId, t3Base.getInfo().getId());
+                                .put(fullCommandId, et3Base.getInfo().getId());
 
                         // コマンド識別子とPathを紐付ける
                         context.getOriginal().getCommandPlacePaths().put(fullCommandId, file);
 
                     }
 
+                    // FIXME
                     // Flow読み込み
-                    for (Flow flow : t3Base.getFlows()) {
-
+                    for (Flow flow : et3Base.getFlows()) {
+                        // TODO
                     }
 
                     // 設定情報読み込み
-                    for (Configuration configuration : t3Base.getConfigurations()) {
+                    for (Configuration configuration : et3Base.getConfigurations()) {
 
                         // 設定識別子を作成
                         String fullConfigurationId = IDUtils.getInstance()
-                                .createFullConfigurationId(t3Base.getInfo().getId(), configuration.getId());
+                                .createFullConfigurationId(et3Base.getInfo().getId(), configuration.getId());
 
                         // 設定定義を追加
                         context.getOriginal().getConfigurations().put(fullConfigurationId, configuration);
@@ -268,13 +270,32 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                         // 設定識別子とシナリオIDを紐付ける
                         context.getOriginal()
                                 .getConfigurationScenarioRelations()
-                                .put(fullConfigurationId, t3Base.getInfo().getId());
+                                .put(fullConfigurationId, et3Base.getInfo().getId());
 
                         // 設定識別子とPathを紐付ける
                         context.getOriginal().getConfigurationPlacePaths().put(fullConfigurationId, file);
 
                     }
 
+                    // 変数読み込み（グローバルのみ）
+                    if (et3Base.getVariables() != null && et3Base.getVariables().getGlobal() != null) {
+                        for (var entry : et3Base.getVariables().getGlobal().entrySet()) {
+                            if (context.getOriginal().getGlobalVariables().containsKey(entry.getKey())) {
+                                // グローバル変数の重複はエラーとする
+                                executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
+                                        .stage(executeContext.getStage())
+                                        .level(NotificationType.ERROR)
+                                        .filePath(file.toString())
+                                        .message(MessageManager.getInstance()
+                                                .getMessage(CoreMessages.CORE_ERR_0069, file.toString(),
+                                                        entry.getKey()))
+                                        .build());
+                            } else {
+                                // グローバル変数を保持
+                                context.getOriginal().getGlobalVariables().put(entry.getKey(), entry.getValue());
+                            }
+                        }
+                    }
                 }
 
                 return FileVisitResult.CONTINUE;

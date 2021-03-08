@@ -1,20 +1,20 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
+import com.epion_t3.core.common.type.ReferenceVariableType;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.common.type.ReferenceVariableType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -229,7 +229,7 @@ public final class BindUtils {
             String referProfileKey = m.group(1);
 
             if (profiles.containsKey(referProfileKey)) {
-                log.trace("replace profile target:{}, bind:{}", m.group(0), profiles.get(referProfileKey));
+                log.debug("replace profile target:{}, bind:{}", m.group(0), profiles.get(referProfileKey));
                 target = target.replace(m.group(0), profiles.get(referProfileKey));
             }
 
@@ -243,7 +243,7 @@ public final class BindUtils {
 
             if (loopCount > 10) {
                 // 最大失敗回数は10回とする
-                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0001, target));
+                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0004, target));
                 break;
             }
 
@@ -263,14 +263,14 @@ public final class BindUtils {
             if (referenceVariableType != null) {
                 switch (referenceVariableType) {
                 case FIX:
-                    log.trace("replace fix target:{}, bind:{}", m.group(0), m.group(2));
+                    log.debug("replace fix target:{}, bind:{}", m.group(0), m.group(2));
                     target = target.replace(m.group(0), m.group(2));
                     replaceFlg = true;
                     break;
                 case GLOBAL:
                     // グローバルスコープ変数からのバインド
                     if (globalVariables.containsKey(m.group(2))) {
-                        log.trace("replace global target:{}, bind:{}", m.group(0),
+                        log.debug("replace global target:{}, bind:{}", m.group(0),
                                 globalVariables.get(m.group(2)).toString());
                         target = target.replace(m.group(0), globalVariables.get(m.group(2)).toString());
                         replaceFlg = true;
@@ -281,7 +281,7 @@ public final class BindUtils {
                 case SCENARIO:
                     // シナリオスコープ変数からのバインド
                     if (scenarioVariables.containsKey(m.group(2))) {
-                        log.trace("replace scenario target:{}, bind:{}", m.group(0),
+                        log.debug("replace scenario target:{}, bind:{}", m.group(0),
                                 scenarioVariables.get(m.group(2)).toString());
                         target = target.replace(m.group(0), scenarioVariables.get(m.group(2)).toString());
                         replaceFlg = true;
@@ -296,7 +296,7 @@ public final class BindUtils {
                     } else {
                         // Flowスコープ変数からのバインド
                         if (flowVariables.containsKey(m.group(2))) {
-                            log.trace("replace scenario target:{}, bind:{}", m.group(0),
+                            log.debug("replace scenario target:{}, bind:{}", m.group(0),
                                     flowVariables.get(m.group(2)).toString());
                             target = target.replace(m.group(0), flowVariables.get(m.group(2)).toString());
                             replaceFlg = true;

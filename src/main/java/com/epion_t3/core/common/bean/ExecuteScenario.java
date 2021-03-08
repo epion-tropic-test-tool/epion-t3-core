@@ -1,11 +1,10 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
-import com.epion_t3.core.common.type.CommandStatus;
+import com.epion_t3.core.common.bean.scenario.Information;
 import com.epion_t3.core.common.type.FlowStatus;
 import com.epion_t3.core.common.type.NotificationType;
 import com.epion_t3.core.common.type.ScenarioExecuteStatus;
-import com.epion_t3.core.common.bean.scenario.Information;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,12 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -155,7 +159,7 @@ public class ExecuteScenario implements Serializable {
      * @return true : 存在する、false : 存在しない
      */
     public boolean hasCommandError() {
-        return flows.stream().anyMatch(x -> x.hasCommandError());
+        return flows.stream().anyMatch(ExecuteFlow::hasCommandError);
     }
 
     /**
