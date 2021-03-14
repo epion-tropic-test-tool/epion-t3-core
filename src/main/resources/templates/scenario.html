@@ -15,7 +15,14 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css"
               integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     </th:block>
-</head>
+
+    <style>
+        body {
+            font-size: 0.8rem;
+            font-weight: 400;
+            line-height: 1.2;
+        }
+    </style>
 </head>
 
 <body>
@@ -46,36 +53,8 @@
 
     <!-- Execute Information. -->
     <section class="row">
-        <div class="col-md-12">
-            <h2 id="executeInformation">Execute&nbsp;Information</h2>
-            <table class="table table-sm table-bordered">
-                <tbody>
-                <tr>
-                    <th class="bg-dark" style="width:200px;color:white">Profile</th>
-                    <td th:text="${executeScenario.option.profile}">develop</td>
-                </tr>
-                <tr>
-                    <th class="bg-dark" style="color:white">Mode</th>
-                    <td th:text="${executeScenario.option.mode}">test</td>
-                </tr>
-                <tr>
-                    <th class="bg-dark" style="color:white">NoReport</th>
-                    <td th:text="${executeScenario.option.noreport}">false</td>
-                </tr>
-                <tr>
-                    <th class="bg-dark" style="color:white">Debug</th>
-                    <td th:text="${executeScenario.option.debug}">false</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-    </section>
-
-    <!-- Execute Scenario Information. -->
-    <section class="row">
-        <div class="col-md-12">
-            <h2 id="scenarioInformation">Scenario&nbsp;Information</h2>
+        <div class="col-md-6">
+            <h3 id="scenarioInformation">Scenario&nbsp;Information</h3>
             <table class="table table-sm table-bordered">
                 <tbody>
                 <tr>
@@ -119,21 +98,94 @@
                 </tbody>
             </table>
         </div>
-
-    </section>
-
-    <!--
-    <section class="row" style="margin-top:20px" id="executedFlow">
-        <div class="col-md-12">
-            <h2>Execute&nbsp;Flow</h2>
-            <th:block th:utext="${activity}"></th:block>
+        <div class="col-md-6">
+            <h3 id="executeInformation">Execute&nbsp;Information</h3>
+            <table class="table table-sm table-bordered">
+                <tbody>
+                <tr>
+                    <th class="bg-dark" style="width:200px;color:white">Profile</th>
+                    <td th:text="${executeScenario.option.profile}">develop</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Mode</th>
+                    <td th:text="${executeScenario.option.mode}">test</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">NoReport</th>
+                    <td th:text="${executeScenario.option.noreport}">false</td>
+                </tr>
+                <tr>
+                    <th class="bg-dark" style="color:white">Debug</th>
+                    <td th:text="${executeScenario.option.debug}">false</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
+
     </section>
-    -->
+
+    <!-- Execute Scenario Information. -->
+<!--    <section class="row">-->
+<!--        <div class="col-md-12">-->
+<!--            <h2 id="scenarioInformation">Scenario&nbsp;Information</h2>-->
+<!--            <table class="table table-sm table-bordered">-->
+<!--                <tbody>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="width:200px;color:white">ID</th>-->
+<!--                    <td th:text="${executeScenario.info.id}">sample-scenario-001</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Version</th>-->
+<!--                    <td th:text="${executeScenario.info.version}">1.0.0</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Summary</th>-->
+<!--                    <td th:text="${executeScenario.info.summary}">Sample Scenario 001</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Description</th>-->
+<!--                    <td th:text="${executeScenario.info.description}">This is a typical example scenario of the tool.-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Execution&nbsp;ID</th>-->
+<!--                    <td th:text="${executeScenario.executeScenarioId}">fef4d139-a550-490a-8365-9fd26ce3f871</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Status</th>-->
+<!--                    <td th:text="${executeScenario.status}" th:class="${executeScenario.status.getCssClass()}">SUCCESS-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Start</th>-->
+<!--                    <td th:text="${dateTimeUtils.formatNormal(executeScenario.start)}">2018/09/01 12:12:12</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">End</th>-->
+<!--                    <td th:text="${dateTimeUtils.formatNormal(executeScenario.end)}">2018/09/01 12:12:12</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <th class="bg-dark" style="color:white">Duration&nbsp;(ms)</th>-->
+<!--                    <td th:text="${dateTimeUtils.getMillis(executeScenario.start, executeScenario.end)}">1</td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+
+<!--    </section>-->
+
+
+<!--    <section class="row" style="margin-top:20px" id="executedFlow">-->
+<!--        <div class="col-md-12">-->
+<!--            <h3>Execute&nbsp;Flow&nbsp;Activity</h3>-->
+<!--            <th:block th:utext="${activity}"></th:block>-->
+<!--        </div>-->
+<!--    </section>-->
+
 
     <section class="row" style="margin-top:20px" id="executeFlow">
         <div class="col-md-12">
-            <h2>Execute&nbsp;Flow</h2>
+            <h3>Execute&nbsp;Flow Details</h3>
             <table class="table table-bordered">
                 <thead class="bg-dark" style="color:white">
                 <tr>
@@ -217,7 +269,7 @@
     <!-- Notifications -->
     <section class="row" style="margin-top:20px" id="notifications" th:unless="${executeScenario.notifications.isEmpty()}">
         <div class="col-md-12">
-            <h2>Notifications</h2>
+            <h3>Notifications</h3>
             <table class="table table-bordered table-hover table-striped">
                 <thead class="bg-dark" style="color:white">
                 <tr>
@@ -238,7 +290,7 @@
     <!-- Evidences -->
     <section class="row" style="margin-top:20px" id="evidences" th:unless="${executeScenario.evidences.isEmpty()}">
         <div class="col-md-12">
-            <h2>Evidences</h2>
+            <h3>Evidences</h3>
             <table class="table table-bordered table-hover table-striped">
                 <thead class="bg-dark" style="color:white">
                 <tr>
@@ -263,8 +315,8 @@
 
     <!-- Profile Constants -->
     <section class="row" style="margin-top:20px" id="profileConstants" th:unless="${executeScenario.profileConstants.isEmpty()}">
-        <div class="col-md-12">
-            <h2>Profile&nbsp;Constants</h2>
+        <div class="col-md-6">
+            <h3>Profile&nbsp;Constants</h3>
             <table class="table table-bordered table-hover table-striped">
                 <thead class="bg-dark" style="color:white">
                 <tr>
@@ -284,12 +336,8 @@
                 </tbody>
             </table>
         </div>
-    </section>
-
-    <!-- Scenario Variables -->
-    <section class="row" style="margin-top:20px" id="scenarioVariables" th:unless="${executeScenario.scenarioVariables.isEmpty()}">
-        <div class="col-md-12">
-            <h2>Scenario Variables</h2>
+        <div class="col-md-6">
+            <h3>Scenario&nbsp;Variables</h3>
             <table class="table table-bordered table-hover table-striped">
                 <thead class="bg-dark" style="color:white">
                 <tr>
@@ -311,9 +359,34 @@
         </div>
     </section>
 
+    <!-- Scenario Variables -->
+<!--    <section class="row" style="margin-top:20px" id="scenarioVariables" th:unless="${executeScenario.scenarioVariables.isEmpty()}">-->
+<!--        <div class="col-md-12">-->
+<!--            <h3>Scenario&nbsp;Variables</h3>-->
+<!--            <table class="table table-bordered table-hover table-striped">-->
+<!--                <thead class="bg-dark" style="color:white">-->
+<!--                <tr>-->
+<!--                    <th scope="col">Name</th>-->
+<!--                    <th scope="col">Value</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                <tr th:each="scenarioVariable,stat : ${executeScenario.scenarioVariables}">-->
+<!--                    <td scope="row" th:text="${scenarioVariable.key}">key1</td>-->
+<!--                    <td th:text="${scenarioVariable.value}">value1</td>-->
+<!--                </tr>-->
+<!--                <tr th:remove="all">-->
+<!--                    <td>key2</td>-->
+<!--                    <td>value2</td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+<!--    </section>-->
+
     <section class="row" style="margin-top:20px" id="executeDetails">
         <div class="col-md-12">
-            <h2>Execute&nbsp;Details</h2>
+            <h3>Execute&nbsp;Details</h3>
             <p>* : Extension Parameter</p>
             <th:block th:each="executeFlow,stat : ${executeScenario.flows}">
                 <div class="row">

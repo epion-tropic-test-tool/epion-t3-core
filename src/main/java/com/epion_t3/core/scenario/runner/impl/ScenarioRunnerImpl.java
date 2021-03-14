@@ -352,9 +352,9 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      */
     private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario,
             final ET3Base et3) {
-        if (et3.getVariables() != null && et3.getVariables().getScenario() != null) {
-            et3.getVariables().getScenario().forEach((k, v) -> executeScenario.getScenarioVariables().remove(k));
-        }
+//        if (et3.getVariables() != null && et3.getVariables().getScenario() != null) {
+//            et3.getVariables().getScenario().forEach((k, v) -> executeScenario.getScenarioVariables().remove(k));
+//        }
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.SCENARIO_DIR.getName());
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.EVIDENCE_DIR.getName());
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.CURRENT_SCENARIO.getName());

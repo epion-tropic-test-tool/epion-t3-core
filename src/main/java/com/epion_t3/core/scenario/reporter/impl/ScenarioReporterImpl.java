@@ -129,7 +129,7 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
             }
 
             // 変数の設定
-            // variable.put("activity", generateSvg(executeScenario));
+//            variable.put("activity", generateSvg(executeScenario));
             if (StringUtils.isNotEmpty(context.getOption().getWebAssetPath())) {
                 variable.put("webAssetPath", context.getOption().getWebAssetPath());
             }
