@@ -2,6 +2,8 @@
 package com.epion_t3.core.scenario.reporter.impl;
 
 import com.epion_t3.core.common.annotation.OriginalProcessField;
+import com.epion_t3.core.common.bean.scenario.AbstractWhileFlow;
+import com.epion_t3.core.common.bean.scenario.Flow;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.bean.ExecuteCommand;
 import com.epion_t3.core.common.context.ExecuteContext;
@@ -9,6 +11,8 @@ import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.exception.SystemException;
+import com.epion_t3.core.flow.runner.IterateTypeFlowRunner;
+import com.epion_t3.core.flow.runner.impl.AbstractSimpleFlowRunner;
 import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.scenario.reporter.ThymeleafScenarioReporter;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
@@ -129,7 +133,7 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
             }
 
             // 変数の設定
-//            variable.put("activity", generateSvg(executeScenario));
+            // variable.put("activity", generateSvg(executeScenario));
             if (StringUtils.isNotEmpty(context.getOption().getWebAssetPath())) {
                 variable.put("webAssetPath", context.getOption().getWebAssetPath());
             }
@@ -156,70 +160,121 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
 
     }
 
+// new activity
+//    /**
+//     * 実行Flowのアクティビティ図のSVGを出力する.
+//     *
+//     * @param executeScenario シナリオ実行情報
+//     * @return PlantUMLのアクティビティ図の文字列表現
+//     */
+//    private String generateSvg(ExecuteScenario executeScenario) {
+//
+//        StringBuilder activity = new StringBuilder();
+//        activity.append("start");
+//        for (ExecuteFlow executeFlow : executeScenario.getFlows()) {
+//            var flow = executeFlow.getFlow();
+//            if (AbstractWhileFlow.class.isAssignableFrom(flow.getClass())) {
+//                activity.append("while (");
+//                activity.append(executeFlow.getFlow().getId());
+//                activity.append(" - condition)");
+//            } else {
+//                activity.append(":");
+//                activity.append(executeFlow.getFlow().getId());
+//                activity.append(";");
+//                activity.append("\n");
+//            }
+//        }
+//        activity.append("stop\n");
+//
+//        List<String> templates = null;
+//        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("activity/activity_template.puml")) {
+//            templates = IOUtils.readLines(is, Charset.forName("UTF-8"));
+//        } catch (IOException e) {
+//            throw new SystemException(e);
+//        }
+//
+//        String activityString = activity.toString();
+//        StringBuilder result = new StringBuilder();
+//        for (String row : templates) {
+//            result.append(row.replace("'$ACTIVITY$", activityString));
+//            result.append("\n");
+//        }
+//
+//        String plantUmlSrc = result.toString();
+//        SourceStringReader reader = new SourceStringReader(plantUmlSrc);
+//        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+//            reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
+//            return new String(os.toByteArray(), Charset.forName("UTF-8"));
+//        } catch (IOException e) {
+//            throw new SystemException(e);
+//        }
+//    }
+
     /**
      * 実行Flowのアクティビティ図のSVGを出力する.
      *
      * @param executeScenario シナリオ実行情報
      * @return PlantUMLのアクティビティ図の文字列表現
      */
-    private String generateSvg(ExecuteScenario executeScenario) {
-
-        StringBuilder activity = new StringBuilder();
-        boolean first = true;
-        for (ExecuteFlow executeFlow : executeScenario.getFlows()) {
-            if (first) {
-                activity.append("(*)-->");
-                activity.append(executeFlow.getFlow().getId());
-                first = false;
-            } else {
-                activity.append("-->");
-                activity.append(executeFlow.getFlow().getId());
-            }
-            switch (executeFlow.getFlowResult().getStatus()) {
-            case WAIT:
-                activity.append("<<WAIT>>");
-                break;
-//            case SKIP:
-//                activity.append("<<SKIP>>");
-//                break;
-            case SUCCESS:
-                activity.append("<<SUCCESS>>");
-                break;
-//            case ASSERT_ERROR:
-//                activity.append("<<ASSERT_ERROR>>");
-//                break;
-            case ERROR:
-                activity.append("<<ERROR>>");
-                break;
-            case WARN:
-                activity.append("<<WARN>>");
-                break;
-            }
-            activity.append("\n");
-        }
-        activity.append("-->(*)\n");
-
-        List<String> templates = null;
-        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("activity/activity_template.puml")) {
-            templates = IOUtils.readLines(is, Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            throw new SystemException(e);
-        }
-
-        String activityString = activity.toString();
-        StringBuilder result = new StringBuilder();
-        for (String row : templates) {
-            result.append(row.replace("'$ACTIVITY$", activityString));
-            result.append("\n");
-        }
-
-        String plantUmlSrc = result.toString();
-        SourceStringReader reader = new SourceStringReader(plantUmlSrc);
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
-            return new String(os.toByteArray(), Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            throw new SystemException(e);
-        }
-    }
+// old activity
+//    private String generateSvg(ExecuteScenario executeScenario) {
+//
+//        StringBuilder activity = new StringBuilder();
+//        boolean first = true;
+//        for (ExecuteFlow executeFlow : executeScenario.getFlows()) {
+//            if (first) {
+//                activity.append("(*)-->");
+//                activity.append(executeFlow.getFlow().getId());
+//                first = false;
+//            } else {
+//                activity.append("-->");
+//                activity.append(executeFlow.getFlow().getId());
+//            }
+//            switch (executeFlow.getFlowResult().getStatus()) {
+//                case WAIT:
+//                    activity.append("<<WAIT>>");
+//                    break;
+////            case SKIP:
+////                activity.append("<<SKIP>>");
+////                break;
+//                case SUCCESS:
+//                    activity.append("<<SUCCESS>>");
+//                    break;
+////            case ASSERT_ERROR:
+////                activity.append("<<ASSERT_ERROR>>");
+////                break;
+//                case ERROR:
+//                    activity.append("<<ERROR>>");
+//                    break;
+//                case WARN:
+//                    activity.append("<<WARN>>");
+//                    break;
+//            }
+//            activity.append("\n");
+//        }
+//        activity.append("-->(*)\n");
+//
+//        List<String> templates = null;
+//        try (InputStream is = this.getClass().getClassLoader().getResourceAsStream("activity/activity_template.puml")) {
+//            templates = IOUtils.readLines(is, Charset.forName("UTF-8"));
+//        } catch (IOException e) {
+//            throw new SystemException(e);
+//        }
+//
+//        String activityString = activity.toString();
+//        StringBuilder result = new StringBuilder();
+//        for (String row : templates) {
+//            result.append(row.replace("'$ACTIVITY$", activityString));
+//            result.append("\n");
+//        }
+//
+//        String plantUmlSrc = result.toString();
+//        SourceStringReader reader = new SourceStringReader(plantUmlSrc);
+//        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+//            reader.generateImage(os, new FileFormatOption(FileFormat.SVG));
+//            return new String(os.toByteArray(), Charset.forName("UTF-8"));
+//        } catch (IOException e) {
+//            throw new SystemException(e);
+//        }
+//    }
 }

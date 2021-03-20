@@ -80,4 +80,13 @@ public class ET3Base implements Serializable {
      */
     private Custom customs;
 
+    /**
+     * 履歴.<br>
+     * 変更履歴をYAML上に残すためのもの.<br>
+     * とりあえず、Informationクラスで十分だと思ったので、利用している
+     * 
+     * @since 0.0.4
+     */
+    private List<Information> history;
+
 }

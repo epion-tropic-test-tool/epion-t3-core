@@ -8,5 +8,5 @@
         /_/
 
 :: Epion - Tropic - Test - Tool
-:: Version 1.0.0 (Latest)
+:: Version 0.0.4 (Latest)
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
