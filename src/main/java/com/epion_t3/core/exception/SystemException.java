@@ -1,8 +1,8 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.exception;
 
-import com.epion_t3.core.message.Messages;
 import com.epion_t3.core.message.MessageManager;
+import com.epion_t3.core.message.Messages;
 
 /**
  * 汎用システム例外.

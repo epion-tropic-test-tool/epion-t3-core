@@ -1,9 +1,9 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.scenario.reporter;
 
+import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
-import com.epion_t3.core.common.bean.ExecuteScenario;
 
 /**
  * シナリオレポート出力インタフェース.

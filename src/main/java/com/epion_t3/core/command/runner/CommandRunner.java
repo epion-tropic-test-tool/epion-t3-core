@@ -3,10 +3,10 @@ package com.epion_t3.core.command.runner;
 
 import com.epion_t3.core.command.bean.CommandResult;
 import com.epion_t3.core.common.bean.ExecuteCommand;
-import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.bean.scenario.Command;
+import com.epion_t3.core.common.context.ExecuteContext;
 import org.slf4j.Logger;
 
 import java.util.regex.Pattern;

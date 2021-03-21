@@ -2,7 +2,6 @@
 package com.epion_t3.core.command.logging.holder;
 
 import com.epion_t3.core.command.logging.bean.CommandLog;
-import com.epion_t3.core.flow.logging.bean.FlowLog;
 import lombok.NonNull;
 import org.apache.commons.lang3.SerializationUtils;
 

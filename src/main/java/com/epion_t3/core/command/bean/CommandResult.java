@@ -1,8 +1,8 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.bean;
 
-import com.epion_t3.core.flow.bean.FlowResult;
 import com.epion_t3.core.common.type.CommandStatus;
+import com.epion_t3.core.flow.bean.FlowResult;
 import lombok.Getter;
 import lombok.Setter;
 

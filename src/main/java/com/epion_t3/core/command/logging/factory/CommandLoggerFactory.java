@@ -2,7 +2,6 @@
 package com.epion_t3.core.command.logging.factory;
 
 import com.epion_t3.core.command.logging.appender.CommandLoggingAppender;
-import com.epion_t3.core.flow.logging.appender.FlowLoggingAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

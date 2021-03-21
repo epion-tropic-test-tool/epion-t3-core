@@ -344,7 +344,10 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
     }
 
     /**
-     * シナリオスコープの変数を掃除する.
+     * シナリオスコープの変数を掃除する.<br>
+     * 削除を行うのは、あくまでもツール内部で作成される変数のみとする.<br>
+     * ユーザーがシナリオファイルに定義しているものや、コマンド実行によって作成された変数は削除しない.<br>
+     * ここで削除してしまうとレポートに出てこない.
      *
      * @param context コンテキスト
      * @param executeScenario 実行シナリオ
@@ -352,9 +355,6 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      */
     private void cleanScenarioVariables(final Context context, final ExecuteScenario executeScenario,
             final ET3Base et3) {
-//        if (et3.getVariables() != null && et3.getVariables().getScenario() != null) {
-//            et3.getVariables().getScenario().forEach((k, v) -> executeScenario.getScenarioVariables().remove(k));
-//        }
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.SCENARIO_DIR.getName());
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.EVIDENCE_DIR.getName());
         executeScenario.getScenarioVariables().remove(ScenarioScopeVariables.CURRENT_SCENARIO.getName());

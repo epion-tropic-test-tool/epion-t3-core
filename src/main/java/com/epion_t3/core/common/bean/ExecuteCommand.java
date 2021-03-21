@@ -4,8 +4,8 @@ package com.epion_t3.core.common.bean;
 import com.epion_t3.core.command.bean.AssertCommandResult;
 import com.epion_t3.core.command.bean.CommandResult;
 import com.epion_t3.core.command.logging.bean.CommandLog;
-import com.epion_t3.core.common.type.AssertStatus;
 import com.epion_t3.core.common.bean.scenario.Command;
+import com.epion_t3.core.common.type.AssertStatus;
 import lombok.Getter;
 import lombok.Setter;
 

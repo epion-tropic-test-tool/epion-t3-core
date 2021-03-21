@@ -1,7 +1,10 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.custom.validator;
 
-import com.epion_t3.core.common.bean.*;
+import com.epion_t3.core.common.bean.ET3Notification;
+import com.epion_t3.core.common.bean.FlowInfo;
+import com.epion_t3.core.common.bean.FlowSpecInfo;
+import com.epion_t3.core.common.bean.FlowSpecStructure;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.NotificationType;
@@ -9,8 +12,6 @@ import com.epion_t3.core.common.type.StructureType;
 import com.epion_t3.core.custom.holder.CustomPackageHolder;
 import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.scenario.bean.CommandSpecStructureValidateError;
-import com.epion_t3.core.scenario.bean.CommandSpecValidateError;
 import com.epion_t3.core.scenario.bean.FlowSpecStructureValidateError;
 import com.epion_t3.core.scenario.bean.FlowSpecValidateError;
 import lombok.extern.slf4j.Slf4j;

@@ -2,7 +2,11 @@
 package com.epion_t3.core.command.logging.bean;
 
 import ch.qos.logback.classic.Level;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

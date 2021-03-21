@@ -2,15 +2,15 @@
 package com.epion_t3.core.common.util;
 
 import com.epion_t3.core.common.bean.EvidenceInfo;
+import com.epion_t3.core.common.bean.ExecuteFlow;
+import com.epion_t3.core.common.bean.ExecuteScenario;
 import com.epion_t3.core.common.bean.FileEvidenceInfo;
 import com.epion_t3.core.common.bean.ObjectEvidenceInfo;
 import com.epion_t3.core.common.context.ExecuteContext;
-import com.epion_t3.core.common.bean.ExecuteFlow;
-import com.epion_t3.core.common.bean.ExecuteScenario;
-import com.epion_t3.core.exception.SystemException;
-import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.common.type.FlowScopeVariables;
 import com.epion_t3.core.common.type.ScenarioScopeVariables;
+import com.epion_t3.core.exception.SystemException;
+import com.epion_t3.core.message.impl.CoreMessages;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;

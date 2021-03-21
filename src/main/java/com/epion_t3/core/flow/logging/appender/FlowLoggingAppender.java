@@ -1,13 +1,10 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.flow.logging.appender;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.epion_t3.core.flow.logging.bean.FlowLog;
 import com.epion_t3.core.flow.logging.holder.FlowLoggingHolder;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

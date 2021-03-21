@@ -1,11 +1,10 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
-import com.epion_t3.core.common.bean.scenario.Configuration;
 import com.epion_t3.core.common.bean.scenario.Command;
+import com.epion_t3.core.common.bean.scenario.Configuration;
 import com.epion_t3.core.common.bean.scenario.ET3Base;
 import com.epion_t3.core.common.bean.scenario.Flow;
-import com.epion_t3.core.common.bean.scenario.Variable;
 import lombok.Getter;
 
 import java.io.Serializable;

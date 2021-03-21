@@ -1,11 +1,11 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.epion_t3.core.command.resolver.CommandTypeIdResolver;
 import com.epion_t3.core.configuration.resolver.CustomConfigurationTypeIdResolver;
 import com.epion_t3.core.flow.resolver.FlowTypeIdResolver;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import lombok.Getter;
 import lombok.Setter;
 

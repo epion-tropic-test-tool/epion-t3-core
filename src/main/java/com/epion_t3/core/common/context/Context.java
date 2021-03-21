@@ -1,11 +1,11 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.context;
 
+import com.epion_t3.core.common.bean.Option;
+import com.epion_t3.core.common.bean.Original;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.epion_t3.core.common.bean.Option;
-import com.epion_t3.core.common.bean.Original;
 import lombok.Getter;
 
 import java.io.Serializable;

@@ -1,7 +1,13 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.custom.holder;
 
-import com.epion_t3.core.common.bean.*;
+import com.epion_t3.core.common.bean.CommandInfo;
+import com.epion_t3.core.common.bean.CommandSpecInfo;
+import com.epion_t3.core.common.bean.CustomConfigurationInfo;
+import com.epion_t3.core.common.bean.CustomConfigurationSpecInfo;
+import com.epion_t3.core.common.bean.CustomSpecInfo;
+import com.epion_t3.core.common.bean.FlowInfo;
+import com.epion_t3.core.common.bean.FlowSpecInfo;
 import com.epion_t3.core.common.bean.scenario.Command;
 import com.epion_t3.core.common.bean.scenario.Configuration;
 import com.epion_t3.core.common.bean.scenario.Flow;

@@ -15,7 +15,7 @@ public class CommandSpecValidateError extends ET3Notification {
     /**
      * コンストラクタ.
      */
-    @Builder(builderMethodName = "csommandSpecValidateErrorBuilder")
+    @Builder(builderMethodName = "commandSpecValidateErrorBuilder")
     public CommandSpecValidateError(StageType stage, NotificationType level, String message, Throwable error,
             String customName) {
         super(stage, level, message, error);

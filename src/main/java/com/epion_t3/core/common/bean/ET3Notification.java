@@ -3,7 +3,11 @@ package com.epion_t3.core.common.bean;
 
 import com.epion_t3.core.common.type.NotificationType;
 import com.epion_t3.core.common.type.StageType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 import java.io.Serializable;
 

@@ -1,7 +1,6 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
-import com.epion_t3.core.common.bean.spec.Command;
 import lombok.Getter;
 import lombok.Setter;
 

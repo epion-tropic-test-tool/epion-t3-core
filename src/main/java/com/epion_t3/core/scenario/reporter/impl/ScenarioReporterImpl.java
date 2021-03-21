@@ -2,41 +2,29 @@
 package com.epion_t3.core.scenario.reporter.impl;
 
 import com.epion_t3.core.common.annotation.OriginalProcessField;
-import com.epion_t3.core.common.bean.scenario.AbstractWhileFlow;
-import com.epion_t3.core.common.bean.scenario.Flow;
-import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.bean.ExecuteCommand;
-import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.context.Context;
+import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.StageType;
-import com.epion_t3.core.exception.SystemException;
-import com.epion_t3.core.flow.runner.IterateTypeFlowRunner;
-import com.epion_t3.core.flow.runner.impl.AbstractSimpleFlowRunner;
-import com.epion_t3.core.message.impl.CoreMessages;
-import com.epion_t3.core.scenario.reporter.ThymeleafScenarioReporter;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
 import com.epion_t3.core.common.util.ThymeleafReportUtils;
+import com.epion_t3.core.exception.SystemException;
+import com.epion_t3.core.message.impl.CoreMessages;
+import com.epion_t3.core.scenario.reporter.ThymeleafScenarioReporter;
 import lombok.extern.slf4j.Slf4j;
-import net.sourceforge.plantuml.FileFormat;
-import net.sourceforge.plantuml.FileFormatOption;
-import net.sourceforge.plantuml.SourceStringReader;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.thymeleaf.TemplateEngine;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
