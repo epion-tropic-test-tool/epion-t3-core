@@ -10,6 +10,9 @@ import java.io.Serializable;
 @Setter
 public class Scenario implements Serializable {
 
+    /**
+     * デフォルトシリアルバージョンUID.
+     */
     private static final long serialVersionUID = 1L;
 
     /**

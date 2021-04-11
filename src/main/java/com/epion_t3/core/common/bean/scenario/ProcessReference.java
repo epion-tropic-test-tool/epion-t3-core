@@ -11,6 +11,11 @@ import java.util.Map;
 @Setter
 public class ProcessReference implements Serializable {
 
+    /**
+     * デフォルトシリアルバージョンUID.
+     */
+    private static final long serialVersionUID = 1L;
+
     private String id;
 
     private Map<String, Object> args;

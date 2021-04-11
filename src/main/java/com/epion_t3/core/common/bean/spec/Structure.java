@@ -28,6 +28,16 @@ public class Structure implements Serializable {
     @NotEmpty
     private String type;
 
+    /**
+     * typeが「array」の場合の要素型の指定.
+     * 
+     * @since 0.0.4
+     */
+    private String itemType;
+
+    /**
+     * typeが「string」の場合の正規表現による入力制限.
+     */
     private String pattern;
 
     /**

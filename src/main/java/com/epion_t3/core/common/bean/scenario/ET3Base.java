@@ -23,6 +23,11 @@ import java.util.Map;
 public class ET3Base implements Serializable {
 
     /**
+     * デフォルトシリアルバージョンUID.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * バージョン. 今使えていない・・・
      */
     private String t3 = "1.0";

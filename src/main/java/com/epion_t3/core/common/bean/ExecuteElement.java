@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- *
+ * 実行情報保持のための基底クラス.
  */
 @Getter
 @Setter
-public class ExecuteElement implements Serializable {
+public abstract class ExecuteElement implements Serializable {
 
     /**
      * デフォルトシリアルバージョンUID.

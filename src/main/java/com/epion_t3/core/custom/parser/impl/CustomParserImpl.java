@@ -208,9 +208,7 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
             log.debug("start parse custom package spec -> {}:{}", entry.getKey(), entry.getValue());
 
             // カスタム機能の設計データを読み込み
-            String specFileName = String.format(CUSTOM_SPEC_FILENAME_PATTERN, entry.getKey());
-
-            InputStream isis = CustomParserImpl.class.getClassLoader().getResourceAsStream(specFileName);
+            var specFileName = String.format(CUSTOM_SPEC_FILENAME_PATTERN, entry.getKey());
 
             try (InputStream is = loader.getResourceAsStream(specFileName)) {
 
@@ -224,12 +222,12 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                     continue;
                 }
 
-                ET3Spec et3Spec = context.getObjectMapper().readValue(is, ET3Spec.class);
+                var et3Spec = context.getObjectMapper().readValue(is, ET3Spec.class);
 
                 Set<ConstraintViolation<ET3Spec>> validationErrors = validationFactory.getValidator().validate(et3Spec);
 
                 // カスタム設計情報の読み込み
-                CustomSpecInfo customSpecInfo = new CustomSpecInfo();
+                var customSpecInfo = new CustomSpecInfo();
                 CustomPackageHolder.getInstance().addCustomSpec(entry.getKey(), customSpecInfo);
 
                 // カスタム名
@@ -251,54 +249,45 @@ public final class CustomParserImpl implements CustomParser<Context, ExecuteCont
                         .forEach(x -> customSpecInfo.putDescription(x.getLang(), x.getContents()));
 
                 // カスタムFlow設定
-                if (et3Spec.getFlows() != null) {
-                    Optional.ofNullable(et3Spec.getFlows())
-                            .map(Collection::stream)
-                            .orElseGet(Stream::empty)
-                            .forEach(x -> {
-                                // コマンド設計を作成
-                                FlowSpecInfo flowSpecInfo = new FlowSpecInfo();
-                                flowSpecInfo.setId(x.getId());
+                Optional.ofNullable(et3Spec.getFlows()).map(Collection::stream).orElseGet(Stream::empty).forEach(x -> {
+                    // コマンド設計を作成
+                    FlowSpecInfo flowSpecInfo = new FlowSpecInfo();
+                    flowSpecInfo.setId(x.getId());
 
-                                // 機能をLocale毎に分けて設定
-                                x.getSummary()
-                                        .stream()
-                                        .forEach(y -> flowSpecInfo.addFunction(y.getLang(), y.getContents()));
+                    // 機能をLocale毎に分けて設定
+                    x.getSummary().stream().forEach(y -> flowSpecInfo.addFunction(y.getLang(), y.getContents()));
 
-                                // 試験項目をorderでソートしたのち、Locale毎に分けて設定
-                                x.getTestItem()
-                                        .stream()
-                                        .sorted(Comparator.comparing(ti -> ti.getOrder()))
-                                        .forEach(ti -> ti.getSummary()
-                                                .forEach(c -> flowSpecInfo.addTestItem(c.getLang(), c.getContents())));
+                    // 試験項目をorderでソートしたのち、Locale毎に分けて設定
+                    x.getTestItem()
+                            .stream()
+                            .sorted(Comparator.comparing(ti -> ti.getOrder()))
+                            .forEach(ti -> ti.getSummary()
+                                    .forEach(c -> flowSpecInfo.addTestItem(c.getLang(), c.getContents())));
 
-                                // Flow構成を設定
-                                x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder())).forEach(s -> {
-                                    FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
-                                    flowSpecStructure.setName(s.getName());
-                                    flowSpecStructure.setRequired(s.getRequired());
-                                    flowSpecStructure.setPattern(s.getPattern());
-                                    flowSpecStructure.setType(s.getType());
-                                    s.getSummary()
-                                            .stream()
-                                            .forEach(
-                                                    sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
-                                    if (s.getDescription() != null) {
-                                        s.getDescription()
-                                                .stream()
-                                                .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(),
-                                                        sm.getContents()));
-                                    }
-                                    if (s.getProperty() != null && !s.getProperty().isEmpty()) {
-                                        parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
-                                    }
-                                    flowSpecInfo.addStructure(flowSpecStructure);
-                                });
+                    // Flow構成を設定
+                    x.getStructure().stream().sorted(Comparator.comparing(s -> s.getOrder())).forEach(s -> {
+                        FlowSpecStructure flowSpecStructure = new FlowSpecStructure();
+                        flowSpecStructure.setName(s.getName());
+                        flowSpecStructure.setRequired(s.getRequired());
+                        flowSpecStructure.setPattern(s.getPattern());
+                        flowSpecStructure.setType(s.getType());
+                        s.getSummary()
+                                .stream()
+                                .forEach(sm -> flowSpecStructure.putSummary(sm.getLang(), sm.getContents()));
+                        if (s.getDescription() != null) {
+                            s.getDescription()
+                                    .stream()
+                                    .forEach(sm -> flowSpecStructure.putDescription(sm.getLang(), sm.getContents()));
+                        }
+                        if (s.getProperty() != null && !s.getProperty().isEmpty()) {
+                            parseCustomFlowStructureRecursive(flowSpecStructure, s.getProperty());
+                        }
+                        flowSpecInfo.addStructure(flowSpecStructure);
+                    });
 
-                                // Flow追加
-                                customSpecInfo.putFlowSpec(flowSpecInfo);
-                            });
-                }
+                    // Flow追加
+                    customSpecInfo.putFlowSpec(flowSpecInfo);
+                });
 
                 // カスタムコマンド設定
                 Optional.ofNullable(et3Spec.getCommands())

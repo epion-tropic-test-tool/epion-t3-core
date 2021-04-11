@@ -7,6 +7,10 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 詳細説明.<br>
+ * 詳細説明はStructureのSummary説明を補足する目的で付与する.
+ */
 @Getter
 @Setter
 public class Description implements Serializable {

@@ -33,7 +33,7 @@ public final class MessageManager {
     /**
      * インスタンスを取得する.
      *
-     * @return
+     * @return シングルトンインスタンス
      */
     public static MessageManager getInstance() {
         return instance;
@@ -42,8 +42,8 @@ public final class MessageManager {
     /**
      * メッセージフォーマットを取得する.
      *
-     * @param messageCode
-     * @return
+     * @param messageCode メッセージコード
+     * @return メッセージフォーマット
      */
     private MessageFormat getMessageFormat(String messageCode) {
         return new MessageFormat(resolver.getMessage(messageCode));
@@ -52,8 +52,8 @@ public final class MessageManager {
     /**
      * メッセージフォーマットを取得する.
      *
-     * @param messages
-     * @return
+     * @param messages メッセージ定義
+     * @return メッセージフォーマット
      */
     private MessageFormat getMessageFormat(Messages messages) {
         return new MessageFormat(resolver.getMessage(messages.getMessageCode()));
@@ -62,8 +62,8 @@ public final class MessageManager {
     /**
      * メッセージを取得する.
      *
-     * @param messageCode
-     * @return
+     * @param messageCode メッセージコード
+     * @return メッセージ
      */
     public String getMessage(String messageCode) {
         return getMessageFormat(messageCode).format(null);
@@ -72,8 +72,8 @@ public final class MessageManager {
     /**
      * メッセージを取得する.
      *
-     * @param messages
-     * @return
+     * @param messages メッセージ定義
+     * @return メッセージ
      */
     public String getMessage(Messages messages) {
         return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(null);
@@ -82,9 +82,9 @@ public final class MessageManager {
     /**
      * メッセージを取得する.
      *
-     * @param messageCode
-     * @param params
-     * @return
+     * @param messageCode メッセージコード
+     * @param params メッセージバインドパラメータ
+     * @return メッセージ
      */
     public String getMessage(String messageCode, Object... params) {
         return "[" + messageCode + "] " + getMessageFormat(messageCode).format(params);
@@ -93,34 +93,12 @@ public final class MessageManager {
     /**
      * メッセージを取得する.
      *
-     * @param messages
-     * @param params
-     * @return
+     * @param messages メッセージ定義
+     * @param params メッセージバインドパラメータ
+     * @return メッセージ
      */
     public String getMessage(Messages messages, Object... params) {
         return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(params);
     }
-
-//    /**
-//     * メッセージを取得する.
-//     *
-//     * @param messageCode
-//     * @param params
-//     * @return
-//     */
-//    public String getMessageWithCode(String messageCode, Object... params) {
-//        return "[" + messageCode + "] " + getMessageFormat(messageCode).format(params);
-//    }
-//
-//    /**
-//     * メッセージを取得する.
-//     *
-//     * @param messages
-//     * @param params
-//     * @return
-//     */
-//    public String getMessageWithCode(Messages messages, Object... params) {
-//        return "[" + messages.getMessageCode() + "] " + getMessageFormat(messages.getMessageCode()).format(params);
-//    }
 
 }

@@ -6,7 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Flowステータス.
+ * Flowステータス.<br>
+ * <ul>
+ * <li>Flowが取りうるステータスの定義.</li>
+ * <li>レポート時のCSSクラス定義.</li>
+ * </ul>
  *
  * @author takashno
  */
@@ -32,6 +36,9 @@ public enum FlowStatus {
 
     WARN("table-danger");
 
+    /**
+     * CSSクラス.
+     */
     private final String cssClass;
 
 }

@@ -9,7 +9,7 @@ import org.apache.bval.constraints.NotEmpty;
 import java.io.Serializable;
 
 /**
- *
+ * 設定.
  */
 @Getter
 @Setter

@@ -7,7 +7,11 @@ import lombok.Setter;
 import org.apache.bval.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.List;
 
+/**
+ * コマンド.
+ */
 @Getter
 @Setter
 public class Command implements Serializable {
@@ -39,5 +43,15 @@ public class Command implements Serializable {
 
     @OriginalProcessField
     private ProcessReference ref;
+
+    /**
+     * 観点.<br>
+     * Assert系コマンドの場合にテスト観点を設定する.<br>
+     * 必須ではない.
+     *
+     * @since 0.0.4
+     */
+    @OriginalProcessField
+    private List<String> viewPoint;
 
 }
