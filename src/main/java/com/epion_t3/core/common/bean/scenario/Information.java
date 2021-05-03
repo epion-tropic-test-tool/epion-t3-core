@@ -22,13 +22,17 @@ public class Information implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
+    /** シナリオID. */
     @NonNull
     private String id;
 
+    /** テスト管理バージョン. */
     private String version;
 
+    /** シナリオ概要. */
     private String summary;
 
+    /** シナリオ詳細. */
     private String description;
 
 }

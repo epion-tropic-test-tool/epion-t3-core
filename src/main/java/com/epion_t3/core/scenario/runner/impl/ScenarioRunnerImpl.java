@@ -69,7 +69,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             scenarioRef.setRef(context.getOption().getTarget());
             scenarioRef.setProfile(context.getOption().getProfile());
             scenarioRef.setMode(context.getOption().getMode());
-            scenarioRef.setNoreport(context.getOption().getNoreport());
+            scenarioRef.setNoreport(context.getOption().getNoReport());
             scenarioRef.setMode(context.getOption().getMode());
             executeScenario(context, executeContext, scenarioRef);
         } else {
@@ -116,7 +116,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
         }
         // レポート出力有無のオーバーライド
         if (scenarioRef.getNoreport() != null) {
-            option.setNoreport(scenarioRef.getNoreport());
+            option.setNoReport(scenarioRef.getNoreport());
         }
         // デバッグ指定のオーバーライド
         if (scenarioRef.getDebug() != null) {
@@ -260,7 +260,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             outputEndScenarioLog(context, executeScenario);
 
             // レポート出力
-            if (!executeScenario.getOption().getNoreport()) {
+            if (!executeScenario.getOption().getNoReport()) {
                 report(context, executeContext, executeScenario, error);
             }
         }
