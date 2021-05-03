@@ -50,7 +50,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * ロギングマーカー.
-     * 
+     *
      * @since 0.0.4
      */
     private Marker collectLoggingMarker;
@@ -151,7 +151,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
             executeCommand.setCommandResult(result);
 
             // 正常終了時にのみカスタムレポートを許可する
-            if (error == null && !executeScenario.getOption().getNoreport()) {
+            if (error == null && !executeScenario.getOption().getNoReport()) {
 
                 Class reporterClazz = executeCommand.getCommandInfo().getReporter();
 
@@ -175,9 +175,9 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * 収集対象のロギングマーカーを取得します.
-     * 
-     * @since 0.0.4
+     *
      * @return ロギングマーカー
+     * @since 0.0.4
      */
     protected Marker collectLoggingMarker() {
         return this.collectLoggingMarker;
@@ -285,7 +285,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * 変数を設定します.
-     * 
+     *
      * @param target 変数名（スコープ.変数名）
      * @param value 設定する値
      */
@@ -318,7 +318,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
 
     /**
      * 変数を削除します.
-     * 
+     *
      * @param target 変数名（スコープ.変数名）
      */
     protected void removeVariable(final String target) {
@@ -345,6 +345,42 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
             } else {
                 throw new SystemException(CoreMessages.CORE_ERR_0005, m.group(1));
             }
+        }
+    }
+
+    /**
+     * 起動時の設定ファイルに沿った基底ディレクトリのパスを文字列で取得する.
+     *
+     * @return 基底ディレクトリ（シナリオディレクトリ、コマンドディレクトリ）のパス文字列
+     * @since 0.0.5
+     */
+    protected String getBaseDirectory() {
+        var pathResolveMode = context.getOption().getPathResolveMode();
+        switch (pathResolveMode) {
+        case BELONG_YAML_BASE:
+            return getCommandBelongScenarioDirectory();
+        case SCENARIO_DIR_BASE:
+            return getScenarioDirectory();
+        default:
+            throw new SystemException(CoreMessages.CORE_ERR_0073, pathResolveMode.getValue());
+        }
+    }
+
+    /**
+     * 起動時の設定ファイルに沿った基底ディレクトリのパスを取得する.
+     *
+     * @return 基底ディレクトリ（シナリオディレクトリ、コマンドディレクトリ）のパス
+     * @since 0.0.5
+     */
+    protected Path getBaseDirectoryPath() {
+        var pathResolveMode = context.getOption().getPathResolveMode();
+        switch (pathResolveMode) {
+        case BELONG_YAML_BASE:
+            return getCommandBelongScenarioDirectoryPath();
+        case SCENARIO_DIR_BASE:
+            return getScenarioDirectoryPath();
+        default:
+            throw new SystemException(CoreMessages.CORE_ERR_0073, pathResolveMode.getValue());
         }
     }
 

@@ -28,13 +28,35 @@ public enum Args {
 
     DEBUG("d", "debug", false, "run tool for debug.", false),
 
-    NO_REPORT("n", "noreport", false, "no report output", false),
+    /**
+     * Disabled Recommendation Start...
+     * 
+     * @since 0.0.5
+     */
+    NO_REPORT("n", "noreport", false, "no report output. (migrate to config file in the future)", false),
 
-    CONSOLE_REPORT("c", "console", false, "output console report.", false),
+    /**
+     * Disabled Recommendation Start...
+     * 
+     * @since 0.0.5
+     */
+    CONSOLE_REPORT("c", "console", false, "output console report. (migrate to config file in the future)", false),
 
-    WEB_ASSET_PATH("a", "webassets", true, "web assets base path.", false),
+    /**
+     * Disabled Recommendation Start...
+     * 
+     * @since 0.0.5
+     */
+    WEB_ASSET_PATH("a", "webassets", true, "web assets base path. (migrate to config file in the future)", false),
 
-    HELP("h", "help", true, "show the tool help.", false);
+    HELP("h", "help", true, "show the tool help.", false),
+
+    /**
+     * 設定ファイルパス.
+     *
+     * @since 0.0.5
+     */
+    CONFIG("c", "config", true, "config file path.", false);
 
     /**
      * 短いオプション名.

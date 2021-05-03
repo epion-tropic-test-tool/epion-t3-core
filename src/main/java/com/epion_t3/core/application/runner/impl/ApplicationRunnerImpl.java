@@ -7,16 +7,20 @@ import com.epion_t3.core.application.reporter.impl.ApplicationReporterImpl;
 import com.epion_t3.core.application.runner.ApplicationRunner;
 import com.epion_t3.core.common.annotation.ApplicationVersion;
 import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.bean.config.ET3Config;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.ApplicationExecuteStatus;
 import com.epion_t3.core.common.type.Args;
 import com.epion_t3.core.common.type.ExitCode;
+import com.epion_t3.core.common.type.PathResolveMode;
 import com.epion_t3.core.common.type.ScenarioExecuteStatus;
 import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
 import com.epion_t3.core.custom.parser.impl.CustomParserImpl;
+import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.exception.handler.impl.ExceptionHandlerImpl;
+import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.scenario.parser.impl.ScenarioParserImpl;
 import com.epion_t3.core.scenario.runner.impl.ScenarioRunnerImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +29,12 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -81,6 +89,10 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         var executeContext = new ExecuteContext();
 
         try {
+
+            // 設定ファイルを読み込み＆設定
+            // XXX: 設定ファイルと引数オプションでは引数オプションを優先設定とする
+            setConfig(context, cmd);
 
             // 引数設定
             setOptions(context, cmd);
@@ -146,6 +158,55 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
     }
 
     /**
+     * 設定ファイルを読み込み、Optionを設定します.
+     *
+     * @param context コンテキスト
+     * @param commandLine コマンドライン
+     * @since 0.0.5
+     */
+    private void setConfig(final Context context, final CommandLine commandLine) {
+
+        // 設定ファイルの取得
+        if (commandLine.hasOption(Args.CONFIG.getShortName())) {
+            var configPath = Paths.get(commandLine.getOptionValue(Args.CONFIG.getShortName()));
+            if (!Files.exists(configPath)) {
+                throw new SystemException(CoreMessages.CORE_ERR_0070, configPath);
+            }
+            try {
+                var et3Config = context.getObjectMapper().readValue(configPath.toFile(), ET3Config.class);
+                if (StringUtils.isNotEmpty(et3Config.getMode())) {
+                    context.getOption().setMode(et3Config.getMode());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getScenarioRootPath())) {
+                    context.getOption().setRootPath(et3Config.getScenarioRootPath());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getResultRootPath())) {
+                    context.getOption().setResultRootPath(et3Config.getResultRootPath());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getProfile())) {
+                    context.getOption().setProfile(et3Config.getProfile());
+                }
+                context.getOption().setDebug(et3Config.isDebug());
+                context.getOption().setNoReport(et3Config.isNoReport());
+                context.getOption().setConsoleReport(et3Config.isConsoleReport());
+                if (StringUtils.isNotEmpty(et3Config.getWebAssetPath())) {
+                    context.getOption().setWebAssetPath(et3Config.getWebAssetPath());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getPathResolveMode())) {
+                    var pathResolveMode = PathResolveMode.valueOf(et3Config.getPathResolveMode());
+                    if (pathResolveMode == null) {
+                        throw new SystemException(CoreMessages.CORE_ERR_0072, configPath,
+                                et3Config.getPathResolveMode());
+                    }
+                    context.getOption().setPathResolveMode(pathResolveMode);
+                }
+            } catch (IOException e) {
+                throw new SystemException(e, CoreMessages.CORE_ERR_0071, configPath);
+            }
+        }
+    }
+
+    /**
      * 実行引数オプションをコンテキストへ設定する.
      *
      * @param context コンテキスト
@@ -177,7 +238,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         }
 
         // レポート出力無の設定
-        context.getOption().setNoreport(commandLine.hasOption(Args.NO_REPORT.getShortName()));
+        context.getOption().setNoReport(commandLine.hasOption(Args.NO_REPORT.getShortName()));
 
         // コンソールレポート出力の設定
         context.getOption().setConsoleReport(commandLine.hasOption(Args.CONSOLE_REPORT.getShortName()));

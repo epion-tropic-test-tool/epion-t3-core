@@ -141,7 +141,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
             outputStartScenarioLog(context, executeScenario);
 
             // プロファイルの解決
-            setProfiles(context, executeScenario);
+            setProfiles(context, executeContext, executeScenario);
 
             // 結果ディレクトリの作成
             ExecutionFileUtils.createScenarioResultDirectory(context, executeContext, executeScenario);
@@ -285,7 +285,8 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
      * @param context コンテキスト
      * @param executeScenario 実行コンテキスト
      */
-    private void setProfiles(final Context context, final ExecuteScenario executeScenario) {
+    private void setProfiles(final Context context, final ExecuteContext executeContext,
+            final ExecuteScenario executeScenario) {
 
         if (StringUtils.isNotEmpty(executeScenario.getOption().getProfile())) {
             // プロファイルを抽出
@@ -295,8 +296,14 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                 } else {
                     // 起動時に指定されたプロファイルが、
                     // シナリオの中に存在しないため実質有効ではないことをWARNログにて通知
-                    log.warn(MessageManager.getInstance()
-                            .getMessage(CoreMessages.CORE_WRN_0002, context.getOption().getProfile()));
+                    var msg = MessageManager.getInstance()
+                            .getMessage(CoreMessages.CORE_WRN_0002, context.getOption().getProfile());
+                    executeScenario.addNotification(ET3Notification.builder()
+                            .stage(executeContext.getStage())
+                            .level(NotificationType.WARN)
+                            .message(msg)
+                            .build());
+                    log.warn(msg);
                 }
             });
         }

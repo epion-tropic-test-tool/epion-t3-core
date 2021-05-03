@@ -3,6 +3,7 @@ package com.epion_t3.core.common.context;
 
 import com.epion_t3.core.common.bean.Option;
 import com.epion_t3.core.common.bean.Original;
+import com.epion_t3.core.common.bean.config.ET3Config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -33,14 +34,26 @@ public class Context implements Serializable {
     private final Original original = new Original();
 
     /**
+     * 設定ファイル.
+     *
+     * @since 0.0.5
+     */
+    @Getter
+    private final ET3Config config;
+
+    /**
      * 実行引数オプション.
      */
     @Getter
     private final Option option;
 
+    /**
+     * コンストラクタ.
+     */
     public Context() {
         this.option = createOption();
         this.objectMapper = createObjectMapper();
+        this.config = createConfig();
     }
 
     /**
@@ -65,6 +78,17 @@ public class Context implements Serializable {
      */
     protected Option createOption() {
         return new Option();
+    }
+
+    /**
+     * 設定ファイルオブジェクト（ET3Config）を生成.<br>
+     * 生成に手を加えたい場合は、オーバーライドすること.
+     * 
+     * @since 0.0.5
+     * @return {@link ET3Config}
+     */
+    protected ET3Config createConfig() {
+        return new ET3Config();
     }
 
 }
