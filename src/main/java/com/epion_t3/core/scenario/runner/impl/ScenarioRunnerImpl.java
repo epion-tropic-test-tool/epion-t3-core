@@ -297,7 +297,7 @@ public class ScenarioRunnerImpl implements ScenarioRunner<Context, ExecuteContex
                     // 起動時に指定されたプロファイルが、
                     // シナリオの中に存在しないため実質有効ではないことをWARNログにて通知
                     var msg = MessageManager.getInstance()
-                            .getMessage(CoreMessages.CORE_WRN_0002, context.getOption().getProfile());
+                            .getMessage(CoreMessages.CORE_WRN_0002, x);
                     executeScenario.addNotification(ET3Notification.builder()
                             .stage(executeContext.getStage())
                             .level(NotificationType.WARN)

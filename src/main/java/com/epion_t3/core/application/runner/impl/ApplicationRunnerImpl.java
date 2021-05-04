@@ -20,6 +20,7 @@ import com.epion_t3.core.common.util.ExecutionFileUtils;
 import com.epion_t3.core.custom.parser.impl.CustomParserImpl;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.exception.handler.impl.ExceptionHandlerImpl;
+import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.scenario.parser.impl.ScenarioParserImpl;
 import com.epion_t3.core.scenario.runner.impl.ScenarioRunnerImpl;
@@ -88,6 +89,9 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         // 実行コンテキストの生成
         var executeContext = new ExecuteContext();
 
+        // 引数チェック結果（正常）
+        var optionCheckSuccess = true;
+
         try {
 
             // 設定ファイルを読み込み＆設定
@@ -96,6 +100,15 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
             // 引数設定
             setOptions(context, cmd);
+
+            // 引数チェック
+            optionCheckSuccess = checkOptions(context);
+
+            if (!optionCheckSuccess) {
+                executeContext.setStatus(ApplicationExecuteStatus.ERROR);
+                executeContext.setStage(StageType.ERROR_END);
+                return ExitCode.ERROR.getExitCode();
+            }
 
             // ロギング設定
             loggingSetting(context);
@@ -136,6 +149,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
             executeContext.setStatus(ApplicationExecuteStatus.ERROR);
 
+            executeContext.setStage(StageType.ERROR_END);
+
         } finally {
 
             executeContext.setEnd(LocalDateTime.now());
@@ -144,7 +159,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             executeContext.setDuration(Duration.between(executeContext.getStart(), executeContext.getEnd()));
 
             // レポート出力
-            if (!cmd.hasOption(Args.NO_REPORT.getShortName())) {
+            // 引数チェックが正常に通っていない場合はレポートは不要
+            if (optionCheckSuccess && !cmd.hasOption(Args.NO_REPORT.getShortName())) {
                 report(context, executeContext);
             }
 
@@ -213,14 +229,16 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
      * @param commandLine コマンドライン
      */
     private void setOptions(final Context context, final CommandLine commandLine) {
-        String version = commandLine.getOptionValue(Args.VERSION.getShortName());
-        String rootPath = commandLine.getOptionValue(Args.ROOT_PATH.getShortName());
-        String target = commandLine.getOptionValue(Args.SCENARIO.getShortName());
 
-        // 必須パラメータの取得
-        context.getOption().setVersion(version);
-        context.getOption().setRootPath(rootPath);
-        context.getOption().setTarget(target);
+        // 対象シナリオ
+        if (commandLine.hasOption(Args.SCENARIO.getShortName())) {
+            context.getOption().setTarget(commandLine.getOptionValue(Args.SCENARIO.getShortName()));
+        }
+
+        // シナリオルートパス
+        if (commandLine.hasOption(Args.ROOT_PATH.getShortName())) {
+            context.getOption().setRootPath(commandLine.getOptionValue(Args.ROOT_PATH.getShortName()));
+        }
 
         // プロファイルの取得
         if (commandLine.hasOption(Args.PROFILE.getShortName())) {
@@ -250,6 +268,25 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
         // デバッグの設定
         context.getOption().setDebug(commandLine.hasOption(Args.DEBUG.getShortName()));
+    }
+
+    /**
+     * オプションのチェックを行う.
+     * @param context コンテキスト
+     * @return チェック結果（true: 正常、false: 異常）
+     * @since 0.0.5
+     */
+    private boolean checkOptions(final Context context) {
+
+        boolean result = true;
+
+        // シナリオ配置ディレクトリのみここでチェック
+        if (StringUtils.isEmpty(context.getOption().getRootPath())) {
+            log.error(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0074));
+            result = false;
+        }
+
+        return result;
     }
 
     /**

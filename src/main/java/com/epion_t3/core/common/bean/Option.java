@@ -81,6 +81,6 @@ public class Option implements Serializable {
      * 
      * @since 0.0.5
      */
-    private PathResolveMode pathResolveMode;
+    private PathResolveMode pathResolveMode = PathResolveMode.SCENARIO_DIR_BASE;
 
 }
