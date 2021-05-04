@@ -7,16 +7,21 @@ import com.epion_t3.core.application.reporter.impl.ApplicationReporterImpl;
 import com.epion_t3.core.application.runner.ApplicationRunner;
 import com.epion_t3.core.common.annotation.ApplicationVersion;
 import com.epion_t3.core.common.bean.ExecuteScenario;
+import com.epion_t3.core.common.bean.config.ET3Config;
 import com.epion_t3.core.common.context.Context;
 import com.epion_t3.core.common.context.ExecuteContext;
 import com.epion_t3.core.common.type.ApplicationExecuteStatus;
 import com.epion_t3.core.common.type.Args;
 import com.epion_t3.core.common.type.ExitCode;
+import com.epion_t3.core.common.type.PathResolveMode;
 import com.epion_t3.core.common.type.ScenarioExecuteStatus;
 import com.epion_t3.core.common.type.StageType;
 import com.epion_t3.core.common.util.ExecutionFileUtils;
 import com.epion_t3.core.custom.parser.impl.CustomParserImpl;
+import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.exception.handler.impl.ExceptionHandlerImpl;
+import com.epion_t3.core.message.MessageManager;
+import com.epion_t3.core.message.impl.CoreMessages;
 import com.epion_t3.core.scenario.parser.impl.ScenarioParserImpl;
 import com.epion_t3.core.scenario.runner.impl.ScenarioRunnerImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +30,12 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -80,10 +89,26 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         // 実行コンテキストの生成
         var executeContext = new ExecuteContext();
 
+        // 引数チェック結果（正常）
+        var optionCheckSuccess = true;
+
         try {
+
+            // 設定ファイルを読み込み＆設定
+            // XXX: 設定ファイルと引数オプションでは引数オプションを優先設定とする
+            setConfig(context, cmd);
 
             // 引数設定
             setOptions(context, cmd);
+
+            // 引数チェック
+            optionCheckSuccess = checkOptions(context);
+
+            if (!optionCheckSuccess) {
+                executeContext.setStatus(ApplicationExecuteStatus.ERROR);
+                executeContext.setStage(StageType.ERROR_END);
+                return ExitCode.ERROR.getExitCode();
+            }
 
             // ロギング設定
             loggingSetting(context);
@@ -124,6 +149,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
             executeContext.setStatus(ApplicationExecuteStatus.ERROR);
 
+            executeContext.setStage(StageType.ERROR_END);
+
         } finally {
 
             executeContext.setEnd(LocalDateTime.now());
@@ -132,7 +159,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
             executeContext.setDuration(Duration.between(executeContext.getStart(), executeContext.getEnd()));
 
             // レポート出力
-            if (!cmd.hasOption(Args.NO_REPORT.getShortName())) {
+            // 引数チェックが正常に通っていない場合はレポートは不要
+            if (optionCheckSuccess && !cmd.hasOption(Args.NO_REPORT.getShortName())) {
                 report(context, executeContext);
             }
 
@@ -146,20 +174,71 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
     }
 
     /**
+     * 設定ファイルを読み込み、Optionを設定します.
+     *
+     * @param context コンテキスト
+     * @param commandLine コマンドライン
+     * @since 0.0.5
+     */
+    private void setConfig(final Context context, final CommandLine commandLine) {
+
+        // 設定ファイルの取得
+        if (commandLine.hasOption(Args.CONFIG.getShortName())) {
+            var configPath = Paths.get(commandLine.getOptionValue(Args.CONFIG.getShortName()));
+            if (!Files.exists(configPath)) {
+                throw new SystemException(CoreMessages.CORE_ERR_0070, configPath);
+            }
+            try {
+                var et3Config = context.getObjectMapper().readValue(configPath.toFile(), ET3Config.class);
+                if (StringUtils.isNotEmpty(et3Config.getMode())) {
+                    context.getOption().setMode(et3Config.getMode());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getScenarioRootPath())) {
+                    context.getOption().setRootPath(et3Config.getScenarioRootPath());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getResultRootPath())) {
+                    context.getOption().setResultRootPath(et3Config.getResultRootPath());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getProfile())) {
+                    context.getOption().setProfile(et3Config.getProfile());
+                }
+                context.getOption().setDebug(et3Config.isDebug());
+                context.getOption().setNoReport(et3Config.isNoReport());
+                context.getOption().setConsoleReport(et3Config.isConsoleReport());
+                if (StringUtils.isNotEmpty(et3Config.getWebAssetPath())) {
+                    context.getOption().setWebAssetPath(et3Config.getWebAssetPath());
+                }
+                if (StringUtils.isNotEmpty(et3Config.getPathResolveMode())) {
+                    var pathResolveMode = PathResolveMode.valueOf(et3Config.getPathResolveMode());
+                    if (pathResolveMode == null) {
+                        throw new SystemException(CoreMessages.CORE_ERR_0072, configPath,
+                                et3Config.getPathResolveMode());
+                    }
+                    context.getOption().setPathResolveMode(pathResolveMode);
+                }
+            } catch (IOException e) {
+                throw new SystemException(e, CoreMessages.CORE_ERR_0071, configPath);
+            }
+        }
+    }
+
+    /**
      * 実行引数オプションをコンテキストへ設定する.
      *
      * @param context コンテキスト
      * @param commandLine コマンドライン
      */
     private void setOptions(final Context context, final CommandLine commandLine) {
-        String version = commandLine.getOptionValue(Args.VERSION.getShortName());
-        String rootPath = commandLine.getOptionValue(Args.ROOT_PATH.getShortName());
-        String target = commandLine.getOptionValue(Args.SCENARIO.getShortName());
 
-        // 必須パラメータの取得
-        context.getOption().setVersion(version);
-        context.getOption().setRootPath(rootPath);
-        context.getOption().setTarget(target);
+        // 対象シナリオ
+        if (commandLine.hasOption(Args.SCENARIO.getShortName())) {
+            context.getOption().setTarget(commandLine.getOptionValue(Args.SCENARIO.getShortName()));
+        }
+
+        // シナリオルートパス
+        if (commandLine.hasOption(Args.ROOT_PATH.getShortName())) {
+            context.getOption().setRootPath(commandLine.getOptionValue(Args.ROOT_PATH.getShortName()));
+        }
 
         // プロファイルの取得
         if (commandLine.hasOption(Args.PROFILE.getShortName())) {
@@ -177,7 +256,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         }
 
         // レポート出力無の設定
-        context.getOption().setNoreport(commandLine.hasOption(Args.NO_REPORT.getShortName()));
+        context.getOption().setNoReport(commandLine.hasOption(Args.NO_REPORT.getShortName()));
 
         // コンソールレポート出力の設定
         context.getOption().setConsoleReport(commandLine.hasOption(Args.CONSOLE_REPORT.getShortName()));
@@ -189,6 +268,25 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
         // デバッグの設定
         context.getOption().setDebug(commandLine.hasOption(Args.DEBUG.getShortName()));
+    }
+
+    /**
+     * オプションのチェックを行う.
+     * @param context コンテキスト
+     * @return チェック結果（true: 正常、false: 異常）
+     * @since 0.0.5
+     */
+    private boolean checkOptions(final Context context) {
+
+        boolean result = true;
+
+        // シナリオ配置ディレクトリのみここでチェック
+        if (StringUtils.isEmpty(context.getOption().getRootPath())) {
+            log.error(MessageManager.getInstance().getMessage(CoreMessages.CORE_ERR_0074));
+            result = false;
+        }
+
+        return result;
     }
 
     /**
