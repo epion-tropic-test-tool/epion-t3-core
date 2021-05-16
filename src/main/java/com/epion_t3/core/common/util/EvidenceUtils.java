@@ -15,9 +15,18 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.LinkedList;
 
 public final class EvidenceUtils {
+
+    /**
+     * 日時フォーマッター.
+     */
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuuMMddhhmmss")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * シングルトンインスタンス.
@@ -100,8 +109,7 @@ public final class EvidenceUtils {
      * @return
      */
     public String getEvidenceBaseName(ExecuteFlow executeFlow, String baseName) {
-        return executeFlow.getFlowVariables().get(FlowScopeVariables.CURRENT_COMMAND_EXECUTE_ID.getName()) + "_"
-                + baseName;
+        return DTF.format(LocalDateTime.now()) + "_" + executeFlow.getFlow().getId() + "_" + baseName;
     }
 
     /**
