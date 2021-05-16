@@ -15,9 +15,18 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.LinkedList;
 
 public final class EvidenceUtils {
+
+    /**
+     * 日時フォーマッター.
+     */
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuuMMddhhmmss")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * シングルトンインスタンス.
@@ -49,7 +58,7 @@ public final class EvidenceUtils {
      * @return
      */
     public <O extends Serializable> O referObjectEvidence(ExecuteContext executeContext,
-            ExecuteScenario executeScenario, String flowId) {
+                                                          ExecuteScenario executeScenario, String flowId) {
         if (executeScenario.getFlowId2EvidenceId().containsKey(flowId)) {
             String evidenceId = executeScenario.getFlowId2EvidenceId().get(flowId).getLast();
             EvidenceInfo evidenceInfo = executeScenario.getEvidences().get(evidenceId);
@@ -74,7 +83,7 @@ public final class EvidenceUtils {
      * @param evidence
      */
     public void registrationObjectEvidence(ExecuteContext executeContext, ExecuteScenario executeScenario,
-            ExecuteFlow executeFlow, Object evidence) {
+                                           ExecuteFlow executeFlow, Object evidence) {
         ObjectEvidenceInfo evidenceInfo = new ObjectEvidenceInfo();
         // Full Query Scenario Name として現在実行シナリオ名を設定
         evidenceInfo.setFqsn(executeScenario.getScenarioVariables()
@@ -100,8 +109,7 @@ public final class EvidenceUtils {
      * @return
      */
     public String getEvidenceBaseName(ExecuteFlow executeFlow, String baseName) {
-        return executeFlow.getFlowVariables().get(FlowScopeVariables.CURRENT_COMMAND_EXECUTE_ID.getName()) + "_"
-                + baseName;
+        return DTF.format(LocalDateTime.now()) + "_" + executeFlow.getFlow().getId() + "_" + baseName;
     }
 
     /**
