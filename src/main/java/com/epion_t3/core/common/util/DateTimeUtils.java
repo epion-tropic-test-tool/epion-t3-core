@@ -7,6 +7,7 @@ import com.epion_t3.core.message.impl.CoreMessages;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.List;
@@ -24,7 +25,8 @@ public final class DateTimeUtils {
      * 日時分秒ミリ秒までの標準フォーマット.
      */
     public static final DateTimeFormatter YYYYMMDD_HHMMSS_NORMAL = DateTimeFormatter
-            .ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+            .ofPattern("uuuu-MM-dd HH:mm:ss.SSS")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     public static final DateTimeFormatter HHMMSS_NORMAL = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 

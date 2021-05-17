@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 
 /**
  * @author takashno
@@ -24,7 +25,8 @@ public final class ExecutionFileUtils {
     /**
      * 結果ディレクトリのフォーマット.
      */
-    public static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    public static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * エビデンス格納ディレクトリ名.

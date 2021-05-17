@@ -25,7 +25,7 @@ public final class EvidenceUtils {
     /**
      * 日時フォーマッター.
      */
-    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuuMMddhhmmss")
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("uuuuMMddHHmmss")
             .withResolverStyle(ResolverStyle.STRICT);
 
     /**
