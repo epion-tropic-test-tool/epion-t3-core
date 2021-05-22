@@ -23,4 +23,4 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publish -PsonatypeUser=${SONATYPE_USER} -PsonatypePassword=${SONATYPE_PASSWORD}
+        run: ./gradlew publish -PsonatypeUser=${SONATYPE_USER} -PsonatypePassword=${SONATYPE_PASSWORD} --stacktrace --debug
