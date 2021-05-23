@@ -27,6 +27,7 @@ jobs:
           echo "name:        ${{ steps.import_gpg.outputs.name }}"
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
           ls -la /home/runner/.gnupg/
+          gpg --export-secret-keys -o /home/runner/.gnupg/secring.gpg
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
