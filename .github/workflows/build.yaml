@@ -37,4 +37,4 @@ jobs:
 #          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
 #          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 #          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew publish -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
+        run: ./gradlew publish -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
