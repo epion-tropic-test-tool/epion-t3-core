@@ -14,22 +14,22 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-#      - name: Import GPG key
-#        id: import_gpg
-#        uses: crazy-max/ghaction-import-gpg@v3
-#        with:
-#          gpg-private-key: ${{ secrets.SIGNING_KEY }}
-#          passphrase: ${{ secrets.SIGNING_PASSWORD }}
-#      - name: GPG user IDs
-#        run: |
-#          echo "fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}"
-#          echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
-#          echo "name:        ${{ steps.import_gpg.outputs.name }}"
-#          echo "email:       ${{ steps.import_gpg.outputs.email }}"
-#          ls -la /home/runner/.gnupg/
-#          ls -la /usr/share/gnupg/
-#          ls -la /home/runner/.gnupg/
-#          ls -la ~/.gnupg/
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v3
+        with:
+          gpg-private-key: ${{ secrets.SIGNING_KEY }}
+          passphrase: ${{ secrets.SIGNING_PASSWORD }}
+      - name: GPG user IDs
+        run: |
+          echo "fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}"
+          echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
+          echo "name:        ${{ steps.import_gpg.outputs.name }}"
+          echo "email:       ${{ steps.import_gpg.outputs.email }}"
+          ls -la /home/runner/.gnupg/
+          ls -la /usr/share/gnupg/
+          ls -la /home/runner/.gnupg/
+          ls -la ~/.gnupg/
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
@@ -39,9 +39,10 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
 #          SIGNING_KEYID: ${{ secrets.SIGNING_KEYID }}
 #          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-#          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
 #          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-#        run: ./gradlew publish -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
         run: |
           env
-          ./gradlew publish
+          ./gradlew publish -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
+#        run: |
+#          ./gradlew publish
