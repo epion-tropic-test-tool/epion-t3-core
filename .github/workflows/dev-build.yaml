@@ -28,18 +28,17 @@ jobs:
           echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
           echo "name:        ${{ steps.import_gpg.outputs.name }}"
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
-          sudo gpg --keyring secring.gpg --export-secret-keys
           sudo LANG=C gpg --export-secret-keys -o /home/runner/.gnupg/secring.gpg
           sudo chmod 766 /root/.gnupg
           ls -la /home/runner/.gnupg/
           ls -la ~/.gnupg/
           sudo ls -la /root/.gnupg
-      - name: Make Gradle Properties
-        run: |
-          mkdir ~/.gradle/
-          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
-          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
-          echo signing.secretKeyRingFile=/root/.gnupg/secring.gpg >> ~/.gradle/gradle.properties
+#      - name: Make Gradle Properties
+#        run: |
+#          mkdir ~/.gradle/
+#          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
+#          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
+#          echo signing.secretKeyRingFile=/root/.gnupg/secring.gpg >> ~/.gradle/gradle.properties
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
@@ -47,6 +46,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          SIGNING_KEYID: ${{ secrets.SIGNING_KEYID }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
