@@ -19,7 +19,7 @@ ext {
     // アーティファクト関連
     group 'com.epion-t3'
 
-    version "${versionMajor}.${versionMinor}.${versionPatch}-SNAPSHOT"
+    version = project.hasProperty('snapshot') ? "${versionMajor}.${versionMinor}.${versionPatch}-SNAPSHOT" : "${versionMajor}.${versionMinor}.${versionPatch}"
 
     // Document
     siteUrl = 'https://docs.epion-t3.com'
@@ -176,7 +176,7 @@ publishing {
     repositories {
         maven {
             name="OSSRH"
-            url = version.endsWith('SNAPSHOT') ? project.snapshotsRepoUrl : project.releasesRepoUrl
+            url = project.hasProperty('snapshot') ? project.snapshotsRepoUrl : project.releasesRepoUrl
             def sonatypeUser = project.hasProperty('sonatypeUser') ? project.property('sonatypeUser') : System.getenv('MAVEN_USERNAME')
             def sonatypePassword = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('MAVEN_PASSWORD')
             credentials {
