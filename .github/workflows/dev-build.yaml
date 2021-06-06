@@ -28,7 +28,7 @@ jobs:
           echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
           echo "name:        ${{ steps.import_gpg.outputs.name }}"
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
-          LANG=C gpg --export-secret-keys -o ~/.gnupg/secring.gpg
+          sudo LANG=C gpg --export-secret-keys -o ~/.gnupg/secring.gpg
           ls -la /home/runner/.gnupg/
           ls -la /usr/share/gnupg/
           ls -la /home/runner/.gnupg/
