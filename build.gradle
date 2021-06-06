@@ -19,7 +19,7 @@ ext {
     // アーティファクト関連
     group 'com.epion-t3'
 
-    version = "${versionMajor}.${versionMinor}.${versionPatch}"
+    version "${versionMajor}.${versionMinor}.${versionPatch}"
 
     // Document
     siteUrl = 'https://docs.epion-t3.com'
