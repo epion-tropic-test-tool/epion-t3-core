@@ -16,6 +16,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+          gpg --export-secret-keys -o /home/runner/.gnupg/secring.gpg
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v3
@@ -33,11 +39,12 @@ jobs:
           ls -la /usr/share/gnupg/
           ls -la /home/runner/.gnupg/
           ls -la ~/.gnupg/
-#      - name: Make Gradle Properties
-#        run: |
-#          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
-#          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
-#          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
+      - name: Make Gradle Properties
+        run: |
+          mkdir ~/.gradle/
+          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
+          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
+          echo signing.secretKeyRingFile=/home/runner/.gnupg/secring.gpg >> ~/.gradle/gradle.properties
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
