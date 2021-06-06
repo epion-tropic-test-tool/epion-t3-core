@@ -52,5 +52,5 @@ jobs:
           OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
         run: |
           env
-          ./gradlew publish -Psnapshot=true
+          ./gradlew publish -Psnapshot=true --stacktrace
 # sudo ./gradlew publish -Psnapshot=true -Psigning.secretKeyRingFile=/root/.gnupg/pubring.kbx -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
