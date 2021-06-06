@@ -190,9 +190,9 @@ publishing {
 
 signing {
 //    def signingKeyId = project.hasProperty('signingKeyId') ? project.property('signingKeyId') : System.getenv('SIGNING_KEYID')
-//    def signingKey = project.hasProperty('signingKey') ? project.property('signingKey') : System.getenv('SIGNING_KEY')
-//    def signingPassword = project.hasProperty('signingPassword') ? project.property('signingPassword') : System.getenv('SIGNING_PASSWORD')
-//    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    def signingKey = project.hasProperty('signingKey') ? project.property('signingKey') : System.getenv('SIGNING_KEY')
+    def signingPassword = project.hasProperty('signingPassword') ? project.property('signingPassword') : System.getenv('SIGNING_PASSWORD')
+    useInMemoryPgpKeys(signingKey, signingPassword)
     sign publishing.publications.mavenJava
 }
 
