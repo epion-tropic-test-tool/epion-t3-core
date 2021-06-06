@@ -28,6 +28,7 @@ jobs:
           echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
           echo "name:        ${{ steps.import_gpg.outputs.name }}"
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
+          sudo gpg --keyring secring.gpg --export-secret-keys
           sudo LANG=C gpg --export-secret-keys -o /home/runner/.gnupg/secring.gpg
           sudo chmod 766 /root/.gnupg
           ls -la /home/runner/.gnupg/
