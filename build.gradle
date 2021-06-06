@@ -19,7 +19,7 @@ ext {
     // アーティファクト関連
     group 'com.epion-t3'
 
-    version = project.hasProperty('snapshot') ? "${versionMajor}.${versionMinor}.${versionPatch}-SNAPSHOT" : "${versionMajor}.${versionMinor}.${versionPatch}"
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
 
     // Document
     siteUrl = 'https://docs.epion-t3.com'
@@ -147,6 +147,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = project.name
+            version = project.hasProperty('snapshot') ? project.version + '-SNAPSHOT' : project.version
             from components.java
             pom {
                 name = project.name
