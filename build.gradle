@@ -177,8 +177,8 @@ publishing {
         maven {
             name="OSSRH"
             url = version.endsWith('SNAPSHOT') ? project.snapshotsRepoUrl : project.releasesRepoUrl
-            def sonatypeUser = project.hasProperty('sonatypeUser') ? project.property('sonatypeUser') : System.getenv('SONATYPE_USER')
-            def sonatypePassword = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
+            def sonatypeUser = project.hasProperty('sonatypeUser') ? project.property('sonatypeUser') : System.getenv('MAVEN_USERNAME')
+            def sonatypePassword = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('MAVEN_PASSWORD')
             credentials {
                 username = sonatypeUser
                 password = sonatypePassword
