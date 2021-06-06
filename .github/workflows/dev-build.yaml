@@ -29,16 +29,17 @@ jobs:
           echo "name:        ${{ steps.import_gpg.outputs.name }}"
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
           sudo LANG=C gpg --export-secret-keys -o /home/runner/.gnupg/secring.gpg
-          ls -la /home/runner/.gnupg/
-          ls -la /usr/share/gnupg/
+          sudo chmod 766 /root/.gnupg
+          sudo chmod 766 /root/.gnupg/*.*
           ls -la /home/runner/.gnupg/
           ls -la ~/.gnupg/
+          ls -la /root/.gnupg
       - name: Make Gradle Properties
         run: |
           mkdir ~/.gradle/
           echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
           echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
-          echo signing.secretKeyRingFile=/home/runner/.gnupg/secring.gpg >> ~/.gradle/gradle.properties
+          echo signing.secretKeyRingFile=/root/.gnupg/secring.gpg >> ~/.gradle/gradle.properties
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
