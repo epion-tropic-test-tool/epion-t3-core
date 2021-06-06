@@ -33,11 +33,11 @@ jobs:
           ls -la /usr/share/gnupg/
           ls -la /home/runner/.gnupg/
           ls -la ~/.gnupg/
-      - name: Make Gradle Properties
-        run: |
-          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
-          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
-          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
+#      - name: Make Gradle Properties
+#        run: |
+#          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
+#          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
+#          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
