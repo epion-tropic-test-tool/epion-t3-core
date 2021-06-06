@@ -30,7 +30,6 @@ jobs:
           echo "email:       ${{ steps.import_gpg.outputs.email }}"
           sudo LANG=C gpg --export-secret-keys -o /home/runner/.gnupg/secring.gpg
           sudo chmod 766 /root/.gnupg
-          sudo chmod 766 /root/.gnupg/*.*
           ls -la /home/runner/.gnupg/
           ls -la ~/.gnupg/
           ls -la /root/.gnupg
