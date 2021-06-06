@@ -1,8 +1,8 @@
-name: build_and_publish_lib
+name: release-build-release-publish
 on:
   push:
     branches:
-      - master
+      - relase
 jobs:
   first_job:
     name: publish
