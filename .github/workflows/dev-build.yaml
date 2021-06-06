@@ -33,6 +33,11 @@ jobs:
           ls -la /usr/share/gnupg/
           ls -la /home/runner/.gnupg/
           ls -la ~/.gnupg/
+      - name: Make Gradle Properties
+        run: |
+          echo signing.keyId=${{ secrets.SIGNING_KEYID }} > ~/.gradle/gradle.properties
+          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
+          echo signing.password=${{ secrets.SIGNING_PASSWORD }} >> ~/.gradle/gradle.properties
       - run: chmod +x gradlew
       - name: Build
         run: ./gradlew clean build
@@ -42,6 +47,8 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
         run: |
           env
-          sudo ./gradlew publish -Psnapshot=true -Psigning.secretKeyRingFile=/root/.gnupg/pubring.kbx -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
+          ./gradlew publish -Psnapshot=true
+# sudo ./gradlew publish -Psnapshot=true -Psigning.secretKeyRingFile=/root/.gnupg/pubring.kbx -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
