@@ -43,4 +43,4 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: |
           env
-          ./gradlew publish -Psnapshot=true -Psigning.secretKeyRingFile=/home/runner/.gnupg/secring.gpg -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
+          ./gradlew publish -Psnapshot=true -Psigning.secretKeyRingFile=/root/.gnupg/pubring.kbx -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
