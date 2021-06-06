@@ -2,7 +2,7 @@ name: release-build-release-publish
 on:
   push:
     branches:
-      - relase
+      - release
 jobs:
   first_job:
     name: publish
