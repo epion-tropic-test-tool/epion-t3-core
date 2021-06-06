@@ -16,12 +16,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v3
-        with:
-          gpg-private-key: ${{ secrets.SIGNING_KEY }}
-          passphrase: ${{ secrets.SIGNING_PASSWORD }}
+#      - name: Import GPG key
+#        id: import_gpg
+#        uses: crazy-max/ghaction-import-gpg@v3
+#        with:
+#          gpg-private-key: ${{ secrets.SIGNING_KEY }}
+#          passphrase: ${{ secrets.SIGNING_PASSWORD }}
 #      - name: GPG user IDs
 #        run: |
 #          gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg
@@ -48,11 +48,11 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-          SIGNING_KEYID: ${{ secrets.SIGNING_KEYID }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
-          OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+#          SIGNING_KEYID: ${{ secrets.SIGNING_KEYID }}
+#          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+#          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+#          OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
         run: |
           env
-          ./gradlew publish -Psnapshot=true --stacktrace
+          ./gradlew publish -Psnapshot=true
 # sudo ./gradlew publish -Psnapshot=true -Psigning.secretKeyRingFile=/root/.gnupg/pubring.kbx -Psigning.keyId=${{ steps.import_gpg.outputs.keyid }} -Psigning.password=${SIGNING_PASSWORD}
