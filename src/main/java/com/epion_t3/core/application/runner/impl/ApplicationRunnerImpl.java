@@ -272,6 +272,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
 
     /**
      * オプションのチェックを行う.
+     * 
      * @param context コンテキスト
      * @return チェック結果（true: 正常、false: 異常）
      * @since 0.0.5

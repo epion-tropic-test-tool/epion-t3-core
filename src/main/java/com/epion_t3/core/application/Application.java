@@ -98,22 +98,18 @@ public final class Application {
         // XXX: 暫定対処
         // 全てのApplicationRunnerを取得する
         /*
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Map<String, Class<?>> applicationRunnerClasses = ClassPath.from(loader)
-                .getTopLevelClassesRecursive(BASE_PACKAGE)
-                .stream()
-                // パッケージ名にバージョンを含むこと or base のみ許可する
-                .filter(info -> {
-                    String[] packages = info.getPackageName().replace(BASE_PACKAGE + ".", "").split("\\.");
-                    return packages[0].matches("v[0-9]+") || "core".equals(packages[0]);
-                })
-                // ApplicationRunnerを実装していること かつ ApplicationVersionのアノテーションを付与していること
-                .filter(info -> {
-                    return ApplicationRunner.class.isAssignableFrom(info.load())
-                            && info.load().getDeclaredAnnotation(ApplicationVersion.class) != null;
-                })
-                .map(info -> info.load())
-                .collect(Collectors.toMap(x -> x.getDeclaredAnnotation(ApplicationVersion.class).version(), x -> x));
+         * ClassLoader loader = Thread.currentThread().getContextClassLoader();
+         * Map<String, Class<?>> applicationRunnerClasses = ClassPath.from(loader)
+         * .getTopLevelClassesRecursive(BASE_PACKAGE) .stream() // パッケージ名にバージョンを含むこと or
+         * base のみ許可する .filter(info -> { String[] packages =
+         * info.getPackageName().replace(BASE_PACKAGE + ".", "").split("\\."); return
+         * packages[0].matches("v[0-9]+") || "core".equals(packages[0]); }) //
+         * ApplicationRunnerを実装していること かつ ApplicationVersionのアノテーションを付与していること
+         * .filter(info -> { return
+         * ApplicationRunner.class.isAssignableFrom(info.load()) &&
+         * info.load().getDeclaredAnnotation(ApplicationVersion.class) != null; })
+         * .map(info -> info.load()) .collect(Collectors.toMap(x ->
+         * x.getDeclaredAnnotation(ApplicationVersion.class).version(), x -> x));
          */
 
         // XXX: 暫定対処
@@ -139,11 +135,11 @@ public final class Application {
                 log.error(messageManager.getMessage(CoreMessages.CORE_ERR_0001), e);
                 System.exit(ExitCode.ERROR.getExitCode());
             }
-        }/* else {
-            // 存在していないならエラーとする
-            log.error(messageManager.getMessage(CoreMessages.CORE_ERR_0002, version));
-            System.exit(ExitCode.ERROR.getExitCode());
-        }*/
+        } /*
+           * else { // 存在していないならエラーとする
+           * log.error(messageManager.getMessage(CoreMessages.CORE_ERR_0002, version));
+           * System.exit(ExitCode.ERROR.getExitCode()); }
+           */
 
     }
 
