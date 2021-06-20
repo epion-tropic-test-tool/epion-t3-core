@@ -1,11 +1,13 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean;
 
+import com.epion_t3.core.common.type.PathResolveMode;
 import com.epion_t3.core.common.type.ScenarioManageFileSystem;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.nio.file.Path;
 
 /**
  * オプション.
@@ -62,7 +64,7 @@ public class Option implements Serializable {
     /**
      * レポートを出力拒否フラグ.
      */
-    private Boolean noreport = false;
+    private Boolean noReport = false;
 
     /**
      * コンソールレポート出力フラグ. true : 出力
@@ -73,5 +75,12 @@ public class Option implements Serializable {
      * レポートのWEBアセット参照パス. cssやjsを配置するベースパス.
      */
     private String webAssetPath;
+
+    /**
+     * パス解決モード.
+     * 
+     * @since 0.0.5
+     */
+    private PathResolveMode pathResolveMode = PathResolveMode.SCENARIO_DIR_BASE;
 
 }
