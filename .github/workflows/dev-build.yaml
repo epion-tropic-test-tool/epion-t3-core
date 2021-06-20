@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - develop/**
-      - ver_0.0.5_dev
       - master
 jobs:
   first_job:

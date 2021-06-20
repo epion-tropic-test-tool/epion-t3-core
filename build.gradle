@@ -13,8 +13,8 @@ plugins {
 ext {
     // バージョン定義
     versionMajor = 0
-    versionMinor = 0
-    versionPatch = 5
+    versionMinor = 1
+    versionPatch = 0
 
     // アーティファクト関連
     group 'com.epion-t3'
