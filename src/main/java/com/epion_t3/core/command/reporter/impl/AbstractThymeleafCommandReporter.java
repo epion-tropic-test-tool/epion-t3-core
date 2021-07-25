@@ -49,10 +49,10 @@ public abstract class AbstractThymeleafCommandReporter<COMMAND extends Command, 
     public void report(COMMAND command, COMMAND_RESULT commandResult, Context context, ExecuteContext executeContext,
             ExecuteScenario executeScenario, ExecuteFlow executeFlow, ExecuteCommand executeCommand, Throwable t) {
 
-        TemplateEngine templateEngine = ThymeleafReportUtils.getInstance().createEngine();
+        var templateEngine = ThymeleafReportUtils.getInstance().createEngine();
 
         org.thymeleaf.context.Context thymeleafContext = new org.thymeleaf.context.Context();
-        Map<String, Object> variable = new HashMap<>();
+        var variable = new HashMap<String, Object>();
 
         // ユーティリティ設定
         ThymeleafReportUtils.setUtility(variable);

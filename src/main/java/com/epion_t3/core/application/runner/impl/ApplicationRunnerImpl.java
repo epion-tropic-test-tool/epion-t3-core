@@ -73,8 +73,8 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
     @Override
     public int execute(String[] args) {
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = null;
+        var parser = new DefaultParser();
+        var cmd = (CommandLine) null;
 
         try {
             cmd = parser.parse(OPTIONS, args);
@@ -84,7 +84,7 @@ public class ApplicationRunnerImpl implements ApplicationRunner<Context> {
         }
 
         // コンテキストの生成
-        Context context = new Context();
+        var context = new Context();
 
         // 実行コンテキストの生成
         var executeContext = new ExecuteContext();

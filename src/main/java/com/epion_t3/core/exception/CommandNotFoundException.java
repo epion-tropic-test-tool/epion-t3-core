@@ -11,8 +11,14 @@ import lombok.Getter;
 @Getter
 public class CommandNotFoundException extends SystemException {
 
+    /** コマンドID. */
     private String commandId;
 
+    /**
+     * コンストラクタ.
+     * 
+     * @param commandId コマンドID
+     */
     public CommandNotFoundException(String commandId) {
         this.commandId = commandId;
     }

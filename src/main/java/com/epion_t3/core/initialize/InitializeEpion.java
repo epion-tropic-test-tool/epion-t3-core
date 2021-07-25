@@ -63,7 +63,7 @@ public class InitializeEpion {
      * @throws IOException
      */
     private ImmutableSet<ResourceInfo> getTopLevelResourcesRecursive(ClassPath classPath) throws IOException {
-        String packagePrefix = TEMPLATE_SCENERIO_PACKAGE.replaceAll("\\.", "/") + "/";
+        var packagePrefix = TEMPLATE_SCENERIO_PACKAGE.replaceAll("\\.", "/") + "/";
         ImmutableSet.Builder<ResourceInfo> builder = ImmutableSet.builder();
         for (ResourceInfo resourceInfo : classPath.getResources()) {
             if (resourceInfo.getResourceName().startsWith(packagePrefix)) {
@@ -79,21 +79,21 @@ public class InitializeEpion {
      * @param resourcesInfoList
      */
     private void outputTemplate(Set<ResourceInfo> resourcesInfoList) {
-        String beforeDirName = null;
+        var beforeDirName = (String) null;
 
-        String templatePath = TEMPLATE_SCENERIO_PACKAGE.replaceAll("\\.", "/");
+        var templatePath = TEMPLATE_SCENERIO_PACKAGE.replaceAll("\\.", "/");
 
         for (ResourceInfo resourceInfo : resourcesInfoList) {
-            String resourceName = resourceInfo.getResourceName().replaceAll(templatePath, "");
-            String resourceDirName = resourceName.substring(0, resourceName.lastIndexOf("/"));
+            var resourceName = resourceInfo.getResourceName().replaceAll(templatePath, "");
+            var resourceDirName = resourceName.substring(0, resourceName.lastIndexOf("/"));
 
             if (beforeDirName == null || !beforeDirName.equals(resourceDirName)) {
                 beforeDirName = resourceDirName;
-                File dir = new File(outputBasePath, resourceDirName);
+                var dir = new File(outputBasePath, resourceDirName);
                 dir.mkdirs();
             }
-            String resourcePath = outputBasePath + resourceName;
-            File file = new File(resourcePath);
+            var resourcePath = outputBasePath + resourceName;
+            var file = new File(resourcePath);
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 fos.getChannel()
                         .transferFrom(Channels.newChannel(resourceInfo.asByteSource().openStream()), 0, Long.MAX_VALUE);

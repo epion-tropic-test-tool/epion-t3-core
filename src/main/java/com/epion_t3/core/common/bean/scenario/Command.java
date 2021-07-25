@@ -1,7 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
-import com.epion_t3.core.common.annotation.OriginalProcessField;
+import com.epion_t3.core.common.annotation.OriginalCommandField;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.bval.constraints.NotEmpty;
@@ -22,26 +22,26 @@ public class Command implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @NotEmpty
-    @OriginalProcessField
+    @OriginalCommandField
     private String id;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private String summary;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private String description;
 
     @NotEmpty
-    @OriginalProcessField
+    @OriginalCommandField
     private String command;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private String target;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private String value;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private ProcessReference ref;
 
     /**
@@ -51,7 +51,7 @@ public class Command implements Serializable {
      *
      * @since 0.0.4
      */
-    @OriginalProcessField
+    @OriginalCommandField
     private List<String> viewPoint;
 
 }

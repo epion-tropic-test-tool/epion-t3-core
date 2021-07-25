@@ -10,12 +10,22 @@ import com.epion_t3.core.common.context.ExecuteContext;
 
 import java.util.Map;
 
+/**
+ * レポーターが存在しないことを表すためのコマンドレポーター.
+ */
 public class NoneCommandReporter extends AbstractThymeleafCommandReporter<NoneCommand, CommandResult> {
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String templatePath() {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setVariables(Map<String, Object> variable, NoneCommand command, CommandResult commandResult,
             ExecuteContext executeContext, ExecuteScenario executeScenario, ExecuteFlow executeFlow,

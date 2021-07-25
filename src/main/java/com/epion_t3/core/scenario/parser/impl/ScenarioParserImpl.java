@@ -159,7 +159,7 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                         Class causeClass = cause.getClass();
                         if (CommandNotFoundException.class.isAssignableFrom(causeClass)) {
                             // コマンドが見つからない場合
-                            CommandNotFoundException cnfe = CommandNotFoundException.class.cast(cause);
+                            var cnfe = CommandNotFoundException.class.cast(cause);
                             executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
@@ -171,7 +171,7 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                                     .build());
                         } else if (FlowNotFoundException.class.isAssignableFrom(causeClass)) {
                             // Flowが見つからない場合
-                            FlowNotFoundException fnfe = FlowNotFoundException.class.cast(cause);
+                            var fnfe = FlowNotFoundException.class.cast(cause);
                             executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)
@@ -182,7 +182,7 @@ public final class ScenarioParserImpl implements ScenarioParser<Context, Execute
                                     .build());
                         } else if (ConfigurationNotFoundException.class.isAssignableFrom(causeClass)) {
                             // 設定が見つからない場合
-                            ConfigurationNotFoundException cnfe = ConfigurationNotFoundException.class.cast(cause);
+                            var cnfe = ConfigurationNotFoundException.class.cast(cause);
                             executeContext.addNotification(ScenarioParseError.scenarioParseErrorBuilder()
                                     .stage(executeContext.getStage())
                                     .level(NotificationType.ERROR)

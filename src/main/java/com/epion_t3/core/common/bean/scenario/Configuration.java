@@ -1,7 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.bean.scenario;
 
-import com.epion_t3.core.common.annotation.OriginalProcessField;
+import com.epion_t3.core.common.annotation.OriginalCommandField;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.bval.constraints.NotEmpty;
@@ -24,17 +24,17 @@ public class Configuration implements Serializable {
      * Configuration.
      */
     @NotEmpty
-    @OriginalProcessField
+    @OriginalCommandField
     private String configuration;
 
     @NotEmpty
-    @OriginalProcessField
+    @OriginalCommandField
     private String id;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private String summary;
 
-    @OriginalProcessField
+    @OriginalCommandField
     private String description;
 
 }

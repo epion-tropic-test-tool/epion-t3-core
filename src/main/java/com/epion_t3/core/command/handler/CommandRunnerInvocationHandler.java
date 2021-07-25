@@ -60,7 +60,7 @@ public class CommandRunnerInvocationHandler<COMMAND_RUNNER extends CommandRunner
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         // 処理結果
-        Object result = null;
+        var result = (Object) null;
 
         try {
 

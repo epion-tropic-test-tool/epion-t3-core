@@ -30,7 +30,7 @@ public enum PathResolveMode {
     /**
      * 値.
      */
-    private String value;
+    private final String value;
 
     /**
      * 値からEnumを特定する.

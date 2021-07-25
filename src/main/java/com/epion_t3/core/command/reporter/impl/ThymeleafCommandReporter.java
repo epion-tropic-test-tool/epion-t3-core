@@ -12,6 +12,8 @@ import com.epion_t3.core.common.context.ExecuteContext;
 import java.util.Map;
 
 /**
+ * Thymeleafを利用したコマンドレポーターのインタフェース.
+ *
  * @param <COMMAND>
  * @param <COMMAND_RESULT>
  * @param <EXECUTE_CONTEXT>
@@ -25,12 +27,16 @@ public interface ThymeleafCommandReporter<COMMAND extends Command, COMMAND_RESUL
         CommandReporter<COMMAND, COMMAND_RESULT, EXECUTE_CONTEXT, EXECUTE_SCENARIO, EXECUTE_FLOW, EXECUTE_COMMAND> {
 
     /**
-     * @return
+     * Thymeleafのテンプレートパスを返却.
+     * 
+     * @return Thymeleafのテンプレートパス
      */
     String templatePath();
 
     /**
-     * @param variable
+     * 変数設定.
+     * 
+     * @param variable 変数マップ
      */
     void setVariables(Map<String, Object> variable, COMMAND command, COMMAND_RESULT commandResult,
             EXECUTE_CONTEXT executeContext, EXECUTE_SCENARIO executeScenario, EXECUTE_FLOW executeFlow,

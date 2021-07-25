@@ -1,7 +1,6 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.command.resolver;
 
-import com.epion_t3.core.common.bean.CommandInfo;
 import com.epion_t3.core.custom.holder.CustomPackageHolder;
 import com.epion_t3.core.exception.CommandNotFoundException;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -47,8 +46,8 @@ public class CommandTypeIdResolver implements TypeIdResolver {
      */
     @Override
     public JavaType typeFromId(DatabindContext context, String id) throws IOException {
-        TypeFactory typeFactory = (context != null) ? context.getTypeFactory() : TypeFactory.defaultInstance();
-        CommandInfo commandInfo = CustomPackageHolder.getInstance().getCustomCommandInfo(id);
+        var typeFactory = (context != null) ? context.getTypeFactory() : TypeFactory.defaultInstance();
+        var commandInfo = CustomPackageHolder.getInstance().getCustomCommandInfo(id);
         if (commandInfo != null) {
             return typeFactory.constructType(commandInfo.getModel());
         }
