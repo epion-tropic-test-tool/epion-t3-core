@@ -87,7 +87,7 @@ public final class MessageResolver {
         List<ResourceBundle> loadingResourceBundles = new ArrayList<>();
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        List<ClassPath.ResourceInfo> messageResources = null;
+        var messageResources = (List<ClassPath.ResourceInfo>) null;
         try {
             messageResources = ClassPath.from(loader)
                     .getResources()
@@ -99,7 +99,7 @@ public final class MessageResolver {
             throw new SystemException(e);
         }
 
-        for (ClassPath.ResourceInfo resource : messageResources) {
+        for (var resource : messageResources) {
             try {
                 ResourceBundle rb = ResourceBundle.getBundle(FilenameUtils.getBaseName(resource.getResourceName()),
                         Locale.getDefault());
@@ -107,7 +107,6 @@ public final class MessageResolver {
                 log.debug("load resource bundle: {}", resource.getResourceName());
             } catch (MissingResourceException e) {
                 log.debug("can not load resource bundle: {}", resource.getResourceName());
-                continue;
             }
         }
 

@@ -6,6 +6,7 @@ package com.epion_t3.core.message;
  */
 public interface Messages {
 
+    /** メッセージコード. */
     String getMessageCode();
 
 }
