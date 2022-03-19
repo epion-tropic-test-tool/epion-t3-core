@@ -11,8 +11,14 @@ import lombok.Getter;
 @Getter
 public class ConfigurationNotFoundException extends SystemException {
 
+    /** 設定ID. */
     private String configurationId;
 
+    /**
+     * コンストラクタ.
+     * 
+     * @param configurationId 設定ID
+     */
     public ConfigurationNotFoundException(String configurationId) {
         this.configurationId = configurationId;
     }

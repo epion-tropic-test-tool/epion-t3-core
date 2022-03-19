@@ -2,6 +2,7 @@
 package com.epion_t3.core.message.impl;
 
 import com.epion_t3.core.message.Messages;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ import lombok.Getter;
  * @author takashno
  */
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum CoreMessages implements Messages {
     CORE_INF_0001("com.epion_t3.core.inf.0001"), CORE_ERR_0001("com.epion_t3.core.err.0001"),
     CORE_ERR_0002("com.epion_t3.core.err.0002"), CORE_ERR_0003("com.epion_t3.core.err.0003"),
@@ -59,5 +60,5 @@ public enum CoreMessages implements Messages {
     /**
      * メッセージコード.
      */
-    private String messageCode;
+    private final String messageCode;
 }

@@ -47,7 +47,7 @@ public class CommandResult implements Serializable {
      * @return コマンド結果
      */
     public static CommandResult getSuccess() {
-        CommandResult commandResult = new CommandResult();
+        var commandResult = new CommandResult();
         commandResult.setStatus(CommandStatus.SUCCESS);
         return commandResult;
     }

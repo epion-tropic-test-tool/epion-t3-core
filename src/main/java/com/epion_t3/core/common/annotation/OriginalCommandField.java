@@ -7,11 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Process定義のオリジナルフィールドの判断をするために付与するアノテーション. それ以外のなんの意味もない.
+ * Command定義のオリジナルフィールドの判断をするために付与するアノテーション. それ以外のなんの意味もない.<br>
+ * 0.1.1にてクラス名にリネーム対応を入れた。旧クラス名は「OriginalProcessField」
  *
  * @author takashno
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OriginalProcessField {
+public @interface OriginalCommandField {
 }

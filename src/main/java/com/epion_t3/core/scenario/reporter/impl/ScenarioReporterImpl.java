@@ -1,7 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.scenario.reporter.impl;
 
-import com.epion_t3.core.common.annotation.OriginalProcessField;
+import com.epion_t3.core.common.annotation.OriginalCommandField;
 import com.epion_t3.core.common.bean.ExecuteCommand;
 import com.epion_t3.core.common.bean.ExecuteFlow;
 import com.epion_t3.core.common.bean.ExecuteScenario;
@@ -99,7 +99,7 @@ public final class ScenarioReporterImpl implements ThymeleafScenarioReporter<Exe
             for (ExecuteFlow executeFlow : executeScenario.getFlows()) {
                 for (ExecuteCommand executeCommand : executeFlow.getCommands()) {
                     for (Field field : executeCommand.getCommand().getClass().getDeclaredFields()) {
-                        if (field.getDeclaredAnnotation(OriginalProcessField.class) == null) {
+                        if (field.getDeclaredAnnotation(OriginalCommandField.class) == null) {
                             if (executeCommand.getExtensionProcessFields() == null) {
                                 executeCommand.setExtensionProcessFields(new HashMap<>());
                             }

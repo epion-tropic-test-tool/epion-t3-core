@@ -59,7 +59,7 @@ public final class CommandRunnerResolverImpl implements CommandRunnerResolver {
             throw new SystemException(CoreMessages.CORE_ERR_0001);
         }
 
-        CommandInfo commandInfo = CustomPackageHolder.getInstance().getCustomCommandInfo(commandId);
+        var commandInfo = CustomPackageHolder.getInstance().getCustomCommandInfo(commandId);
 
         if (commandInfo == null) {
             // コマンド解決が出来ない場合
@@ -70,7 +70,7 @@ public final class CommandRunnerResolverImpl implements CommandRunnerResolver {
         executeCommand.setCommandInfo(commandInfo);
 
         // 実行クラスを取得
-        Class runnerClass = commandInfo.getRunner();
+        var runnerClass = commandInfo.getRunner();
 
         if (runnerClass == null) {
             // クラスが設定されていない場合（コンパイルが通らないレベルのため通常発生しない）
@@ -79,12 +79,12 @@ public final class CommandRunnerResolverImpl implements CommandRunnerResolver {
 
         try {
             // インスタンス生成＋返却
-            CommandRunner commandRunner = CommandRunner.class.cast(runnerClass.newInstance());
-            CommandRunnerInvocationHandler commandRunnerInvocationHandler = new CommandRunnerInvocationHandler(
-                    commandRunner, context, executeContext, executeScenario, executeFlow, executeCommand);
+            var commandRunner = CommandRunner.class.cast(runnerClass.newInstance());
+            var commandRunnerInvocationHandler = new CommandRunnerInvocationHandler(commandRunner, context,
+                    executeContext, executeScenario, executeFlow, executeCommand);
 
             // Proxyを作成
-            CommandRunner commandRunnerProxy = (CommandRunner) Proxy.newProxyInstance(
+            var commandRunnerProxy = (CommandRunner) Proxy.newProxyInstance(
                     CommandRunnerResolverImpl.class.getClassLoader(), new Class<?>[] { CommandRunner.class },
                     commandRunnerInvocationHandler);
 

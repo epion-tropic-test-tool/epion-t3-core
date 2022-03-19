@@ -6,6 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Flow定義のオリジナルフィールドの判断をするために付与するアノテーション. それ以外のなんの意味もない.
+ *
+ * @author takashno
+ */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OriginalFlowField {

@@ -114,10 +114,10 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
         this.collectLoggingMarker = MarkerFactory.getMarker(executeCommand.getExecuteId().toString());
 
         // エラー
-        Throwable error = null;
+        var error = (Throwable) null;
 
         // コマンド実行
-        CommandResult result = null;
+        var result = (CommandResult) null;
 
         try {
 
@@ -153,11 +153,11 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
             // 正常終了時にのみカスタムレポートを許可する
             if (error == null && !executeScenario.getOption().getNoReport()) {
 
-                Class reporterClazz = executeCommand.getCommandInfo().getReporter();
+                var reporterClazz = executeCommand.getCommandInfo().getReporter();
 
                 if (!NoneCommandReporter.class.isAssignableFrom(reporterClazz)) {
 
-                    CommandReporter reporter = (CommandReporter) reporterClazz.newInstance();
+                    var reporter = (CommandReporter) reporterClazz.newInstance();
 
                     // レポート出力
                     reporter.report(command, result, context, executeContext, executeScenario, executeFlow,
@@ -241,14 +241,14 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
         }
 
         // 正規表現からスコープと変数名に分割して解析する
-        Matcher m = EXTRACT_PATTERN.matcher(referenceVariable);
+        var m = EXTRACT_PATTERN.matcher(referenceVariable);
 
         if (m.find()) {
 
             // 変数参照スコープを解決
-            ReferenceVariableType referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
+            var referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
 
-            Object referObject = null;
+            var referObject = (Object) null;
 
             if (referenceVariableType != null) {
                 switch (referenceVariableType) {
@@ -290,9 +290,9 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @param value 設定する値
      */
     protected void setVariable(final String target, final Object value) {
-        Matcher m = EXTRACT_PATTERN.matcher(target);
+        var m = EXTRACT_PATTERN.matcher(target);
         if (m.find()) {
-            ReferenceVariableType referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
+            var referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
             if (referenceVariableType != null) {
                 switch (referenceVariableType) {
                 case FIX:
@@ -322,9 +322,9 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @param target 変数名（スコープ.変数名）
      */
     protected void removeVariable(final String target) {
-        Matcher m = EXTRACT_PATTERN.matcher(target);
+        var m = EXTRACT_PATTERN.matcher(target);
         if (m.find()) {
-            ReferenceVariableType referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
+            var referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
             if (referenceVariableType != null) {
                 switch (referenceVariableType) {
                 case FIX:
@@ -392,7 +392,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      */
     protected String getCommandBelongScenarioDirectory() {
         // シナリオ識別子はシステムで投入する値のため、存在しないことは不正
-        String belongScenarioId = IDUtils.getInstance().extractBelongScenarioIdFromFqcn(executeCommand.getFqcn());
+        var belongScenarioId = IDUtils.getInstance().extractBelongScenarioIdFromFqcn(executeCommand.getFqcn());
         if (StringUtils.isEmpty(belongScenarioId)) {
             throw new SystemException(CoreMessages.CORE_ERR_0018, executeCommand.getFqcn());
         }
@@ -414,7 +414,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @return
      */
     protected Path getCommandBelongScenarioDirectoryPath() {
-        String belongScenarioId = IDUtils.getInstance().extractBelongScenarioIdFromFqcn(executeCommand.getFqcn());
+        var belongScenarioId = IDUtils.getInstance().extractBelongScenarioIdFromFqcn(executeCommand.getFqcn());
         return context.getOriginal().getScenarioPlacePaths().get(belongScenarioId);
     }
 
@@ -424,7 +424,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @return シナリオ格納ディレクトリパス（文字列）
      */
     protected String getScenarioDirectory() {
-        Object scenarioDirectory = executeScenario.getScenarioVariables()
+        var scenarioDirectory = executeScenario.getScenarioVariables()
                 .get(ScenarioScopeVariables.SCENARIO_DIR.getName());
         if (scenarioDirectory == null) {
             throw new SystemException(CoreMessages.CORE_ERR_0019, executeScenario.getFqsn());
@@ -438,7 +438,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @return シナリオ格納ディレクトリパス
      */
     protected Path getScenarioDirectoryPath() {
-        Object scenarioDirectory = executeScenario.getScenarioVariables()
+        var scenarioDirectory = executeScenario.getScenarioVariables()
                 .get(ScenarioScopeVariables.SCENARIO_DIR.getName());
         if (scenarioDirectory == null) {
             throw new SystemException(CoreMessages.CORE_ERR_0019, executeScenario.getFqsn());
@@ -452,7 +452,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @return エビデンス格納ディレクトリ
      */
     protected String getEvidenceDirectory() {
-        Object evidenceDirectory = executeScenario.getScenarioVariables()
+        var evidenceDirectory = executeScenario.getScenarioVariables()
                 .get(ScenarioScopeVariables.EVIDENCE_DIR.getName());
         if (evidenceDirectory == null) {
             throw new SystemException(CoreMessages.CORE_ERR_0020, executeScenario.getFqsn());
@@ -470,12 +470,12 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
      * @return エビデンス格納ディレクトリ
      */
     protected Path getEvidenceDirectoryPath() {
-        Object evidenceDirectory = executeScenario.getScenarioVariables()
+        var evidenceDirectory = executeScenario.getScenarioVariables()
                 .get(ScenarioScopeVariables.EVIDENCE_DIR.getName());
         if (evidenceDirectory == null) {
             throw new SystemException(CoreMessages.CORE_ERR_0020, executeScenario.getFqsn());
         }
-        Path evidenceDirectoryPath = Path.class.cast(evidenceDirectory);
+        var evidenceDirectoryPath = Path.class.cast(evidenceDirectory);
         if (Files.notExists(evidenceDirectoryPath)) {
             throw new SystemException(CoreMessages.CORE_ERR_0021, evidenceDirectoryPath.toString());
         }
@@ -549,7 +549,7 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
     protected <C extends Configuration> C referConfiguration(String configurationId) {
 
         // 参照用の設定ID
-        String referConfigurationId = configurationId;
+        var referConfigurationId = configurationId;
 
         // 設定識別子かどうか判断
         if (!IDUtils.getInstance().isFullQueryConfigurationId(configurationId)) {
@@ -558,12 +558,12 @@ public abstract class AbstractCommandRunner<COMMAND extends Command>
             referConfigurationId = IDUtils.getInstance()
                     .createFullConfigurationId(executeScenario.getInfo().getId(), referConfigurationId);
         }
-        Configuration configuration = context.getOriginal().getConfigurations().get(configurationId);
+        var configuration = context.getOriginal().getConfigurations().get(configurationId);
         if (configuration == null) {
             throw new SystemException(CoreMessages.CORE_ERR_0006, configurationId);
         }
 
-        Configuration cloneConfiguration = SerializationUtils.clone(configuration);
+        var cloneConfiguration = SerializationUtils.clone(configuration);
 
         // 変数バインド
         BindUtils.getInstance()

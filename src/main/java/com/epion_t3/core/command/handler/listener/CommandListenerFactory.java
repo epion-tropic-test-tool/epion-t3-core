@@ -39,7 +39,7 @@ public final class CommandListenerFactory {
      * @return
      */
     public List<CommandBeforeListener> getBeforeListener() {
-        final List<CommandBeforeListener> result = new LinkedList<>();
+        final var result = new LinkedList<CommandBeforeListener>();
         CommandListenerHolder.getInstance().getCommandBeforeListenerClasses().forEach(x -> {
             try {
                 result.add(x.newInstance());
@@ -55,7 +55,7 @@ public final class CommandListenerFactory {
      * @return
      */
     public List<CommandAfterListener> getAfterListener() {
-        final List<CommandAfterListener> result = new LinkedList<>();
+        final var result = new LinkedList<CommandAfterListener>();
         CommandListenerHolder.getInstance().getCommandAfterListenerClasses().forEach(x -> {
             try {
                 result.add(x.newInstance());
@@ -71,7 +71,7 @@ public final class CommandListenerFactory {
      * @return
      */
     public List<CommandErrorListener> getErrorListener() {
-        final List<CommandErrorListener> result = new LinkedList<>();
+        final var result = new LinkedList<CommandErrorListener>();
         CommandListenerHolder.getInstance().getCommandErrorListenerClasses().forEach(x -> {
             try {
                 result.add(x.newInstance());

@@ -11,9 +11,16 @@ import lombok.Getter;
 @Getter
 public class FlowNotFoundException extends SystemException {
 
+    /** FlowId. */
     private String flowId;
 
+    /**
+     * コンストラクタ.
+     * 
+     * @param flowId FlowId
+     */
     public FlowNotFoundException(String flowId) {
         super("not found flow: '" + flowId + "'");
+        this.flowId = flowId;
     }
 }
