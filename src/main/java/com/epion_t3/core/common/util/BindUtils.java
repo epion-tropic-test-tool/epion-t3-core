@@ -5,6 +5,7 @@ import com.epion_t3.core.common.type.ReferenceVariableType;
 import com.epion_t3.core.exception.SystemException;
 import com.epion_t3.core.message.MessageManager;
 import com.epion_t3.core.message.impl.CoreMessages;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -15,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -34,12 +34,13 @@ public final class BindUtils {
     /**
      * バインド変数抽出パターン(名前空間あり). TODO:ここは外側から指定できるべきか
      */
-    public static final Pattern BIND_EXTRACT_PATTERN = Pattern.compile("\\$\\{([^\\}]+)\\}");
+    public static final Pattern BIND_EXTRACT_PATTERN = Pattern.compile("\\$\\{([^\\.\\{\\}]+)\\}");
 
     /**
      * バインド変数抽出パターン(名前空間あり). TODO:ここは外側から指定できるべきか
      */
-    public static final Pattern BIND_EXTRACT_PATTERN_WITHNAMESPACE = Pattern.compile("\\$\\{([^\\.]+)\\.([^\\}]+)\\}");
+    public static final Pattern BIND_EXTRACT_PATTERN_WITHNAMESPACE = Pattern
+            .compile("\\$\\{([^\\.\\{\\}]+)\\.([^\\{\\}]+)\\}");
 
     /**
      * インスタンスを取得します.
@@ -204,68 +205,58 @@ public final class BindUtils {
      * 文字列に対して各種変数およびプロファイルの値のバインド処理を行う.
      *
      * @param target 対象文字列
+     * @param profiles プロファイル
      * @param globalVariables グローバル変数
      * @param scenarioVariables シナリオ変数
+     * @param flowVariables Flow変数
      * @return バインド後の文字列
      */
-    public String bind(String target, Map<String, String> profiles, Map<String, Object> globalVariables,
-            Map<String, Object> scenarioVariables, Map<String, Object> flowVariables) {
+    public String bind(String target, @NonNull Map<String, String> profiles,
+            @NonNull Map<String, Object> globalVariables, @NonNull Map<String, Object> scenarioVariables,
+            @NonNull Map<String, Object> flowVariables) {
 
         if (StringUtils.isEmpty(target)) {
             return null;
         }
 
         // 名前空間なしでバインド（Profile用を想定）
-        Matcher m = BIND_EXTRACT_PATTERN.matcher(target);
+        var m = BIND_EXTRACT_PATTERN.matcher(target);
 
-        // バインドを実行したかどうかのフラグ
-        boolean replaceFlg = false;
-
-        // 連続バインド失敗回数のカウンタ
-        int loopCount = 0;
-
+        // プロファイルからのバインド
         while (m.find()) {
 
-            String referProfileKey = m.group(1);
+            var referProfileKey = m.group(1);
 
             if (profiles.containsKey(referProfileKey)) {
                 log.debug("replace profile target:{}, bind:{}", m.group(0), profiles.get(referProfileKey));
                 target = target.replace(m.group(0), profiles.get(referProfileKey));
-            }
-
-            // バインドが成功していない継続数をインクリメントする
-            if (!replaceFlg) {
-                loopCount++;
+                // バインドしたあとの文字列に更にバインド文字列が含まれている場合、 多重でバインドを行うため、Matcherを再度生成する
+                m = BIND_EXTRACT_PATTERN.matcher(target);
             } else {
-                // 一度でもバインドが成功した場合は、初期化する
-                loopCount = 0;
+                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0004, m.group(), target));
             }
-
-            if (loopCount > 10) {
-                // 最大失敗回数は10回とする
-                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0004, target));
-                break;
-            }
-
-            // 変数バインド継続
-            m = BIND_EXTRACT_PATTERN.matcher(target);
 
         }
 
         // 名前空間ありにて抽出
         m = BIND_EXTRACT_PATTERN_WITHNAMESPACE.matcher(target);
 
-        // 初期化
-        loopCount = 0;
-
         while (m.find()) {
-            ReferenceVariableType referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
-            if (referenceVariableType != null) {
+
+            // バインドを実行したかどうかのフラグ
+            var replaceSuccess = false;
+
+            // 参照変数種別（スコープ）の解決
+            var referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
+
+            if (referenceVariableType == null) {
+                throw new SystemException(CoreMessages.CORE_ERR_0004, m.group(0));
+            } else {
                 switch (referenceVariableType) {
                 case FIX:
                     log.debug("replace fix target:{}, bind:{}", m.group(0), m.group(2));
                     target = target.replace(m.group(0), m.group(2));
-                    replaceFlg = true;
+                    replaceSuccess = true;
                     break;
                 case GLOBAL:
                     // グローバルスコープ変数からのバインド
@@ -273,9 +264,7 @@ public final class BindUtils {
                         log.debug("replace global target:{}, bind:{}", m.group(0),
                                 globalVariables.get(m.group(2)).toString());
                         target = target.replace(m.group(0), globalVariables.get(m.group(2)).toString());
-                        replaceFlg = true;
-                    } else {
-                        replaceFlg = false;
+                        replaceSuccess = true;
                     }
                     break;
                 case SCENARIO:
@@ -284,25 +273,16 @@ public final class BindUtils {
                         log.debug("replace scenario target:{}, bind:{}", m.group(0),
                                 scenarioVariables.get(m.group(2)).toString());
                         target = target.replace(m.group(0), scenarioVariables.get(m.group(2)).toString());
-                        replaceFlg = true;
-                    } else {
-                        replaceFlg = false;
+                        replaceSuccess = true;
                     }
                     break;
                 case FLOW:
-                    if (flowVariables == null) {
-                        // Flowスコープ変数からのバインドが利用不可だった場合、その時点で警告扱い
-                        loopCount += 10;
-                    } else {
-                        // Flowスコープ変数からのバインド
-                        if (flowVariables.containsKey(m.group(2))) {
-                            log.debug("replace scenario target:{}, bind:{}", m.group(0),
-                                    flowVariables.get(m.group(2)).toString());
-                            target = target.replace(m.group(0), flowVariables.get(m.group(2)).toString());
-                            replaceFlg = true;
-                        } else {
-                            replaceFlg = false;
-                        }
+                    // Flowスコープ変数からのバインド
+                    if (flowVariables.containsKey(m.group(2))) {
+                        log.debug("replace scenario target:{}, bind:{}", m.group(0),
+                                flowVariables.get(m.group(2)).toString());
+                        target = target.replace(m.group(0), flowVariables.get(m.group(2)).toString());
+                        replaceSuccess = true;
                     }
                     break;
                 default:
@@ -310,22 +290,14 @@ public final class BindUtils {
                 }
             }
 
-            // バインドが成功していない継続数をインクリメントする
-            if (!replaceFlg) {
-                loopCount++;
+            if (replaceSuccess) {
+                // バインドしたあとの文字列に更にバインド文字列が含まれている場合、 多重でバインドを行うため、Matcherを再度生成する
+                m = BIND_EXTRACT_PATTERN_WITHNAMESPACE.matcher(target);
             } else {
-                // 一度でもバインドが成功した場合は、初期化する
-                loopCount = 0;
+                // バインドに失敗した場合は、WARNログを出して次に進む
+                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0001, m.group(0), target));
             }
 
-            if (loopCount > 10) {
-                // 最大失敗回数は10回とする
-                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0001, target));
-                break;
-            }
-
-            // 変数バインド継続
-            m = BIND_EXTRACT_PATTERN_WITHNAMESPACE.matcher(target);
         }
 
         return target;
