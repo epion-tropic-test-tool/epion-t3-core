@@ -32,20 +32,14 @@ public final class BindUtils {
     private static final BindUtils instance = new BindUtils();
 
     /**
-     * バインド変数抽出パターン(名前空間あり). TODO:ここは外側から指定できるべきか
+     * バインド変数抽出パターン.
      */
-    public static final Pattern BIND_EXTRACT_PATTERN = Pattern.compile("\\$\\{([^\\.\\{\\}]+)\\}");
-
-    /**
-     * バインド変数抽出パターン(名前空間あり). TODO:ここは外側から指定できるべきか
-     */
-    public static final Pattern BIND_EXTRACT_PATTERN_WITHNAMESPACE = Pattern
-            .compile("\\$\\{([^\\.\\{\\}]+)\\.([^\\{\\}]+)\\}");
+    public static final Pattern BIND_EXTRACT_PATTERN = Pattern.compile("\\$\\{([^\\{\\}]+)\\}");
 
     /**
      * インスタンスを取得します.
      *
-     * @return
+     * @return {@link BindUtils}のインスタンス
      */
     public static BindUtils getInstance() {
         return instance;
@@ -73,26 +67,6 @@ public final class BindUtils {
 
         while (true) {
 
-//            Arrays.stream(clazz.getDeclaredFields())
-//                    // Stringのみ
-//                    .filter(x -> String.class.isAssignableFrom(x.getType()))
-//                    .forEach(x -> {
-//                        try {
-//                            PropertyDescriptor pd = new PropertyDescriptor(x.getName(), target.getClass());
-//                            Object value = pd.getReadMethod().invoke(target);
-//                            if (value != null) {
-//                                value = bind(value.toString(),
-//                                        profiles,
-//                                        globalVariables,
-//                                        scenarioVariables,
-//                                        flowVariables);
-//                                pd.getWriteMethod().invoke(target, value.toString());
-//                            }
-//                        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-//                            log.debug("Ignore...", e);
-//                        }
-//                    });
-
             // String以外
             for (Field f : clazz.getDeclaredFields()) {
 
@@ -103,9 +77,6 @@ public final class BindUtils {
                 Class<?> fieldClass = f.getType();
 
                 try {
-                    // PropertyDescriptor pd = new PropertyDescriptor(f.getName(),
-                    // target.getClass());
-                    // Object value = pd.getReadMethod().invoke(target);
                     Object value = PropertyUtils.getProperty(target, f.getName());
                     if (value != null) {
 
@@ -171,25 +142,6 @@ public final class BindUtils {
 
             }
 
-//            Arrays.stream(clazz.getDeclaredFields())
-//                    // String以外
-//                    .filter(x -> !String.class.isAssignableFrom(x.getType()) && !x.getName().equals("serialVersionUID"))
-//                    .forEach(x -> {
-//                        try {
-//                            PropertyDescriptor pd = new PropertyDescriptor(x.getName(), target.getClass());
-//                            Object value = pd.getReadMethod().invoke(target);
-//                            if (value != null) {
-//                                bind(value,
-//                                        profiles,
-//                                        globalVariables,
-//                                        scenarioVariables,
-//                                        flowVariables);
-//                            }
-//                        } catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-//                            log.debug("Ignore...", e);
-//                        }
-//                    });
-
             if (clazz.getSuperclass() != null) {
                 // 親クラスが存在すれば、ループ処理.
                 // 再帰でもよかったなぁ・・・
@@ -218,90 +170,113 @@ public final class BindUtils {
         if (StringUtils.isEmpty(target)) {
             return null;
         }
+        return replaceVariable(target, null, profiles, globalVariables, scenarioVariables, flowVariables);
 
-        // 名前空間なしでバインド（Profile用を想定）
-        var m = BIND_EXTRACT_PATTERN.matcher(target);
+    }
 
-        // プロファイルからのバインド
-        while (m.find()) {
+    /**
+     * 変数での置換対象文字列を置換して返却する. 置換対象文字列から置換後文字列を解決できた場合には、本メソッドを再帰呼び出しして多重置換後の文字列を解決する.
+     * 同一の置換対象文字列が置換対象履歴に含まれる場合は、循環参照と判断しエラーとする.
+     * <p>
+     * EX) ${hoge} -> ${fuga} -> ${hoge} で循環する例 対象文字列 : abc${hoge}123${fuga}
+     * profiles : hoge=${fuga}, huga=${hoge}
+     *
+     * @param target 対象文字列
+     * @param targetHistory 置換履歴
+     * @param profiles プロファイル変数
+     * @param globalVariables グローバル変数
+     * @param scenarioVariables シナリオ変数
+     * @param flowVariables Flow変数
+     * @return 置換後対象文字列
+     */
+    private String replaceVariable(String target, List<String> targetHistory, @NonNull Map<String, String> profiles,
+            @NonNull Map<String, Object> globalVariables, @NonNull Map<String, Object> scenarioVariables,
+            @NonNull Map<String, Object> flowVariables) {
 
-            var referProfileKey = m.group(1);
-
-            if (profiles.containsKey(referProfileKey)) {
-                log.debug("replace profile target:{}, bind:{}", m.group(0), profiles.get(referProfileKey));
-                target = target.replace(m.group(0), profiles.get(referProfileKey));
-                // バインドしたあとの文字列に更にバインド文字列が含まれている場合、 多重でバインドを行うため、Matcherを再度生成する
-                m = BIND_EXTRACT_PATTERN.matcher(target);
-            } else {
-                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0004, m.group(), target));
-            }
-
+        if (StringUtils.isEmpty(target)) {
+            return null;
         }
 
-        // 名前空間ありにて抽出
-        m = BIND_EXTRACT_PATTERN_WITHNAMESPACE.matcher(target);
+        var needCircularReferenceCheck = targetHistory != null;
+        if (!needCircularReferenceCheck) {
+            targetHistory = new ArrayList<>();
+        }
+
+        var m = BIND_EXTRACT_PATTERN.matcher(target);
 
         while (m.find()) {
 
-            // バインドを実行したかどうかのフラグ
-            var replaceSuccess = false;
+            var referKey = m.group(1);
 
-            // 参照変数種別（スコープ）の解決
-            var referenceVariableType = ReferenceVariableType.valueOfByName(m.group(1));
+            if (needCircularReferenceCheck && targetHistory.contains(referKey)) {
+                throw new SystemException(CoreMessages.CORE_ERR_0075, referKey);
+            }
+            targetHistory.add(referKey);
 
-            if (referenceVariableType == null) {
-                throw new SystemException(CoreMessages.CORE_ERR_0004, m.group(0));
-            } else {
+            // 置換後の文字列
+            var replaceString = (String) null;
+
+            if (referKey.matches("[^\\.]+\\..+")) {
+                // 名前空間あり
+                var referKeyArray = referKey.split("\\.");
+                var referNameSpace = referKeyArray[0];
+                var referKeyInNameSpace = referKeyArray[1];
+
+                // 参照変数種別（スコープ）の解決
+                var referenceVariableType = ReferenceVariableType.valueOfByName(referNameSpace);
+
+                if (referenceVariableType == null) {
+                    throw new SystemException(CoreMessages.CORE_ERR_0004, referKey);
+                }
+
                 switch (referenceVariableType) {
                 case FIX:
-                    log.debug("replace fix target:{}, bind:{}", m.group(0), m.group(2));
-                    target = target.replace(m.group(0), m.group(2));
-                    replaceSuccess = true;
+                    replaceString = replaceVariable(referKeyInNameSpace, targetHistory, profiles, globalVariables,
+                            scenarioVariables, flowVariables);
                     break;
                 case GLOBAL:
                     // グローバルスコープ変数からのバインド
-                    if (globalVariables.containsKey(m.group(2))) {
-                        log.debug("replace global target:{}, bind:{}", m.group(0),
-                                globalVariables.get(m.group(2)).toString());
-                        target = target.replace(m.group(0), globalVariables.get(m.group(2)).toString());
-                        replaceSuccess = true;
+                    if (globalVariables.containsKey(referKeyInNameSpace)) {
+                        replaceString = replaceVariable(globalVariables.get(referKeyInNameSpace).toString(),
+                                targetHistory, profiles, globalVariables, scenarioVariables, flowVariables);
                     }
                     break;
                 case SCENARIO:
                     // シナリオスコープ変数からのバインド
-                    if (scenarioVariables.containsKey(m.group(2))) {
-                        log.debug("replace scenario target:{}, bind:{}", m.group(0),
-                                scenarioVariables.get(m.group(2)).toString());
-                        target = target.replace(m.group(0), scenarioVariables.get(m.group(2)).toString());
-                        replaceSuccess = true;
+                    if (scenarioVariables.containsKey(referKeyInNameSpace)) {
+                        replaceString = replaceVariable(scenarioVariables.get(referKeyInNameSpace).toString(),
+                                targetHistory, profiles, globalVariables, scenarioVariables, flowVariables);
                     }
                     break;
                 case FLOW:
                     // Flowスコープ変数からのバインド
-                    if (flowVariables.containsKey(m.group(2))) {
-                        log.debug("replace scenario target:{}, bind:{}", m.group(0),
-                                flowVariables.get(m.group(2)).toString());
-                        target = target.replace(m.group(0), flowVariables.get(m.group(2)).toString());
-                        replaceSuccess = true;
+                    if (flowVariables.containsKey(referKeyInNameSpace)) {
+                        replaceString = replaceVariable(flowVariables.get(referKeyInNameSpace).toString(),
+                                targetHistory, profiles, globalVariables, scenarioVariables, flowVariables);
                     }
                     break;
                 default:
-                    throw new SystemException(CoreMessages.CORE_ERR_0004, m.group(0));
+                    throw new SystemException(CoreMessages.CORE_ERR_0004, referKey);
+                }
+            } else {
+                // 名前空間なし
+                if (profiles.containsKey(referKey)) {
+                    replaceString = replaceVariable(profiles.get(referKey), targetHistory, profiles, globalVariables,
+                            scenarioVariables, flowVariables);
+                } else {
+                    log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0004, m.group(), target));
                 }
             }
 
-            if (replaceSuccess) {
-                // バインドしたあとの文字列に更にバインド文字列が含まれている場合、 多重でバインドを行うため、Matcherを再度生成する
-                m = BIND_EXTRACT_PATTERN_WITHNAMESPACE.matcher(target);
-            } else {
-                // バインドに失敗した場合は、WARNログを出して次に進む
-                log.warn(MessageManager.getInstance().getMessage(CoreMessages.CORE_WRN_0001, m.group(0), target));
+            if (StringUtils.isNotEmpty(replaceString)) {
+                log.debug("replace target:{}, bind:{}", m.group(0), replaceString);
+                target = target.replace(m.group(0), replaceString);
+                // 置換を行った場合は再度Matcherを作成し直す、置換できなかった文字列も再度やり直すことになるが仕方ない。
+                // 全ての置換可能な文字列を置換し終えた場合はこのルートに入らないので、Whileが回りきって返却される。
+                m = BIND_EXTRACT_PATTERN.matcher(target);
             }
-
         }
-
         return target;
-
     }
 
 }

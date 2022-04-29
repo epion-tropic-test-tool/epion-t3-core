@@ -1,6 +1,7 @@
 /* Copyright (c) 2017-2021 Nozomu Takashima. */
 package com.epion_t3.core.common.util;
 
+import com.epion_t3.core.exception.SystemException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * {@link BindUtils} のテストケース.
@@ -229,6 +231,40 @@ public class BindUtilsTest {
         // アサーション
         assertThat(result).isEqualTo(
                 "abc${hoge}def${fuga}ghi${piyo}jkl${global.hoge}mno${scenario.hoge}pqrほげ${global.fuga}${scenario.fuga}${flow.fuga}");
+    }
+
+    @Test
+    @DisplayName("循環参照で失敗")
+    void bind_circular＿reference_001() {
+
+        profile.put("hoge", "${fuga}");
+        profile.put("fuga", "${piyo}");
+        profile.put("piyo", "${hoge}");
+
+        // 実行
+        var e = assertThrows(SystemException.class,
+                () -> BindUtils.getInstance().bind(target, profile, globalVariables, scenarioVariables, flowVariables));
+
+        // アサーション
+        assertThat(e.getMessage())
+                .isEqualTo("[com.epion_t3.core.err.0075] 変数バインドにて循環参照が確認されました。置換中に同じ置換対象文字列が2回以上含まれます。該当置換対象文字列:hoge");
+    }
+
+    @Test
+    @DisplayName("循環参照で失敗.スコープ跨ぎ")
+    void bind_circular＿reference_002() {
+
+        profile.put("hoge", "12345${global.fuga}abcde");
+        globalVariables.put("fuga", "67890${scenario.piyo}fghij");
+        profile.put("piyo", "!!!!${hoge}!!!!");
+
+        // 実行
+        var e = assertThrows(SystemException.class,
+                () -> BindUtils.getInstance().bind(target, profile, globalVariables, scenarioVariables, flowVariables));
+
+        // アサーション
+        assertThat(e.getMessage())
+                .isEqualTo("[com.epion_t3.core.err.0075] 変数バインドにて循環参照が確認されました。置換中に同じ置換対象文字列が2回以上含まれます。該当置換対象文字列:hoge");
     }
 
 }
