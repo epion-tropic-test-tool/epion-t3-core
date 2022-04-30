@@ -4,7 +4,6 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'signing'
-    id 'maven'
     id 'maven-publish'
     id 'jacoco'
     id "com.diffplug.gradle.spotless"
@@ -91,7 +90,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.6'
     annotationProcessor 'org.projectlombok:lombok:1.18.6'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation(platform('org.junit:junit-bom:5.8.2'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation('org.assertj:assertj-core:3.21.0')
 
 }
 
@@ -112,6 +113,13 @@ tasks.withType(JavaCompile) {
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 spotless {

@@ -2,6 +2,7 @@ name: dev-build-snapshot-publish
 on:
   push:
     branches:
+      - feature/**
       - develop/**
       - master
 jobs:
