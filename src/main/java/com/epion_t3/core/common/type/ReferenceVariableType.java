@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 
 /**
- * 参照変数種別.
+ * 参照変数種別（スコープ）.
  *
  * @author takashno
  */
