@@ -4,7 +4,6 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'signing'
-    id 'maven'
     id 'maven-publish'
     id 'jacoco'
     id "com.diffplug.gradle.spotless"
